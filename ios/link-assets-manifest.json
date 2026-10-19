@@ -1,0 +1,37 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/DMSans-Bold.ttf",
+      "sha1": "8695cff0b1a06e5537b174e0f9486c2b46ccbbf9"
+    },
+    {
+      "path": "src/assets/fonts/DMSans-Medium.ttf",
+      "sha1": "3b00a0b6287c394f220d3712f5f56d40b02c1c31"
+    },
+    {
+      "path": "src/assets/fonts/DMSans-Regular.ttf",
+      "sha1": "f70a8ac0c1aa7bdd511d52a156fda25c8ba3c5f7"
+    },
+    {
+      "path": "src/assets/fonts/DMSans-SemiBold.ttf",
+      "sha1": "5ba615660e90da3637fa956fdd446d2433ecdebf"
+    },
+    {
+      "path": "src/assets/fonts/InstrumentSerif-Italic.ttf",
+      "sha1": "14f75487c9b6f3d9390e750907f60b57924f5cee"
+    },
+    {
+      "path": "src/assets/fonts/InstrumentSerif-Regular.ttf",
+      "sha1": "1638d50537a329d97f24f37ce87fae2b57a57cd6"
+    },
+    {
+      "path": "src/assets/fonts/JetBrainsMono-Medium.ttf",
+      "sha1": "ee292a1a7e431c635851a5ae0c087009295d655c"
+    },
+    {
+      "path": "src/assets/fonts/JetBrainsMono-Regular.ttf",
+      "sha1": "d702828b32b8b8a27407068f9fbef6fe2a99458a"
+    }
+  ]
+}

@@ -1,97 +1,177 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# SpoonUp
 
-# Getting Started
+React Native CLI application (Android + iOS), with full native project control. This is **not** an Expo-managed app — see [Expo Go / Expo Dev Client](#expo-go--expo-dev-client) below for why, and what to use instead for on-device testing.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Requirements
 
-## Step 1: Start Metro
+| Tool | Version used in this repo |
+| --- | --- |
+| Node | ≥ 22.11.0 (developed on 26.0.0) |
+| npm | 11.x |
+| Java (JDK) | 17 (Zulu) |
+| Ruby | see `Gemfile` (`>= 2.6.10`) |
+| CocoaPods | via Bundler (`Gemfile`), currently 1.15.2 |
+| Watchman | recommended |
+| Xcode | current stable, with an iOS Simulator runtime installed |
+| Android Studio / SDK | compileSdk 37, buildTools 37.0.0, NDK 27.1.12297006 |
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
-
-To start the Metro dev server, run the following command from the root of your React Native project:
-
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+Install the JS dependencies first:
 
 ```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+npm install
 ```
 
-### iOS
+## Environment setup
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+Values are injected at bundle time via `react-native-dotenv` (`babel.config.js`).
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+- `.env` — development (default). Set `API_BASE_URL` to your Mac's LAN IP and backend port, e.g. `http://192.168.1.15:5001`. Android emulator may use `http://10.0.2.2:5001`.
+- `.env.production` — production (`https://spoonupfoods.com`).
+- Staging has no file yet; create `.env.staging` once the staging URL exists.
+
+Select a file for a build with `ENV_FILE`, then reset Metro's cache once:
+
+```sh
+ENV_FILE=.env.production npm run android
+npx react-native start --reset-cache
+```
+
+The app throws at startup if `API_BASE_URL` is missing. Env files are gitignored; `.env.example` documents the keys.
+
+**Do not treat these values as secrets.** They ship inside the JS bundle. Backend credentials stay on the server.
+
+## Android setup
+
+The Android project is otherwise ready to build as-is (SDK/NDK/build-tools versions above are already installed and verified). No additional setup is required beyond having Android Studio's SDK components installed.
+
+## iOS setup
+
+Install Ruby gems (CocoaPods) via Bundler once:
 
 ```sh
 bundle install
 ```
 
-Then, and every time you update your native dependencies, run:
+Then, and every time native iOS dependencies change:
 
 ```sh
+cd ios
 bundle exec pod install
+cd ..
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## Running the application
+
+Start Metro first, in its own terminal:
 
 ```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+npm start
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Android emulator
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```sh
+npm run android
+```
 
-## Step 3: Modify your app
+### iOS Simulator
 
-Now that you have successfully run the app, let's make changes!
+```sh
+npm run ios
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+### Physical Android device
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+1. Enable Developer Options + USB debugging on the device.
+2. Connect via USB and confirm the device is visible: `adb devices`
+3. `npm run android` — the CLI installs onto the connected device.
+4. If Metro can't reach the device, run `adb reverse tcp:8081 tcp:8081`.
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+### Physical iPhone
 
-## Congratulations! :tada:
+1. Open `ios/SpoonUp.xcworkspace` in Xcode.
+2. Select your device as the run target, set your Apple ID / development team under Signing & Capabilities.
+3. Run from Xcode (⌘R), or `npx react-native run-ios --device "Your iPhone Name"`.
+4. Device and Mac must be on the same network (or use USB) for Metro's connection.
 
-You've successfully run and modified your React Native App. :partying_face:
+## Expo Go / Expo Dev Client
 
-### Now what?
+This project is on **React Native 0.87.1**. The nearest Expo SDKs are:
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+- SDK 57 (latest stable) → bundles react-native **0.86.3**
+- SDK 58 (preview, not GA) → bundles react-native **0.88.0-rc.1**
 
-# Troubleshooting
+Neither matches 0.87.1 exactly, so installing Expo Go / Expo Dev Client packages now risks native/Fabric build mismatches. Per project decision, Expo is **intentionally not installed**. Physical-device testing uses the native workflows above (USB-debugged Android device, Xcode-signed iPhone build) instead.
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+If a future React Native upgrade lines up with a stable Expo SDK and on-device testing via Expo Go/Dev Client becomes valuable, that's a deliberate follow-up, not something to bolt on speculatively.
 
-# Learn More
+## Testing
 
-To learn more about React Native, take a look at the following resources:
+```sh
+npm test
+```
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Test files live under `__tests__/`, mirroring `src/` structure as it grows (`components/`, `features/`, `services/`, `utils/`).
+
+## Linting
+
+```sh
+npm run lint
+```
+
+## Type checking
+
+```sh
+npm run typecheck
+```
+
+## Formatting
+
+```sh
+npm run format        # writes changes
+npm run format:check  # CI-safe, fails on unformatted files
+```
+
+## Building
+
+### Android debug APK
+
+```sh
+cd android && ./gradlew assembleDebug
+```
+
+Output: `android/app/build/outputs/apk/debug/app-debug.apk`
+
+### Android release
+
+The `release` build type currently reuses the **debug keystore** (React Native CLI default). Before shipping, generate a real release keystore and update `android/app/build.gradle`'s `signingConfigs.release` — see [Signing your app](https://reactnative.dev/docs/signed-apk-android). Do not commit the release keystore or its passwords to git.
+
+```sh
+cd android && ./gradlew assembleRelease
+```
+
+### iOS
+
+Archive/build through Xcode (`ios/SpoonUp.xcworkspace`) once a valid signing team/provisioning profile is configured — this can't be done headlessly without an Apple Developer account attached to this machine.
+
+## Project architecture
+
+Feature-based structure under `src/`; folders are added as real features land, not pre-created empty.
+
+```
+src/
+├── assets/        # fonts, icons, images (add subfolders as assets arrive)
+├── components/    # shared UI only — business-specific components live in features/
+├── config/        # env.ts, constants.ts, appConfig.ts
+├── features/      # one folder per feature (screens/components/hooks/services/types)
+├── services/
+│   └── api/       # client.ts, endpoints.ts, interceptors.ts — centralized fetch wrapper
+├── theme/         # colors, spacing, radius, typography tokens
+└── types/         # shared/global TypeScript types (e.g. env.d.ts)
+```
+
+Data flow: **Screen → hook → feature service → `services/api/client.ts` → backend.** Screens should not call `fetch` directly.
+
+State management: no global store (Redux/Zustand/etc.) is installed. There's no cross-feature state yet to justify one — add it when a real need shows up, not preemptively.
+
+Navigation: no navigation library installed yet — there's only a single placeholder screen. Add `@react-navigation/native` when a second real screen exists, and wire up `src/navigation/` (`AppNavigator`, `AuthNavigator`, `MainNavigator`) at that point.

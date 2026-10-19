@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="ext-resource-dependency" content="assets/products/chia.png">
+<meta name="ext-resource-dependency" content="assets/products/dragonfruit-bottle.png">
+<meta name="ext-resource-dependency" content="assets/products/dryfruit.png">
+<meta name="ext-resource-dependency" content="assets/products/fries.png">
+<meta name="ext-resource-dependency" content="assets/products/modak.png">
+<meta name="ext-resource-dependency" content="assets/products/muesli.png">
+<meta name="ext-resource-dependency" content="assets/products/pudding-jar.png">
+<meta name="ext-resource-dependency" content="assets/products/smoothie.png">
+<meta name="ext-resource-dependency" content="assets/products/tikki.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F1E7;font-family:"DM Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#1B2A18}
+a{color:#4A5D2E;text-decoration:none}a:hover{color:#1B2A18}
+input,button{font-family:inherit}
+</style>
+</helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="#1B2A18"></rect><text x="200" y="175" font-family="Georgia,serif" font-size="64" fill="#FCFBF7" text-anchor="middle">Admin</text></svg></template>
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="Admin login" style="min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:#FCFBF7">
+  <div style="display:flex;flex-direction:column;justify-content:space-between;padding:36px 56px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:46px;width:auto;object-fit:contain">
+      <span style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#8B6A46;padding:4px 8px;border:1px solid rgba(139,106,70,.35);border-radius:4px">ADMIN</span>
+    </div>
+
+    <sc-if value="{{ isCreds }}" hint-placeholder-val="{{ true }}">
+    <div style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:22px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#8B6A46">STAFF SIGN-IN</div>
+        <h1 style="margin:0;font:400 44px/1.05 'Instrument Serif',serif">Good morning.<br>Kitchen's waiting.</h1>
+      </div>
+      <label style="display:flex;flex-direction:column;gap:7px;font:500 12.5px 'DM Sans',sans-serif">Work email
+        <input value="{{ email }}" onChange="{{ onEmail }}" style="padding:13px 14px;border-radius:8px;border:1px solid rgba(27,42,24,.16);background:#fff;font:400 14.5px 'DM Sans',sans-serif;color:#1B2A18;outline:none" style-focus="border-color:#4A5D2E;box-shadow:0 0 0 3px rgba(74,93,46,.12)">
+      </label>
+      <label style="display:flex;flex-direction:column;gap:7px;font:500 12.5px 'DM Sans',sans-serif">
+        <span style="display:flex;justify-content:space-between">Password<span style="font-weight:400;color:rgba(27,42,24,.55)">Forgot? Ask an owner to reset</span></span>
+        <input type="password" defaultValue="spoonup-demo" style="padding:13px 14px;border-radius:8px;border:1px solid rgba(27,42,24,.16);background:#fff;font:400 14.5px 'DM Sans',sans-serif;color:#1B2A18;outline:none" style-focus="border-color:#4A5D2E;box-shadow:0 0 0 3px rgba(74,93,46,.12)">
+      </label>
+      <label style="display:flex;align-items:center;gap:9px;font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.72)"><input type="checkbox" defaultChecked="{{ true }}" style="accent-color:#4A5D2E;width:16px;height:16px;margin:0">Trust this device for 30 days</label>
+      <button onClick="{{ toOtp }}" style="padding:14px;border:0;border-radius:8px;background:#1B2A18;color:#FCFBF7;font:600 14.5px 'DM Sans',sans-serif;cursor:pointer" style-hover="background:#4A5D2E">Continue</button>
+      <div style="font:400 12.5px/1.55 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">We'll send a 6-digit code to the phone on your staff profile. Customer accounts can't sign in here.</div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isOtp }}" hint-placeholder-val="{{ false }}">
+    <div style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:22px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#8B6A46">STEP 2 OF 2</div>
+        <h1 style="margin:0;font:400 44px/1.05 'Instrument Serif',serif">Check your phone.</h1>
+        <div style="font:400 14px/1.55 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">Code sent to +91 ••••• ••418 for {{ email }}</div>
+      </div>
+      <input value="{{ otp }}" onChange="{{ onOtp }}" maxLength="6" placeholder="––––––" autoFocus="{{ true }}" style="padding:16px 18px;border-radius:8px;border:1.5px solid #4A5D2E;background:#fff;font:500 30px 'JetBrains Mono',monospace;letter-spacing:.55em;color:#1B2A18;outline:none;box-shadow:0 0 0 3px rgba(74,93,46,.12)">
+      <button onClick="{{ signIn }}" style="padding:14px;border:0;border-radius:8px;background:#1B2A18;color:#FCFBF7;font:600 14.5px 'DM Sans',sans-serif;cursor:pointer" style-hover="background:#4A5D2E">Verify &amp; sign in</button>
+      <div style="display:flex;justify-content:space-between;font:400 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)"><span onClick="{{ toCreds }}" style="cursor:pointer;color:#4A5D2E">← Use a different account</span><span>Resend in 0:24</span></div>
+    </div>
+    </sc-if>
+
+    <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.45)">SpoonUp Foods · Internal tool · Sign-ins are logged</div>
+  </div>
+  <div style="background:#1B2A18;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:48px 56px">
+    <img src="assets/products/pudding-jar.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(27,42,24,0) 35%,rgba(27,42,24,.92) 88%)"></div>
+    <div style="position:relative;display:flex;flex-direction:column;gap:10px;max-width:380px">
+      <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#A8B98C">SPOONUP KITCHEN · KORAMANGALA</div>
+      <div style="font:400 40px/1.08 'Instrument Serif',serif;color:#FCFBF7">Good food,<br><i>higher days.</i></div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isApp }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;display:flex;background:#F4F1E7">
+  <aside style="width:232px;flex:none;background:#FCFBF7;border-right:1px solid rgba(27,42,24,.08);display:flex;flex-direction:column;padding:20px 14px;gap:22px;position:sticky;top:0;height:100vh;box-sizing:border-box">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 8px">
+      <img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:38px;width:auto;object-fit:contain">
+      <span style="font:500 9.5px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#8B6A46">ADMIN</span>
+    </div>
+    <nav style="display:flex;flex-direction:column;gap:2px">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="8">
+        <div onClick="{{ n.go }}" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:8px;cursor:pointer;font:500 13.5px 'DM Sans',sans-serif;background:{{ n.bg }};color:{{ n.fg }}" style-hover="box-shadow:inset 0 0 0 1px rgba(27,42,24,.12)">
+          <span>{{ n.label }}</span>
+          <span style="font:500 10.5px 'JetBrains Mono',monospace;opacity:.7">{{ n.count }}</span>
+        </div>
+      </sc-for>
+    </nav>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px">
+      <div onClick="{{ toggleKitchen }}" style="display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:10px;background:#F4F1E7;cursor:pointer">
+        <div style="display:flex;align-items:center;gap:8px;font:600 12.5px 'DM Sans',sans-serif"><span style="width:8px;height:8px;border-radius:50%;background:{{ kDot }}"></span>{{ kLabel }}</div>
+        <div style="font:400 11.5px/1.4 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ kSub }}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:4px 8px">
+        <div style="width:32px;height:32px;border-radius:50%;background:#4A5D2E;color:#FCFBF7;display:flex;align-items:center;justify-content:center;font:600 12px 'DM Sans',sans-serif">{{ initials }}</div>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font:600 12.5px 'DM Sans',sans-serif">{{ userName }}</span><span style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">{{ roleLabel }}</span></div>
+        <span onClick="{{ signOut }}" style="font:500 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);cursor:pointer" style-hover="color:#1B2A18">Sign out</span>
+      </div>
+    </div>
+  </aside>
+
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <header style="display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 32px;background:#FCFBF7;border-bottom:1px solid rgba(27,42,24,.08);position:sticky;top:0;z-index:5">
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#8B6A46">THU 24 SEP · 11:40 AM</div>
+        <h1 style="margin:0;font:400 30px/1.1 'Instrument Serif',serif">{{ title }}</h1>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <input placeholder="Search order ID, phone or name" value="{{ q }}" onChange="{{ onQ }}" onKeyDown="{{ onQKey }}" style="width:280px;padding:10px 14px;border-radius:100px;border:1px solid rgba(27,42,24,.14);background:#fff;font:400 13px 'DM Sans',sans-serif;color:#1B2A18;outline:none" style-focus="border-color:#4A5D2E">
+        <div style="display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:100px;background:#F4F1E7;font:500 12.5px 'DM Sans',sans-serif">Koramangala kitchen ▾</div>
+      </div>
+    </header>
+
+    <div style="overflow-x:auto">
+    <div style="padding:28px 32px 48px;display:flex;flex-direction:column;gap:22px;min-width:1120px;box-sizing:border-box">
+
+    <!-- DASHBOARD -->
+    <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Dashboard" style="display:flex;flex-direction:column;gap:22px">
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+          <div style="background:#fff;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:6px;border:1px solid rgba(27,42,24,.07)">
+            <div style="font:500 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ k.label }}</div>
+            <div style="font:400 38px/1 'Instrument Serif',serif">{{ k.value }}</div>
+            <div style="font:500 12px 'DM Sans',sans-serif;color:{{ k.noteColor }}">{{ k.note }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px;align-items:start">
+        <div style="background:#fff;border-radius:12px;padding:20px 22px;border:1px solid rgba(27,42,24,.07);display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font:600 14.5px 'DM Sans',sans-serif">Today by order part</div><span onClick="{{ goOrders }}" style="font:500 12.5px 'DM Sans',sans-serif;color:#4A5D2E;cursor:pointer">All orders →</span></div>
+          <sc-for list="{{ partRows }}" as="p" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <div style="display:flex;align-items:center;gap:10px"><span style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.08em;padding:3px 8px;border-radius:4px;background:{{ p.bg }};color:{{ p.c }}">{{ p.tag }}</span><span style="font:500 13.5px 'DM Sans',sans-serif">{{ p.name }}</span></div>
+                <span style="font:400 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ p.total }}</span>
+              </div>
+              <div style="display:flex;height:10px;border-radius:5px;overflow:hidden;background:rgba(27,42,24,.06)">
+                <div style="width:{{ p.w1 }};background:{{ p.c }}"></div>
+                <div style="width:{{ p.w2 }};background:{{ p.c }};opacity:.45"></div>
+              </div>
+              <div style="display:flex;gap:18px;font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)"><span>{{ p.s1 }}</span><span>{{ p.s2 }}</span><span>{{ p.s3 }}</span></div>
+            </div>
+          </sc-for>
+          <div style="border-top:1px solid rgba(27,42,24,.08);padding-top:16px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;font:500 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)"><span>Orders per hour</span><span>6 am – 10 pm</span></div>
+            <div style="display:flex;align-items:flex-end;gap:5px;height:90px">
+              <sc-for list="{{ hours }}" as="h" hint-placeholder-count="16">
+                <div title="{{ h.tip }}" style="flex:1;height:{{ h.h }};border-radius:3px 3px 0 0;background:{{ h.c }}"></div>
+              </sc-for>
+            </div>
+            <div style="display:flex;justify-content:space-between;font:400 10.5px 'JetBrains Mono',monospace;color:rgba(27,42,24,.45)"><span>6a</span><span>10a</span><span>2p</span><span>6p</span><span>10p</span></div>
+          </div>
+        </div>
+
+        <div style="background:#fff;border-radius:12px;padding:20px 22px;border:1px solid rgba(27,42,24,.07);display:flex;flex-direction:column;gap:4px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><div style="font:600 14.5px 'DM Sans',sans-serif">Needs attention</div><span style="font:500 11px 'JetBrains Mono',monospace;color:#A34A2A">{{ alertCount }} OPEN</span></div>
+          <sc-for list="{{ alerts }}" as="a" hint-placeholder-count="5">
+            <div style="display:flex;gap:12px;padding:12px 0;border-top:1px solid rgba(27,42,24,.07)">
+              <span style="width:8px;height:8px;border-radius:50%;margin-top:6px;flex:none;background:{{ a.c }}"></span>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+                <div style="font:600 13px 'DM Sans',sans-serif">{{ a.title }}</div>
+                <div style="font:400 12px/1.45 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ a.sub }}</div>
+              </div>
+              <button onClick="{{ a.go }}" style="align-self:center;flex:none;padding:7px 12px;border-radius:100px;border:1px solid rgba(27,42,24,.16);background:#fff;font:500 12px 'DM Sans',sans-serif;color:#1B2A18;cursor:pointer" style-hover="background:#1B2A18;color:#FCFBF7">{{ a.cta }}</button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ORDERS -->
+    <sc-if value="{{ isOrders }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Orders" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;gap:6px;padding:4px;background:#FCFBF7;border-radius:100px;border:1px solid rgba(27,42,24,.08)">
+          <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+            <div onClick="{{ t.go }}" style="display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:100px;cursor:pointer;font:500 13px 'DM Sans',sans-serif;background:{{ t.bg }};color:{{ t.fg }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ t.dot }}"></span>{{ t.label }}<span style="font:500 10.5px 'JetBrains Mono',monospace;opacity:.65">{{ t.count }}</span></div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:8px;font:500 12.5px 'DM Sans',sans-serif">
+          <span style="padding:8px 14px;border-radius:100px;background:#FCFBF7;border:1px solid rgba(27,42,24,.1)">Today ▾</span>
+          <span style="padding:8px 14px;border-radius:100px;background:#FCFBF7;border:1px solid rgba(27,42,24,.1)">Any status ▾</span>
+          <span style="padding:8px 14px;border-radius:100px;background:#FCFBF7;border:1px solid rgba(27,42,24,.1)">Export CSV</span>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:1px solid rgba(27,42,24,.07);overflow:hidden">
+        <div style="display:grid;grid-template-columns:110px minmax(0,1.3fr) minmax(0,1fr) minmax(0,1.1fr) 130px 90px;gap:14px;padding:12px 20px;background:#FCFBF7;font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.08em;color:rgba(27,42,24,.55)">
+          <span>ORDER</span><span>CUSTOMER</span><span>PARTS</span><span>NEXT UP</span><span>STATUS</span><span style="text-align:right">TOTAL</span>
+        </div>
+        <sc-for list="{{ orders }}" as="o" hint-placeholder-count="10">
+          <div onClick="{{ o.open }}" style="display:grid;grid-template-columns:110px minmax(0,1.3fr) minmax(0,1fr) minmax(0,1.1fr) 130px 90px;gap:14px;align-items:center;padding:13px 20px;border-top:1px solid rgba(27,42,24,.07);cursor:pointer;font:400 13px 'DM Sans',sans-serif" style-hover="background:#FCFBF7">
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 12px 'JetBrains Mono',monospace">{{ o.id }}</span><span style="font-size:11.5px;color:rgba(27,42,24,.5)">{{ o.placed }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-weight:600">{{ o.cust }}</span><span style="font-size:11.5px;color:rgba(27,42,24,.55)">{{ o.area }}</span></div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap">
+              <sc-for list="{{ o.chips }}" as="c" hint-placeholder-count="2"><span style="font:500 10px 'JetBrains Mono',monospace;letter-spacing:.06em;padding:3px 7px;border-radius:4px;background:{{ c.bg }};color:{{ c.c }}">{{ c.tag }}</span></sc-for>
+            </div>
+            <span style="color:rgba(27,42,24,.72)">{{ o.next }}</span>
+            <span style="justify-self:start;font:600 11.5px 'DM Sans',sans-serif;padding:5px 10px;border-radius:100px;background:{{ o.sBg }};color:{{ o.sFg }}">{{ o.status }}</span>
+            <span style="text-align:right;font-weight:600">{{ o.totalFmt }}</span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noOrders }}" hint-placeholder-val="{{ false }}"><div style="padding:40px;text-align:center;font:400 13.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">No orders match “{{ q }}”.</div></sc-if>
+        <div style="display:flex;justify-content:space-between;padding:12px 20px;border-top:1px solid rgba(27,42,24,.07);font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)"><span>Showing {{ orderCount }} of 486 today</span><span>1 2 3 … 49 →</span></div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- KITCHEN -->
+    <sc-if value="{{ isKitchen }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Kitchen board" style="display:grid;grid-template-columns:minmax(0,3fr) minmax(250px,1fr);gap:14px;align-items:start">
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+        <sc-for list="{{ cols }}" as="col" hint-placeholder-count="3">
+          <div style="background:rgba(27,42,24,.05);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:480px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding:2px 4px"><span style="font:600 13.5px 'DM Sans',sans-serif">{{ col.label }}</span><span style="font:500 11px 'JetBrains Mono',monospace;color:rgba(27,42,24,.55)">{{ col.n }}</span></div>
+            <sc-for list="{{ col.items }}" as="t" hint-placeholder-count="3">
+              <div style="background:#fff;border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:9px;box-shadow:0 1px 2px rgba(27,42,24,.08);border:1.5px solid {{ t.border }}">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="display:flex;gap:6px;align-items:center"><span style="font:500 10px 'JetBrains Mono',monospace;padding:3px 7px;border-radius:4px;background:{{ t.bg }};color:{{ t.c }}">{{ t.tag }}</span><span style="font:500 11.5px 'JetBrains Mono',monospace">{{ t.id }}</span></div>
+                  <span style="font:600 12px 'JetBrains Mono',monospace;color:{{ t.ageC }}">{{ t.age }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px">
+                  <sc-for list="{{ t.items }}" as="it" hint-placeholder-count="2"><div style="font:500 14px/1.35 'DM Sans',sans-serif">{{ it }}</div></sc-for>
+                </div>
+                <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ t.meta }}</div>
+                <button onClick="{{ t.advance }}" style="padding:9px;border-radius:7px;border:0;background:#1B2A18;color:#FCFBF7;font:600 12.5px 'DM Sans',sans-serif;cursor:pointer" style-hover="background:#4A5D2E">{{ t.cta }}</button>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="background:#1B2A18;color:#FCFBF7;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+          <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#A8B98C">NEXT PLAN BATCH · 12–2 PM</div>
+          <div style="font:400 26px/1.1 'Instrument Serif',serif">Prep by 11:45 am</div>
+          <sc-for list="{{ batch }}" as="b" hint-placeholder-count="4">
+            <div style="display:flex;justify-content:space-between;font:400 13.5px 'DM Sans',sans-serif;padding-top:9px;border-top:1px solid rgba(252,251,247,.12)"><span>{{ b.name }}</span><span style="font:500 13px 'JetBrains Mono',monospace;color:#D8E2C4">× {{ b.n }}</span></div>
+          </sc-for>
+          <button style="margin-top:4px;padding:10px;border-radius:7px;border:0;background:#A8B98C;color:#1B2A18;font:600 12.5px 'DM Sans',sans-serif;cursor:pointer">Print batch labels</button>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;border:1px solid rgba(27,42,24,.07)">
+          <div style="font:500 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Handed to riders today</div>
+          <div style="font:400 34px/1 'Instrument Serif',serif">{{ handed }}</div>
+          <div style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Avg prep 11 min · target 12</div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- DISPATCH -->
+    <sc-if value="{{ isDispatch }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Dispatch" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:14px;align-items:start">
+      <div style="background:#fff;border-radius:12px;border:1px solid rgba(27,42,24,.07);padding:18px 20px;display:flex;flex-direction:column;gap:4px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px"><span style="font:600 14.5px 'DM Sans',sans-serif">Packed, waiting for a rider</span><span style="font:500 11px 'JetBrains Mono',monospace;color:rgba(27,42,24,.55)">{{ queueN }}</span></div>
+        <sc-for list="{{ queue }}" as="d" hint-placeholder-count="4">
+          <div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid rgba(27,42,24,.07)">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+              <div style="display:flex;gap:8px;align-items:center"><span style="font:500 11.5px 'JetBrains Mono',monospace">{{ d.id }}</span><span style="font:500 10px 'JetBrains Mono',monospace;padding:2px 6px;border-radius:4px;background:{{ d.bg }};color:{{ d.c }}">{{ d.tag }}</span></div>
+              <div style="font:600 13px 'DM Sans',sans-serif">{{ d.area }}</div>
+              <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ d.meta }}</div>
+            </div>
+            <button onClick="{{ d.assign }}" style="flex:none;padding:8px 12px;border-radius:7px;border:0;background:#1B2A18;color:#FCFBF7;font:600 12px 'DM Sans',sans-serif;cursor:pointer" style-hover="background:#4A5D2E">Assign {{ d.suggest }}</button>
+          </div>
+        </sc-for>
+        <sc-if value="{{ queueEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:24px 0;font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">All packed orders are with riders.</div></sc-if>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:1px solid rgba(27,42,24,.07);overflow:hidden">
+        <div style="display:grid;grid-template-columns:minmax(0,1.2fr) 110px minmax(0,1fr) 70px 80px;gap:12px;padding:12px 20px;background:#FCFBF7;font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.08em;color:rgba(27,42,24,.55)"><span>RIDER</span><span>STATUS</span><span>ROUTE</span><span>BAG</span><span style="text-align:right">BACK IN</span></div>
+        <sc-for list="{{ riders }}" as="r" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:minmax(0,1.2fr) 110px minmax(0,1fr) 70px 80px;gap:12px;align-items:center;padding:13px 20px;border-top:1px solid rgba(27,42,24,.07);font:400 13px 'DM Sans',sans-serif">
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:600">{{ r.name }}</span><span style="font-size:11.5px;color:rgba(27,42,24,.55)">{{ r.phone }}</span></div>
+            <span style="justify-self:start;font:600 11.5px 'DM Sans',sans-serif;padding:5px 10px;border-radius:100px;background:{{ r.sBg }};color:{{ r.sFg }}">{{ r.status }}</span>
+            <span style="color:rgba(27,42,24,.72)">{{ r.route }}</span>
+            <span style="font:500 12px 'JetBrains Mono',monospace">{{ r.load }}/4</span>
+            <span style="text-align:right;font:500 12px 'JetBrains Mono',monospace">{{ r.back }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- PLANS -->
+    <sc-if value="{{ isPlans }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Subscriptions" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px">
+        <sc-for list="{{ planKpis }}" as="k" hint-placeholder-count="4">
+          <div style="background:#fff;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:5px;border:1px solid rgba(27,42,24,.07)">
+            <div style="font:500 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ k.label }}</div>
+            <div style="font:400 32px/1 'Instrument Serif',serif">{{ k.value }}</div>
+            <div style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ k.note }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:1px solid rgba(27,42,24,.07);overflow:hidden">
+        <div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1.2fr) minmax(0,1fr) 150px minmax(0,1fr) 110px;gap:14px;padding:12px 20px;background:#FCFBF7;font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.08em;color:rgba(27,42,24,.55)"><span>CUSTOMER</span><span>PRODUCT</span><span>SCHEDULE</span><span>PROGRESS</span><span>NEXT DELIVERY</span><span>STATUS</span></div>
+        <sc-for list="{{ plans }}" as="p" hint-placeholder-count="8">
+          <div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1.2fr) minmax(0,1fr) 150px minmax(0,1fr) 110px;gap:14px;align-items:center;padding:13px 20px;border-top:1px solid rgba(27,42,24,.07);font:400 13px 'DM Sans',sans-serif">
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:600">{{ p.cust }}</span><span style="font:500 11px 'JetBrains Mono',monospace;color:rgba(27,42,24,.5)">{{ p.id }}</span></div>
+            <span>{{ p.product }}</span>
+            <span style="color:rgba(27,42,24,.72)">{{ p.sched }}</span>
+            <div style="display:flex;flex-direction:column;gap:5px"><div style="height:6px;border-radius:3px;background:rgba(27,42,24,.08);overflow:hidden"><div style="height:100%;width:{{ p.pct }};background:#1B2A18"></div></div><span style="font:500 11px 'JetBrains Mono',monospace;color:rgba(27,42,24,.6)">{{ p.done }}</span></div>
+            <span style="color:rgba(27,42,24,.72)">{{ p.next }}</span>
+            <span style="justify-self:start;font:600 11.5px 'DM Sans',sans-serif;padding:5px 10px;border-radius:100px;background:{{ p.sBg }};color:{{ p.sFg }}">{{ p.status }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- MENU -->
+    <sc-if value="{{ isMenu }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Menu &amp; products" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">Switching an item off hides it on the website and app within a minute. Active plans for that item are skipped, not charged.</div>
+        <button style="flex:none;padding:10px 16px;border-radius:8px;border:0;background:#1B2A18;color:#FCFBF7;font:600 13px 'DM Sans',sans-serif;cursor:pointer">+ Add product</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">
+        <sc-for list="{{ products }}" as="p" hint-placeholder-count="9">
+          <div style="background:#fff;border-radius:12px;border:1px solid rgba(27,42,24,.07);overflow:hidden;display:flex;flex-direction:column;opacity:{{ p.op }}">
+            <div style="height:150px;background:#F4F1E7;display:flex;align-items:center;justify-content:center;position:relative">
+              <img src="{{ p.img }}" alt="{{ p.name }}" style="height:130px;width:auto;max-width:90%;object-fit:contain">
+              <span style="position:absolute;top:10px;left:10px;font:500 10px 'JetBrains Mono',monospace;padding:3px 7px;border-radius:4px;background:{{ p.bg }};color:{{ p.c }}">{{ p.tag }}</span>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:600 14px 'DM Sans',sans-serif">{{ p.name }}</span><span style="font:600 13.5px 'DM Sans',sans-serif">{{ p.price }}</span></div>
+              <div style="font:400 12px 'DM Sans',sans-serif;color:{{ p.metaC }}">{{ p.meta }}</div>
+              <div onClick="{{ p.toggle }}" style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(27,42,24,.07);cursor:pointer">
+                <span style="font:500 12.5px 'DM Sans',sans-serif">{{ p.avail }}</span>
+                <span style="width:36px;height:20px;border-radius:10px;background:{{ p.trk }};position:relative;display:block"><span style="position:absolute;top:2px;left:{{ p.knob }};width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2)"></span></span>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- CUSTOMERS -->
+    <sc-if value="{{ isCustomers }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Customers" style="background:#fff;border-radius:12px;border:1px solid rgba(27,42,24,.07);overflow:hidden">
+      <div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 80px 110px 110px minmax(0,1fr);gap:14px;padding:12px 20px;background:#FCFBF7;font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.08em;color:rgba(27,42,24,.55)"><span>CUSTOMER</span><span>AREA</span><span>ORDERS</span><span>ACTIVE PLANS</span><span>CREDIT</span><span>LAST ORDER</span></div>
+      <sc-for list="{{ customers }}" as="c" hint-placeholder-count="8">
+        <div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 80px 110px 110px minmax(0,1fr);gap:14px;align-items:center;padding:13px 20px;border-top:1px solid rgba(27,42,24,.07);font:400 13px 'DM Sans',sans-serif" style-hover="background:#FCFBF7">
+          <div style="display:flex;gap:10px;align-items:center"><div style="width:30px;height:30px;border-radius:50%;background:rgba(74,93,46,.12);color:#4A5D2E;display:flex;align-items:center;justify-content:center;font:600 11px 'DM Sans',sans-serif;flex:none">{{ c.ini }}</div><div style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font-weight:600">{{ c.name }}</span><span style="font-size:11.5px;color:rgba(27,42,24,.55)">{{ c.phone }} · since {{ c.since }}</span></div></div>
+          <span style="color:rgba(27,42,24,.72)">{{ c.area }}</span>
+          <span style="font:500 12.5px 'JetBrains Mono',monospace">{{ c.orders }}</span>
+          <span>{{ c.plans }}</span>
+          <span style="font:500 12.5px 'JetBrains Mono',monospace">{{ c.credit }}</span>
+          <span style="color:rgba(27,42,24,.72)">{{ c.last }}</span>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <!-- ZONES -->
+    <sc-if value="{{ isZones }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Delivery zones" style="display:flex;flex-direction:column;gap:14px">
+      <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">These pincodes power the location pill on the website. Turning off <b>Now</b> for a pincode keeps Plan and Ships available there.</div>
+      <div style="background:#fff;border-radius:12px;border:1px solid rgba(27,42,24,.07);overflow:hidden">
+        <div style="display:grid;grid-template-columns:100px minmax(0,1.3fr) 120px 110px 110px 100px;gap:14px;padding:12px 20px;background:#FCFBF7;font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.08em;color:rgba(27,42,24,.55)"><span>PINCODE</span><span>AREA</span><span>NOW ETA</span><span>DELIVERY FEE</span><span>ORDERS / WK</span><span>NOW</span></div>
+        <sc-for list="{{ zones }}" as="z" hint-placeholder-count="8">
+          <div style="display:grid;grid-template-columns:100px minmax(0,1.3fr) 120px 110px 110px 100px;gap:14px;align-items:center;padding:13px 20px;border-top:1px solid rgba(27,42,24,.07);font:400 13px 'DM Sans',sans-serif">
+            <span style="font:500 12.5px 'JetBrains Mono',monospace">{{ z.pin }}</span>
+            <span style="font-weight:600">{{ z.area }}</span>
+            <span style="color:{{ z.etaC }}">{{ z.eta }}</span>
+            <span>{{ z.fee }}</span>
+            <span style="font:500 12.5px 'JetBrains Mono',monospace">{{ z.wk }}</span>
+            <span onClick="{{ z.toggle }}" style="width:36px;height:20px;border-radius:10px;background:{{ z.trk }};position:relative;display:block;cursor:pointer"><span style="position:absolute;top:2px;left:{{ z.knob }};width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2)"></span></span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    </div>
+    </div>
+  </main>
+
+  <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeSel }}" style="position:fixed;inset:0;background:rgba(27,42,24,.28);z-index:20"></div>
+  <div data-screen-label="Order detail" style="position:fixed;top:0;right:0;bottom:0;width:460px;max-width:100%;background:#FCFBF7;z-index:21;display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(27,42,24,.18)">
+    <div style="padding:22px 26px;border-bottom:1px solid rgba(27,42,24,.08);display:flex;justify-content:space-between;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8B6A46">{{ sel.id }} · PLACED {{ sel.placed }}</div>
+        <div style="font:400 30px/1.1 'Instrument Serif',serif">{{ sel.cust }}</div>
+        <div style="font:400 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ sel.phone }} · {{ sel.area }}</div>
+      </div>
+      <span onClick="{{ closeSel }}" style="font:400 22px 'DM Sans',sans-serif;cursor:pointer;color:rgba(27,42,24,.55);line-height:1">×</span>
+    </div>
+    <div style="flex:1;overflow:auto;padding:20px 26px;display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{ sel.parts }}" as="p" hint-placeholder-count="2">
+        <div style="flex:none;background:#fff;border-radius:10px;border:1px solid rgba(27,42,24,.08);overflow:hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:{{ p.bg }}">
+            <span style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.08em;color:{{ p.c }}">{{ p.head }}</span>
+            <span style="font:600 11.5px 'DM Sans',sans-serif;color:{{ p.c }}">{{ p.state }}</span>
+          </div>
+          <div style="padding:12px 14px;display:flex;flex-direction:column;gap:6px">
+            <div style="font:500 13.5px/1.45 'DM Sans',sans-serif">{{ p.items }}</div>
+            <div style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ p.meta }}</div>
+          </div>
+        </div>
+      </sc-for>
+      <div style="display:flex;flex-direction:column;gap:8px;padding:14px 0;border-top:1px solid rgba(27,42,24,.08);font:400 13px 'DM Sans',sans-serif">
+        <div style="display:flex;justify-content:space-between"><span style="color:rgba(27,42,24,.6)">Paid via</span><span>{{ sel.pay }}</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:rgba(27,42,24,.6)">Coupon</span><span>{{ sel.coupon }}</span></div>
+        <div style="display:flex;justify-content:space-between;font-weight:600;font-size:14.5px"><span>Total</span><span>{{ sel.totalFmt }}</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;color:rgba(27,42,24,.55)">NOTE FROM CUSTOMER</div>
+        <div style="font:400 13px/1.5 'DM Sans',sans-serif;padding:10px 12px;background:#F4F1E7;border-radius:8px">{{ sel.note }}</div>
+      </div>
+    </div>
+    <div style="padding:16px 26px;border-top:1px solid rgba(27,42,24,.08);display:flex;gap:8px">
+      <button style="flex:1;padding:11px;border-radius:8px;border:0;background:#1B2A18;color:#FCFBF7;font:600 13px 'DM Sans',sans-serif;cursor:pointer">Call customer</button>
+      <button style="flex:1;padding:11px;border-radius:8px;border:1px solid rgba(27,42,24,.2);background:#fff;color:#1B2A18;font:600 13px 'DM Sans',sans-serif;cursor:pointer">Refund to credit</button>
+      <button style="padding:11px 14px;border-radius:8px;border:1px solid rgba(163,74,42,.35);background:#fff;color:#A34A2A;font:600 13px 'DM Sans',sans-serif;cursor:pointer">Cancel part</button>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;login&quot;,&quot;dashboard&quot;,&quot;orders&quot;,&quot;kitchen&quot;,&quot;dispatch&quot;,&quot;plans&quot;,&quot;menu&quot;,&quot;customers&quot;,&quot;zones&quot;],&quot;default&quot;:&quot;login&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;role&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Owner&quot;,&quot;Kitchen staff&quot;],&quot;default&quot;:&quot;Owner&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = this.seed();
+
+  seed() {
+    const tickets = [
+      { id: 'SU-24831', t: 'now', items: ['Chia pudding × 2', 'Dragonfruit smoothie × 1'], meta: 'ASAP · HSR Layout · rider in 8 min', min: 3, col: 0 },
+      { id: 'SU-24830', t: 'now', items: ['Veg tikki × 4', 'Baked fries × 1'], meta: 'ASAP · Koramangala 5th Blk', min: 5, col: 0 },
+      { id: 'SU-24829', t: 'plan', items: ['Pudding jar × 1'], meta: 'Plan day 12 of 30 · 12–2 pm', min: 2, col: 0 },
+      { id: 'SU-24826', t: 'now', items: ['Smoothie × 3'], meta: 'ASAP · BTM 2nd Stage', min: 14, col: 1 },
+      { id: 'SU-24824', t: 'now', items: ['Chia pudding × 1', 'Veg tikki × 2'], meta: 'Scheduled 12:15 pm · Ejipura', min: 9, col: 1 },
+      { id: 'SU-24821', t: 'now', items: ['Baked fries × 2'], meta: 'ASAP · Koramangala 1st Blk', min: 18, col: 2 },
+      { id: 'SU-24819', t: 'plan', items: ['Chia pudding × 1'], meta: 'Plan day 4 of 12 · 12–2 pm', min: 6, col: 2 }
+    ];
+    return {
+      screen: this.props.startScreen ?? 'login', step: 'creds', email: 'meera@spoonup.in', otp: '',
+      tab: 'all', q: '', sel: null, kitchenOpen: true, handed: 212, tickets,
+      offProducts: { modak: true }, offZones: { '560037': true },
+      queue: [
+        { id: 'SU-24821', t: 'now', area: 'Koramangala 1st Block', meta: 'Packed 2 min ago · 1.2 km', suggest: 'Ravi' },
+        { id: 'SU-24819', t: 'plan', area: 'HSR Layout Sector 2', meta: 'Plan slot 12–2 pm · 3.4 km', suggest: 'Salma' },
+        { id: 'SU-24817', t: 'now', area: 'Koramangala 5th Block', meta: 'Packed 6 min ago · 0.8 km', suggest: 'Ravi' },
+        { id: 'SU-24812', t: 'plan', area: 'BTM 2nd Stage', meta: 'Plan slot 12–2 pm · 2.9 km', suggest: 'Salma' }
+      ],
+      riders: [
+        { name: 'Ravi Kumar', phone: '98450 •• 211', st: 'free', route: 'At kitchen', load: 0, back: '—' },
+        { name: 'Salma Begum', phone: '99001 •• 874', st: 'free', route: 'At kitchen', load: 0, back: '—' },
+        { name: 'Arjun S', phone: '97411 •• 330', st: 'out', route: 'HSR → Agara', load: 3, back: '14 min' },
+        { name: 'Deepak M', phone: '90080 •• 562', st: 'out', route: 'Ejipura', load: 2, back: '9 min' },
+        { name: 'Nikhil R', phone: '96320 •• 118', st: 'out', route: 'BTM 1st → 2nd Stg', load: 4, back: '22 min' },
+        { name: 'Priya V', phone: '81230 •• 907', st: 'off', route: 'Shift starts 5 pm', load: 0, back: '—' }
+      ]
+    };
+  }
+
+  componentDidUpdate(prev) {
+    if (prev.startScreen !== this.props.startScreen && this.props.startScreen) this.setState({ screen: this.props.startScreen, sel: null });
+  }
+
+  T = {
+    now: { tag: 'NOW', c: '#4A5D2E', bg: 'rgba(74,93,46,.12)' },
+    plan: { tag: 'PLAN', c: '#1B2A18', bg: 'rgba(27,42,24,.09)' },
+    ships: { tag: 'SHIPS', c: '#8B6A46', bg: 'rgba(139,106,70,.13)' }
+  };
+  S = {
+    'New': ['rgba(168,185,140,.3)', '#1B2A18'],
+    'Preparing': ['rgba(74,93,46,.12)', '#4A5D2E'],
+    'Out for delivery': ['#4A5D2E', '#FCFBF7'],
+    'Delivered': ['rgba(27,42,24,.07)', 'rgba(27,42,24,.6)'],
+    'Scheduled': ['rgba(27,42,24,.09)', '#1B2A18'],
+    'Packing to ship': ['rgba(139,106,70,.13)', '#8B6A46'],
+    'Late · 12 min': ['rgba(163,74,42,.12)', '#A34A2A'],
+    'Payment failed': ['rgba(163,74,42,.12)', '#A34A2A'],
+    'Active': ['rgba(74,93,46,.12)', '#4A5D2E'],
+    'Paused': ['rgba(27,42,24,.07)', 'rgba(27,42,24,.6)'],
+    'Ends in 3 days': ['rgba(139,106,70,.13)', '#8B6A46'],
+    'Renewal failed': ['rgba(163,74,42,.12)', '#A34A2A'],
+    'free': ['rgba(74,93,46,.12)', '#4A5D2E'],
+    'out': ['#1B2A18', '#FCFBF7'],
+    'off': ['rgba(27,42,24,.07)', 'rgba(27,42,24,.55)']
+  };
+
+  ORDERS = [
+    { id: 'SU-24831', placed: '11:38 am', cust: 'Kavya Iyer', phone: '+91 98860 •• 412', area: 'HSR Layout · 560102', status: 'New', total: 427, pay: 'UPI', coupon: '—', note: 'Less sugar in the smoothie please.', next: 'Kitchen · ASAP',
+      parts: [{ t: 'now', head: 'NOW · ASAP', state: 'In queue', items: 'Chia pudding × 2 · Dragonfruit smoothie × 1', meta: 'Promised by 12:15 pm' }] },
+    { id: 'SU-24826', placed: '11:22 am', cust: 'Rohan Mehta', phone: '+91 99000 •• 118', area: 'BTM 2nd Stage · 560076', status: 'Late · 12 min', total: 417, pay: 'Card', coupon: '—', note: 'Gate 2, ring the bell twice.', next: 'Kitchen · promised 11:58',
+      parts: [{ t: 'now', head: 'NOW · ASAP', state: 'Preparing · 14 min', items: 'Smoothie × 3', meta: 'Promised by 11:58 am · customer notified of delay' }] },
+    { id: 'SU-24817', placed: '10:51 am', cust: 'Ananya Rao', phone: '+91 98450 •• 021', area: 'Koramangala 5th Blk · 560095', status: 'Preparing', total: 3248, pay: 'UPI', coupon: 'GOODFOOD100 · −₹100', note: 'Leave with security if I don\u2019t answer.', next: 'Rider pickup · 11:50',
+      parts: [
+        { t: 'now', head: 'NOW · ASAP', state: 'Packed', items: 'Veg tikki × 2 · Baked fries × 1', meta: 'Waiting for rider · suggested Ravi' },
+        { t: 'plan', head: 'PLAN · DAILY · 30 DAYS · 7–9 AM', state: 'Starts Fri 25 Sep', items: 'Chia pudding × 1 per delivery', meta: '30 deliveries · 18% plan discount' },
+        { t: 'ships', head: 'SHIPS · COURIER 3–5 DAYS', state: 'Packing', items: 'Dry fruit mix 500 g × 1', meta: 'Ships by tomorrow 6 pm · tracking sent on dispatch' }
+      ] },
+    { id: 'SU-24812', placed: '10:30 am', cust: 'Farhan Ali', phone: '+91 97410 •• 663', area: 'BTM 2nd Stage · 560076', status: 'Scheduled', total: 159, pay: 'Plan', coupon: '—', note: '—', next: 'Plan slot 12–2 pm',
+      parts: [{ t: 'plan', head: 'PLAN · ALT DAYS · DAY 9 OF 15', state: 'In today\u2019s batch', items: 'Pudding jar × 1', meta: 'Slot 12–2 pm' }] },
+    { id: 'SU-24806', placed: '10:02 am', cust: 'Sneha Pillai', phone: '+91 90080 •• 745', area: 'Indiranagar · 560038', status: 'Packing to ship', total: 848, pay: 'Netbanking', coupon: '—', note: 'Gift — no invoice in the box.', next: 'Courier pickup · 6 pm',
+      parts: [{ t: 'ships', head: 'SHIPS · COURIER 3–5 DAYS', state: 'Packing', items: 'Muesli × 1 · Dry fruit mix × 1', meta: 'Gift note attached' }] },
+    { id: 'SU-24799', placed: '9:41 am', cust: 'Vikram Shetty', phone: '+91 96860 •• 230', area: 'Ejipura · 560047', status: 'Out for delivery', total: 546, pay: 'UPI', coupon: '—', note: '—', next: 'Deepak · 9 min away',
+      parts: [{ t: 'now', head: 'NOW · SCHEDULED 11:30', state: 'With Deepak', items: 'Veg tikki × 2 · Smoothie × 2', meta: 'ETA 11:49 am' }, { t: 'ships', head: 'SHIPS', state: 'Shipped', items: 'Muesli × 1', meta: 'Delhivery-style tracking link sent' }] },
+    { id: 'SU-24790', placed: '9:15 am', cust: 'Meghna Das', phone: '+91 81970 •• 552', area: 'Koramangala 1st Blk · 560034', status: 'Payment failed', total: 2980, pay: 'UPI · failed ×2', coupon: '—', note: '—', next: 'Retry link sent 9:17',
+      parts: [{ t: 'plan', head: 'PLAN · WEEKLY · 3 MONTHS', state: 'Not started', items: 'Smoothie bottle × 2 per delivery', meta: 'Held until payment clears' }] },
+    { id: 'SU-24781', placed: '8:48 am', cust: 'Aditya Rao', phone: '+91 99452 •• 610', area: 'HSR Layout · 560102', status: 'Delivered', total: 298, pay: 'Card', coupon: '—', note: '—', next: 'Delivered 9:21 am',
+      parts: [{ t: 'now', head: 'NOW · ASAP', state: 'Delivered', items: 'Chia pudding × 2', meta: 'Delivered by Arjun · 33 min' }] },
+    { id: 'SU-24772', placed: '8:10 am', cust: 'Isha Nair', phone: '+91 98801 •• 004', area: 'Koramangala 5th Blk · 560095', status: 'Delivered', total: 159, pay: 'Plan', coupon: '—', note: '—', next: 'Delivered 8:32 am',
+      parts: [{ t: 'plan', head: 'PLAN · DAILY · DAY 22 OF 30', state: 'Delivered', items: 'Pudding jar × 1', meta: 'Slot 7–9 am' }] },
+    { id: 'SU-24768', placed: '7:55 am', cust: 'Karthik B', phone: '+91 90350 •• 781', area: 'Bellandur · 560103', status: 'Delivered', total: 647, pay: 'UPI', coupon: 'FIRST50 · −₹50', note: '—', next: 'Delivered 8:40 am',
+      parts: [{ t: 'now', head: 'NOW · ASAP', state: 'Delivered', items: 'Veg tikki × 4 · Baked fries × 2', meta: 'Delivered by Nikhil · 45 min' }] }
+  ];
+
+  go = (screen) => () => this.setState({ screen, sel: null });
+  fmt = (n) => '₹' + n.toLocaleString('en-IN');
+
+  renderVals() {
+    const s = this.state, T = this.T, S = this.S;
+    const kitchenRole = this.props.role === 'Kitchen staff';
+    const titles = { dashboard: 'Today at a glance', orders: 'Orders', kitchen: 'Kitchen board', dispatch: 'Dispatch', plans: 'Subscriptions', menu: 'Menu & products', customers: 'Customers', zones: 'Delivery zones' };
+    const liveTickets = s.tickets.length;
+    const navAll = [['dashboard', 'Dashboard', ''], ['orders', 'Orders', '486'], ['kitchen', 'Kitchen board', String(liveTickets)], ['dispatch', 'Dispatch', String(s.queue.length)], ['plans', 'Subscriptions', '1,204'], ['menu', 'Menu & products', '9'], ['customers', 'Customers', '8.2k'], ['zones', 'Delivery zones', '12']];
+    const allowed = kitchenRole ? ['kitchen', 'dispatch', 'menu'] : navAll.map(n => n[0]);
+    let screen = s.screen;
+    if (screen !== 'login' && !allowed.includes(screen)) screen = allowed[0];
+    const nav = navAll.filter(n => allowed.includes(n[0])).map(([k, label, count]) => ({ label, count, go: this.go(k), bg: screen === k ? '#1B2A18' : 'transparent', fg: screen === k ? '#FCFBF7' : '#1B2A18' }));
+
+    const q = s.q.trim().toLowerCase();
+    const counts = { all: 486, now: 238, plan: 212, ships: 36 };
+    const tabs = [['all', 'All', 'rgba(27,42,24,.3)'], ['now', 'Now', '#4A5D2E'], ['plan', 'Plan', '#1B2A18'], ['ships', 'Ships', '#8B6A46']].map(([k, label, dot]) => ({ label, dot, count: counts[k], go: () => this.setState({ tab: k }), bg: s.tab === k ? '#1B2A18' : 'transparent', fg: s.tab === k ? '#FCFBF7' : '#1B2A18' }));
+    const orders = this.ORDERS
+      .filter(o => s.tab === 'all' || o.parts.some(p => p.t === s.tab))
+      .filter(o => !q || (o.id + ' ' + o.cust + ' ' + o.phone).toLowerCase().includes(q))
+      .map(o => ({ ...o, totalFmt: this.fmt(o.total), chips: [...new Set(o.parts.map(p => p.t))].map(t => T[t]), sBg: S[o.status][0], sFg: S[o.status][1], open: () => this.setState({ sel: o.id }) }));
+    const selO = this.ORDERS.find(o => o.id === s.sel);
+    const sel = selO ? { ...selO, totalFmt: this.fmt(selO.total), parts: selO.parts.map(p => ({ ...p, c: T[p.t].c, bg: T[p.t].bg })) } : {};
+
+    const colDefs = [['New', 'Start prep'], ['Preparing', 'Mark packed'], ['Packed', 'Hand to rider']];
+    const cols = colDefs.map(([label, cta], ci) => {
+      const items = s.tickets.filter(t => t.col === ci).map(t => ({
+        ...t, ...T[t.t], cta, age: t.min + ' min',
+        ageC: t.min >= 12 ? '#A34A2A' : 'rgba(27,42,24,.6)', border: t.min >= 12 ? 'rgba(163,74,42,.5)' : 'transparent',
+        advance: () => this.setState(st => ci === 2
+          ? { tickets: st.tickets.filter(x => x.id !== t.id), handed: st.handed + 1 }
+          : { tickets: st.tickets.map(x => x.id === t.id ? { ...x, col: ci + 1 } : x) })
+      }));
+      return { label, items, n: items.length };
+    });
+
+    const riders = s.riders.map(r => ({ ...r, status: r.st === 'free' ? 'At kitchen' : r.st === 'out' ? 'On route' : 'Off shift', sBg: S[r.st][0], sFg: S[r.st][1] }));
+    const queue = s.queue.map(d => ({ ...d, ...T[d.t], assign: () => this.setState(st => ({
+      queue: st.queue.filter(x => x.id !== d.id),
+      riders: st.riders.map(r => r.name.startsWith(d.suggest) ? { ...r, st: 'out', load: r.load + 1, route: d.area, back: '25 min' } : r)
+    })) }));
+
+    const prodDefs = [
+      ['chia', 'Chia pudding', 'now', 149, 'chia.png', 'Plan-eligible · 312 active plans'],
+      ['pudding', 'Pudding jar', 'now', 159, 'pudding-jar.png', 'Plan-eligible · 288 active plans'],
+      ['dragon', 'Dragonfruit smoothie', 'now', 129, 'dragonfruit-bottle.png', 'Plan-eligible · 164 active plans'],
+      ['smoothie', 'Green smoothie', 'now', 139, 'smoothie.png', 'Plan-eligible · 201 active plans'],
+      ['tikki', 'Veg tikki (4 pc)', 'now', 119, 'tikki.png', 'Eat-now only'],
+      ['fries', 'Baked fries', 'now', 99, 'fries.png', 'Eat-now only'],
+      ['muesli', 'Muesli 400 g', 'ships', 349, 'muesli.png', 'Stock 42 packs'],
+      ['dry', 'Dry fruit mix 500 g', 'ships', 499, 'dryfruit.png', 'Low stock · 8 packs left', true],
+      ['modak', 'Dry fruit modak (6)', 'ships', 299, 'modak.png', 'Out of stock · restock Mon', true]
+    ];
+    const products = prodDefs.map(([k, name, t, price, img, meta, warn]) => {
+      const on = !s.offProducts[k];
+      return { name, price: this.fmt(price), img: 'assets/products/' + img, meta, metaC: warn ? '#A34A2A' : 'rgba(27,42,24,.6)', ...T[t], op: on ? 1 : .6,
+        avail: on ? 'Available' : 'Hidden from store', trk: on ? '#4A5D2E' : 'rgba(27,42,24,.2)', knob: on ? '18px' : '2px',
+        toggle: () => this.setState(st => ({ offProducts: { ...st.offProducts, [k]: on } })) };
+    });
+
+    const zoneDefs = [['560095', 'Koramangala 5th–8th Block', '25–35 min', 'Free', 612], ['560034', 'Koramangala 1st–4th Block', '25–35 min', 'Free', 548], ['560102', 'HSR Layout', '30–40 min', 'Free', 701], ['560076', 'BTM Layout', '30–40 min', '₹20', 389], ['560047', 'Ejipura / Viveknagar', '25–35 min', 'Free', 244], ['560038', 'Indiranagar', '40–50 min', '₹30', 196], ['560103', 'Bellandur', '40–50 min', '₹30', 172], ['560037', 'Marathahalli', 'Plan & Ships only', '₹40', 58]];
+    const zones = zoneDefs.map(([pin, area, eta, fee, wk]) => {
+      const on = !s.offZones[pin];
+      return { pin, area, eta: on ? eta : 'Plan & Ships only', fee, wk, etaC: on ? '#1B2A18' : 'rgba(27,42,24,.5)', trk: on ? '#4A5D2E' : 'rgba(27,42,24,.2)', knob: on ? '18px' : '2px', toggle: () => this.setState(st => ({ offZones: { ...st.offZones, [pin]: on } })) };
+    });
+
+    const planDefs = [['PL-3102', 'Ananya Rao', 'Chia pudding × 1', 'Daily · 7–9 am', 0, 30, 'Tomorrow 7–9 am', 'Active'], ['PL-3088', 'Isha Nair', 'Pudding jar × 1', 'Daily · 7–9 am', 22, 30, 'Tomorrow 7–9 am', 'Active'], ['PL-3071', 'Farhan Ali', 'Pudding jar × 1', 'Alt days · 12–2 pm', 9, 15, 'Today 12–2 pm', 'Active'], ['PL-3056', 'Nisha Kapoor', 'Green smoothie × 2', '2× week · 6–8 pm', 22, 24, 'Sat 26 Sep', 'Ends in 3 days'], ['PL-3049', 'Rahul Menon', 'Dragonfruit smoothie × 1', 'Daily · 7–9 am', 11, 30, 'Paused till 1 Oct', 'Paused'], ['PL-3031', 'Meghna Das', 'Green smoothie × 2', 'Weekly · 6–8 pm', 0, 12, 'Awaiting payment', 'Renewal failed'], ['PL-3017', 'Tara Joseph', 'Chia pudding × 2', 'Alt days · 7–9 am', 13, 45, 'Sat 26 Sep', 'Active'], ['PL-2998', 'Sameer Khan', 'Pudding jar × 1', 'Daily · 12–2 pm', 29, 30, 'Tomorrow 12–2 pm', 'Ends in 3 days']];
+    const plans = planDefs.map(([id, cust, product, sched, d, n, next, status]) => ({ id, cust, product, sched, next, status, done: d + ' / ' + n + ' delivered', pct: Math.round(d / n * 100) + '%', sBg: S[status][0], sFg: S[status][1] }));
+
+    const custDefs = [['Ananya Rao', '98450 •• 021', 'Mar 2026', 'Koramangala', 34, '1 · Chia pudding', '₹120', 'Today'], ['Isha Nair', '98801 •• 004', 'Jan 2026', 'Koramangala', 58, '1 · Pudding jar', '₹0', 'Today'], ['Tara Joseph', '91080 •• 551', 'Feb 2026', 'HSR Layout', 41, '2', '₹240', 'Yesterday'], ['Rohan Mehta', '99000 •• 118', 'Aug 2026', 'BTM Layout', 6, '—', '₹0', 'Today'], ['Kavya Iyer', '98860 •• 412', 'Sep 2026', 'HSR Layout', 2, '—', '₹50', 'Today'], ['Sneha Pillai', '90080 •• 745', 'May 2026', 'Indiranagar', 12, '—', '₹0', 'Today'], ['Rahul Menon', '97390 •• 802', 'Apr 2026', 'Ejipura', 27, '1 · paused', '₹159', '19 Sep'], ['Meghna Das', '81970 •• 552', 'Jun 2026', 'Koramangala', 9, 'Renewal failed', '₹0', 'Today']];
+    const customers = custDefs.map(([name, phone, since, area, orders, plans, credit, last]) => ({ name, phone, since, area, orders, plans, credit, last, ini: name.split(' ').map(w => w[0]).join('') }));
+
+    const red = '#A34A2A', amb = '#8B6A46', ol = '#4A5D2E';
+    const alerts = [
+      { c: red, title: 'SU-24826 is 12 min late', sub: 'Smoothie × 3 to BTM · customer was sent the delay SMS', cta: 'Open', go: () => this.setState({ screen: 'orders', sel: 'SU-24826' }) },
+      { c: red, title: '2 plan renewals failed', sub: 'UPI mandate declined · plans held, not cancelled', cta: 'Review', go: this.go('plans') },
+      { c: amb, title: 'Dry fruit modak is out of stock', sub: '14 pantry orders this week included it', cta: 'Menu', go: this.go('menu') },
+      { c: amb, title: '4 packed orders need a rider', sub: 'Ravi and Salma are at the kitchen', cta: 'Dispatch', go: this.go('dispatch') },
+      { c: ol, title: 'Lunch plan batch: 146 items', sub: 'Prep must finish by 11:45 am', cta: 'Kitchen', go: this.go('kitchen') }
+    ];
+    const hourVals = [14, 38, 52, 41, 28, 22, 31, 44, 36, 18, 15, 24, 39, 47, 33, 12];
+    const max = Math.max(...hourVals);
+    const hours = hourVals.map((v, i) => ({ h: Math.round(v / max * 100) + '%', c: i === 5 ? '#4A5D2E' : i > 5 ? 'rgba(27,42,24,.12)' : 'rgba(27,42,24,.35)', tip: (6 + i) + ':00 · ' + v + ' orders' }));
+
+    return {
+      isLogin: screen === 'login', isApp: screen !== 'login', isCreds: s.step === 'creds', isOtp: s.step === 'otp',
+      email: s.email, otp: s.otp,
+      onEmail: e => this.setState({ email: e.target.value }),
+      onOtp: e => this.setState({ otp: e.target.value.replace(/\D/g, '').slice(0, 6) }),
+      toOtp: () => this.setState({ step: 'otp' }), toCreds: () => this.setState({ step: 'creds', otp: '' }),
+      signIn: () => this.setState({ screen: kitchenRole ? 'kitchen' : 'dashboard', step: 'creds', otp: '' }),
+      signOut: () => this.setState({ screen: 'login', sel: null }),
+      nav, title: titles[screen] || '', q: s.q,
+      onQ: e => this.setState({ q: e.target.value }),
+      onQKey: e => { if (e.key === 'Enter') this.setState({ screen: 'orders', tab: 'all' }); },
+      initials: kitchenRole ? 'SK' : 'MS', userName: kitchenRole ? 'Suresh K' : 'Meera S', roleLabel: kitchenRole ? 'Kitchen lead' : 'Owner',
+      kDot: s.kitchenOpen ? '#4A5D2E' : '#A34A2A', kLabel: s.kitchenOpen ? 'Kitchen open' : 'Kitchen paused',
+      kSub: s.kitchenOpen ? 'Taking Now orders · tap to pause' : 'Now orders hidden on site · plans still run',
+      toggleKitchen: () => this.setState(st => ({ kitchenOpen: !st.kitchenOpen })),
+      isDashboard: screen === 'dashboard', isOrders: screen === 'orders', isKitchen: screen === 'kitchen', isDispatch: screen === 'dispatch', isPlans: screen === 'plans', isMenu: screen === 'menu', isCustomers: screen === 'customers', isZones: screen === 'zones',
+      goOrders: this.go('orders'),
+      kpis: [
+        { label: 'Orders today', value: '486', note: '+8% vs last Thursday', noteColor: ol },
+        { label: 'Revenue today', value: '₹1.84L', note: 'Avg order ₹379', noteColor: 'rgba(27,42,24,.6)' },
+        { label: 'On-time (Now)', value: '94%', note: '6 late of 104 delivered', noteColor: amb },
+        { label: 'Active plans', value: '1,204', note: '38 new this week', noteColor: ol }
+      ],
+      partRows: [
+        { ...T.now, name: 'Eat now', total: '238 orders', w1: '62%', w2: '12%', s1: '148 delivered', s2: '29 on the way', s3: '61 in kitchen' },
+        { ...T.plan, name: 'Plan deliveries', total: '212 due today', w1: '48%', w2: '0%', s1: '102 delivered (7–9 am)', s2: '146 in lunch batch', s3: '64 evening' },
+        { ...T.ships, name: 'Pantry shipments', total: '36 to ship', w1: '31%', w2: '44%', s1: '11 shipped', s2: '16 packing', s3: 'Courier pickup 6 pm' }
+      ],
+      hours, alerts, alertCount: alerts.length,
+      tabs, orders, orderCount: orders.length, noOrders: orders.length === 0,
+      hasSel: !!selO, sel, closeSel: () => this.setState({ sel: null }),
+      cols, handed: s.handed,
+      batch: [{ name: 'Pudding jar', n: 58 }, { name: 'Chia pudding', n: 44 }, { name: 'Green smoothie', n: 26 }, { name: 'Dragonfruit smoothie', n: 18 }],
+      queue, queueN: queue.length, queueEmpty: queue.length === 0, riders,
+      planKpis: [
+        { label: 'Active plans', value: '1,204', note: '96 paused' },
+        { label: 'Deliveries tomorrow', value: '218', note: '104 breakfast · 78 lunch · 36 evening' },
+        { label: 'Ending this week', value: '41', note: 'Renewal reminder goes 3 days before' },
+        { label: 'Renewals failed', value: '2', note: 'Retried automatically at 6 pm' }
+      ],
+      plans, products, customers, zones
+    };
+  }
+}
+</script>
+</body>
+</html>

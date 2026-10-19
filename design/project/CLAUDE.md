@@ -1,0 +1,1 @@
+- Mobile app bottom tab bar (Home, Shop, Orders, Plans, Wallet) is icon-only — no text labels. Active tab: #1B2A18 icon, 2px stroke, small olive dot below; inactive: rgba(27,42,24,.4). Use this on every future app screen.

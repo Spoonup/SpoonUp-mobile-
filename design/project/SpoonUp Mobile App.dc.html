@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics="">
+<meta name="ext-resource-dependency" content="assets/products/chia.png">
+<meta name="ext-resource-dependency" content="assets/products/dragonfruit-bottle.png">
+<meta name="ext-resource-dependency" content="assets/products/dryfruit.png">
+<meta name="ext-resource-dependency" content="assets/products/fries.png">
+<meta name="ext-resource-dependency" content="assets/products/modak.png">
+<meta name="ext-resource-dependency" content="assets/products/muesli.png">
+<meta name="ext-resource-dependency" content="assets/products/pudding-jar.png">
+<meta name="ext-resource-dependency" content="assets/products/smoothie.png">
+<meta name="ext-resource-dependency" content="assets/products/tikki.png">
+<meta name="ext-resource-dependency" content="assets/generated/eat-now.jpg">
+<meta name="ext-resource-dependency" content="assets/generated/week-jars.jpg">
+<meta name="ext-resource-dependency" content="assets/generated/pantry.jpg">
+
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,400&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+body{margin:0;background:#EDEAE1;font-family:"DM Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#4A5D2E;text-decoration:none}a:hover{color:#1B2A18}
+.dv-turn{padding:44px 48px 36px;border-bottom:1px solid rgba(27,42,24,.1)}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+.dv-tid{font:500 10px "JetBrains Mono",monospace;padding:3px 7px;background:#1B2A18;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 "DM Sans",sans-serif;color:#1B2A18}
+.dv-tsub{margin:0 0 24px;font:400 12.5px/1.6 "DM Sans",sans-serif;color:rgba(27,42,24,.55);max-width:760px}
+.dv-opts{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px}
+.dv-oid{font:500 10.5px "JetBrains Mono",monospace;padding:3px 7px;background:rgba(27,42,24,.09);color:#1B2A18;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 "DM Sans",sans-serif;color:rgba(27,42,24,.55)}
+.dv-card{max-width:100%;background:#FCFBF7;border:1px solid rgba(27,42,24,.1);border-radius:10px;box-shadow:0 2px 10px rgba(27,42,24,.07);overflow:hidden}
+.dv-opt:target .dv-oid{background:#4A5D2E;color:#fff}
+.dv-next{margin:26px 0 0;font:12px/1.6 "DM Sans",sans-serif;color:rgba(27,42,24,.5)}
+.ph{background-image:repeating-linear-gradient(135deg,#E4E0D2 0 7px,#DAD5C4 7px 14px);display:flex;align-items:center;justify-content:center;text-align:center;font:400 9.5px/1.4 "JetBrains Mono",monospace;color:rgba(27,42,24,.5);letter-spacing:.02em;padding:6px}
+.phone{width:390px;height:812px;background:#FCFBF7;border:9px solid #1B2A18;border-radius:42px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+</style>
+</helmet>
+
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="#F4F1E7"></rect><circle cx="200" cy="140" r="58" fill="#1B2A18"></circle><circle cx="200" cy="140" r="34" fill="#F4F1E7"></circle><rect x="192" y="140" width="16" height="78" rx="8" fill="#1B2A18"></rect><text x="200" y="262" font-family="Georgia,serif" font-size="30" fill="#1B2A18" text-anchor="middle">SpoonUp</text></svg>
+</template>
+
+<div style="display:flex;gap:10px;padding:18px 48px 0;font:500 12.5px 'DM Sans',sans-serif">
+<a href="SpoonUp Website.dc.html" style="padding:8px 14px;border-radius:100px;color:#1B2A18;border:1px solid rgba(27,42,24,.2)">Website</a>
+<a href="SpoonUp Mobile App.dc.html" style="padding:8px 14px;border-radius:100px;background:#1B2A18;color:#FCFBF7">Mobile app</a>
+</div>
+
+<section class="dv-turn" id="flow">
+<div class="dv-thd"><a class="dv-tid" href="#flow">D</a><span class="dv-tname">Mobile app — the full journey, in order</span></div>
+<p class="dv-tsub">Left to right is the order a new customer goes through: sign in → home → shop → cart → track → manage plans → wallet → account. Every tab, back arrow and “→” button jumps to the matching screen, and Home, Shop and Cart share one live cart. Fixes from the walkthrough: the welcome screen now leads into the app, Home has a first-visit state with a quick tour of the tabs, plans are built from the product card, greyed-out buttons say why, and a wrong code shows an error. Earlier versions: <a href="SpoonUp Mobile App (before flow fixes).dc.html">before flow fixes</a>.</p>
+<div class="dv-opts">
+<div class="dv-opt" id="6a"><div class="dv-olabel"><a class="dv-oid" href="#6a">6a</a>Login · phone → code → pincode</div>
+<div class="phone" data-screen-label="6a Login">
+  <div style="display:flex;justify-content:space-between;padding:14px 22px 0;font:500 12px 'DM Sans',sans-serif;color:#1B2A18;flex:none"><span>9:41</span><span>●●● ▮</span></div>
+  <sc-if value="{{ isWelcome }}" hint-placeholder-val="{{ true }}">
+  <div style="flex:1;display:flex;flex-direction:column">
+    <div onClick="{{ nextSlide }}" style="height:360px;margin:14px 16px 0;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;flex:none;background:#F4F1E7">
+      <sc-for list="{{ slides }}" as="sl" hint-placeholder-count="0"><img src="{{ sl.img }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .6s ease;opacity:{{ sl.op }}"></sc-for>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(27,42,24,0) 45%,rgba(27,42,24,.85) 100%)"></div>
+      <div style="position:absolute;left:20px;right:20px;bottom:20px;display:flex;flex-direction:column;gap:6px">
+        <span style="align-self:flex-start;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.1em;padding:4px 8px;border-radius:4px;background:#FCFBF7;color:{{ slideColor }}">{{ slideTag }}</span>
+        <div style="font:400 26px/1.1 'Instrument Serif',serif;color:#FCFBF7">{{ slideText }}</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:6px;padding:14px 0 0"><sc-for list="{{ dots }}" as="d" hint-placeholder-count="3"><span onClick="{{ d.go }}" style="height:7px;border-radius:4px;cursor:pointer;transition:all .3s;width:{{ d.w }};background:{{ d.bg }}"></span></sc-for></div>
+    <div style="padding:18px 22px 0;display:flex;flex-direction:column;gap:12px;flex:1">
+      <img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:40px;width:auto;align-self:center">
+      <div style="font:400 29px/1.12 'Instrument Serif',serif;color:#1B2A18;text-align:center">Eat healthy. Eat longer.</div>
+      <div onClick="{{ toPhone }}" style="text-align:center;font:500 14.5px 'DM Sans',sans-serif;padding:15px;border-radius:12px;transition:all .2s;cursor:pointer;background:#1B2A18;color:#FCFBF7;margin-top:4px" style-active="transform:scale(.98)">Continue with phone</div>
+      <div onClick="{{ viaGoogle }}" style="display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid rgba(27,42,24,.2);color:#1B2A18;font:500 14.5px 'DM Sans',sans-serif;padding:14px;border-radius:12px;cursor:pointer" style-active="transform:scale(.98)"><span style="font:700 15px 'DM Sans',sans-serif;color:#4A5D2E">G</span>Continue with Google</div>
+      <div onClick="{{ asGuest }}" style="text-align:center;font:500 12.5px 'DM Sans',sans-serif;color:#4A5D2E;cursor:pointer;padding:4px">Just browsing? Skip for now</div>
+      <div style="margin-top:auto;padding-bottom:20px;font:400 10.5px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.45);text-align:center">By continuing you accept our Terms and Privacy Policy.</div>
+    </div>
+  </div>
+  </sc-if>
+  <sc-if value="{{ inFlow }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;align-items:center;gap:14px;padding:16px 22px 0;flex:none">
+    <span onClick="{{ back }}" style="width:40px;height:40px;border-radius:50%;border:1px solid rgba(27,42,24,.14);display:flex;align-items:center;justify-content:center;font:400 18px 'DM Sans',sans-serif;color:#1B2A18;cursor:pointer;flex:none">←</span>
+    <div style="flex:1;display:flex;gap:5px"><sc-for list="{{ prog }}" as="p" hint-placeholder-count="3"><span style="flex:1;height:4px;border-radius:2px;transition:background .3s;background:{{ p.bg }}"></span></sc-for></div>
+    <span style="font:500 11px 'JetBrains Mono',monospace;color:rgba(27,42,24,.5);flex:none">{{ stepNo }}/3</span>
+  </div>
+  </sc-if>
+  <sc-if value="{{ isPhoneStep }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;display:flex;flex-direction:column;gap:16px;padding:34px 22px 22px">
+    <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#8B6A46">{{ phoneKicker }}</div>
+    <div style="font:400 34px/1.08 'Instrument Serif',serif;color:#1B2A18">{{ phoneHead }}</div>
+    <div style="display:flex;align-items:center;gap:10px;border:1.5px solid {{ phoneBorder }};border-radius:12px;padding:0 14px;background:#fff;transition:border-color .2s">
+      <span style="font:500 17px 'DM Sans',sans-serif;color:#1B2A18;padding-right:10px;border-right:1px solid rgba(27,42,24,.12)">+91</span>
+      <input value="{{ phoneFmt }}" onChange="{{ onPhone }}" inputMode="numeric" placeholder="98450 12345" autoFocus="{{ true }}" style="flex:1;min-width:0;border:0;outline:none;background:transparent;padding:16px 0;font:500 19px 'DM Sans',sans-serif;letter-spacing:.04em;color:#1B2A18">
+      <sc-if value="{{ phoneOk }}" hint-placeholder-val="{{ false }}"><span style="width:22px;height:22px;border-radius:50%;background:#4A5D2E;color:#FCFBF7;display:flex;align-items:center;justify-content:center;font:600 12px 'DM Sans',sans-serif">✓</span></sc-if>
+    </div>
+    <div style="font:400 12.5px/1.55 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ phoneSub }}</div>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:9px">
+      <div style="text-align:center;font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">{{ phoneHint }}</div>
+      <div onClick="{{ sendCode }}" style="text-align:center;font:500 14.5px 'DM Sans',sans-serif;padding:15px;border-radius:12px;transition:all .2s;cursor:pointer;background:{{ phoneBtnBg }};color:{{ phoneBtnFg }}">Send code</div>
+    </div>
+  </div>
+  </sc-if>
+  <sc-if value="{{ isOtpStep }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;display:flex;flex-direction:column;gap:16px;padding:34px 22px 22px">
+    <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#8B6A46">CHECK YOUR MESSAGES</div>
+    <div style="font:400 34px/1.08 'Instrument Serif',serif;color:#1B2A18">Enter the code</div>
+    <div style="font:400 13px/1.5 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">Sent to +91 {{ phoneFmt }} · <span onClick="{{ back }}" style="color:#4A5D2E;font-weight:500;cursor:pointer">Change</span></div>
+    <div style="position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:6px">
+      <sc-for list="{{ otpBoxes }}" as="b" hint-placeholder-count="6"><div style="height:56px;border-radius:11px;background:#fff;display:flex;align-items:center;justify-content:center;font:500 24px 'DM Sans',sans-serif;color:#1B2A18;transition:border-color .15s;border:1.5px solid {{ b.border }}">{{ b.d }}</div></sc-for>
+      <input value="{{ otp }}" onChange="{{ onOtp }}" inputMode="numeric" autoComplete="one-time-code" autoFocus="{{ true }}" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;cursor:pointer">
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;font:400 12.5px/1.45 'DM Sans',sans-serif">
+      <span style="color:{{ otpStatusC }}">{{ otpStatus }}</span>
+      <span onClick="{{ resend }}" style="flex:none;font-weight:500;cursor:pointer;color:{{ resendC }}">{{ resendLabel }}</span>
+    </div>
+    <div style="margin-top:auto;background:#F4F1E7;border-radius:11px;padding:12px 14px;font:400 11.5px/1.5 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Demo: any 6 digits verify by themselves. Type 000000 to see the wrong-code state.</div>
+  </div>
+  </sc-if>
+  <sc-if value="{{ isProfileStep }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:30px 22px 22px">
+    <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#8B6A46">ALMOST THERE</div>
+    <div style="font:400 34px/1.08 'Instrument Serif',serif;color:#1B2A18">What reaches you?</div>
+    <div style="font:400 12.5px/1.55 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-top:-4px">Just your pincode for now. We'll ask for flat and street at checkout.</div>
+    <label style="display:flex;flex-direction:column;gap:6px;font:500 12px 'DM Sans',sans-serif;color:#1B2A18">Your name
+      <input value="{{ name }}" onChange="{{ onName }}" placeholder="First name is fine" style="border:1.5px solid rgba(27,42,24,.16);border-radius:11px;padding:13px 14px;background:#fff;font:400 15px 'DM Sans',sans-serif;color:#1B2A18;outline:none" style-focus="border-color:#4A5D2E">
+    </label>
+    <label style="display:flex;flex-direction:column;gap:6px;font:500 12px 'DM Sans',sans-serif;color:#1B2A18">Delivery pincode
+      <input value="{{ pin }}" onChange="{{ onPin }}" inputMode="numeric" placeholder="560102" style="border:1.5px solid rgba(27,42,24,.16);border-radius:11px;padding:13px 14px;background:#fff;font:500 15px 'DM Sans',sans-serif;letter-spacing:.08em;color:#1B2A18;outline:none" style-focus="border-color:#4A5D2E">
+    </label>
+    <sc-if value="{{ pinShow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border-radius:11px;background:{{ pinBg }}"><span style="width:8px;height:8px;border-radius:50%;margin-top:5px;flex:none;background:{{ pinC }}"></span><span style="font:500 12.5px/1.5 'DM Sans',sans-serif;color:{{ pinC }}">{{ pinText }}</span></div>
+    </sc-if>
+    <sc-if value="{{ refClosed }}" hint-placeholder-val="{{ true }}"><div onClick="{{ openRef }}" style="font:500 12.5px 'DM Sans',sans-serif;color:#4A5D2E;cursor:pointer">+ I have a referral code</div></sc-if>
+    <sc-if value="{{ refOpen }}" hint-placeholder-val="{{ false }}"><input value="{{ ref }}" onChange="{{ onRef }}" placeholder="Referral code, e.g. MEHER150" style="border:1.5px dashed rgba(74,93,46,.5);border-radius:11px;padding:12px 14px;background:rgba(74,93,46,.05);font:500 14px 'JetBrains Mono',monospace;color:#1B2A18;outline:none"></sc-if>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:9px">
+      <div style="text-align:center;font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">{{ profHint }}</div>
+      <div onClick="{{ finish }}" style="text-align:center;font:500 14.5px 'DM Sans',sans-serif;padding:15px;border-radius:12px;transition:all .2s;cursor:pointer;background:{{ profBtnBg }};color:{{ profBtnFg }}">Start eating</div>
+    </div>
+  </div>
+  </sc-if>
+  <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:22px;text-align:center">
+    <div style="width:84px;height:84px;border-radius:50%;background:#4A5D2E;color:#FCFBF7;display:flex;align-items:center;justify-content:center;font:400 38px 'DM Sans',sans-serif">✓</div>
+    <div style="font:400 36px/1.08 'Instrument Serif',serif;color:#1B2A18">{{ doneTitle }}</div>
+    <div style="font:400 13.5px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.65);max-width:280px">{{ doneSub }}</div>
+    <sc-if value="{{ refBonus }}" hint-placeholder-val="{{ false }}"><div style="background:#1B2A18;color:#FCFBF7;border-radius:12px;padding:12px 16px;font:500 13px 'DM Sans',sans-serif">₹150 added to your wallet <span style="color:#A8B98C">· code {{ refUpper }}</span></div></sc-if>
+    <a href="{{ doneHref }}" onClick="{{ enterApp }}" style="text-align:center;font:500 14.5px 'DM Sans',sans-serif;padding:15px;border-radius:12px;transition:all .2s;cursor:pointer;align-self:stretch;margin-top:14px;background:#1B2A18;color:#FCFBF7;text-decoration:none">{{ doneCta }}</a>
+    <div onClick="{{ restart }}" style="font:500 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.5);cursor:pointer">↺ Restart the demo</div>
+  </div>
+  </sc-if>
+</div></div>
+
+<div class="dv-opt" id="6b"><div class="dv-olabel"><a class="dv-oid" href="#6b">6b</a>Home<span style="display:flex;gap:4px;margin-left:8px"><span onClick="{{ homeNew }}" style="padding:4px 9px;border-radius:100px;cursor:pointer;font:500 10.5px 'DM Sans',sans-serif;background:{{ hmNewBg }};color:{{ hmNewFg }}">First visit</span><span onClick="{{ homeRet }}" style="padding:4px 9px;border-radius:100px;cursor:pointer;font:500 10.5px 'DM Sans',sans-serif;background:{{ hmRetBg }};color:{{ hmRetFg }}">Returning</span></span></div>
+<div class="phone" data-screen-label="6b Home">
+  <div style="display:flex;justify-content:space-between;padding:14px 22px 0;font:500 12px 'DM Sans',sans-serif;color:#1B2A18;flex:none"><span>9:41</span><span>●●● ▮</span></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px 0;flex:none">
+    <div style="display:flex;align-items:center;gap:7px;font:500 12px 'DM Sans',sans-serif;color:#1B2A18;padding:9px 13px;border-radius:100px;background:#F4F1E7;border:1px solid rgba(27,42,24,.1)"><span style="width:7px;height:7px;border-radius:50%;background:#4A5D2E"></span>{{ locText }}</div>
+    <a href="#6h" aria-label="Account" style="position:relative;width:40px;height:40px;border-radius:50%;background:#4A5D2E;color:#FCFBF7;display:flex;align-items:center;justify-content:center;font:600 13px 'DM Sans',sans-serif;text-decoration:none;box-shadow:0 0 0 2px #FCFBF7,0 0 0 3.5px rgba(74,93,46,.45)">{{ homeIni }}<span style="position:absolute;right:-5px;bottom:-4px;width:17px;height:17px;border-radius:50%;background:#FCFBF7;border:1px solid rgba(27,42,24,.18);color:#1B2A18;font:700 10px/1 'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center">›</span></a>
+  </div>
+  <div style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:16px;padding:18px 20px 16px">
+    <div style="display:flex;flex-direction:column;gap:4px;flex:none">
+      <div style="font:400 30px/1.1 'Instrument Serif',serif;color:#1B2A18">{{ homeHello }}</div>
+      <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ homeSub }}</div>
+    </div>
+    <sc-if value="{{ isNewHome }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:none;background:#1B2A18;border-radius:16px;padding:15px 16px;display:flex;gap:12px;align-items:center">
+      <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+        <div style="font:500 10px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#A8B98C">{{ nudgeKicker }}</div>
+        <div style="font:500 15px 'DM Sans',sans-serif;color:#FCFBF7">₹150 is in your wallet</div>
+        <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(252,251,247,.65)">Taken off your first order over ₹299.</div>
+      </div>
+      <a href="#6c" onClick="{{ goShopAll }}" style="flex:none;padding:9px 13px;border-radius:100px;background:#A8B98C;color:#1B2A18;font:600 12px 'DM Sans',sans-serif;text-decoration:none">Use it →</a>
+    </div>
+    <div style="flex:none;border-radius:16px;overflow:hidden;background:#F4F1E7;display:flex;flex-direction:column">
+      <div style="height:120px"><img src="assets/generated/week-jars.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      <div style="padding:13px 15px 15px;display:flex;flex-direction:column;gap:5px">
+        <div style="font:500 10px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#1B2A18">PLAN · FROM ₹286 A JAR</div>
+        <div style="font:400 23px/1.1 'Instrument Serif',serif;color:#1B2A18">Start a breakfast plan</div>
+        <div style="font:400 12px/1.5 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">A jar at your door 7–9 am. Skip any day and it moves to the end of your plan.</div>
+        <a href="#6c" onClick="{{ startPlan }}" style="align-self:flex-start;margin-top:6px;padding:10px 16px;border-radius:100px;background:#1B2A18;color:#FCFBF7;font:600 12.5px 'DM Sans',sans-serif;text-decoration:none">Build my plan</a>
+      </div>
+    </div>
+    </sc-if>
+    <sc-if value="{{ isReturnHome }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:none;background:#1B2A18;border-radius:16px;padding:16px;display:flex;gap:14px;align-items:center">
+      <div style="width:70px;height:70px;border-radius:12px;overflow:hidden;flex:none;background:#F4F1E7"><img src="assets/products/pudding-jar.png" alt="" style="width:100%;height:100%;object-fit:cover"></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+        <div style="font:500 10px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#A8B98C">{{ planHead }}</div>
+        <div style="font:500 14.5px 'DM Sans',sans-serif;color:#FCFBF7">Chocolate Protein Chia Pudding</div>
+        <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(252,251,247,.65)">{{ planSub }}</div>
+      </div>
+      <div onClick="{{ toggleSkip }}" style="flex:none;padding:9px 13px;border-radius:100px;font:500 12px 'DM Sans',sans-serif;cursor:pointer;background:{{ skipBg }};color:{{ skipFg }}">{{ skipLabel }}</div>
+    </div>
+    </sc-if>
+    <div style="flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px">
+      <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="3">
+      <a href="#6c" onClick="{{ t.go }}" style="border-radius:14px;overflow:hidden;background:#F4F1E7;display:flex;flex-direction:column;text-decoration:none" style-active="transform:scale(.97)">
+        <div style="height:74px"><img src="{{ t.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+        <div style="padding:9px 10px 11px;display:flex;flex-direction:column;gap:2px"><span style="font:500 9.5px 'JetBrains Mono',monospace;letter-spacing:.08em;color:{{ t.c }}">{{ t.tag }}</span><span style="font:600 12.5px 'DM Sans',sans-serif;color:#1B2A18">{{ t.label }} ›</span><span style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">{{ t.sub }}</span></div>
+      </a>
+      </sc-for>
+    </div>
+    <div style="flex:none;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:600 14px 'DM Sans',sans-serif;color:#1B2A18">{{ rowTitle }}</span><a href="#6c" onClick="{{ goShopAll }}" style="font:500 12px 'DM Sans',sans-serif;color:#4A5D2E">{{ cartHint }}</a></div>
+      <div style="display:flex;gap:10px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px">
+        <sc-for list="{{ again }}" as="p" hint-placeholder-count="3">
+          <div style="flex:none;width:136px;border:1px solid rgba(27,42,24,.1);border-radius:14px;overflow:hidden;background:#fff">
+            <div style="height:96px;background:#F4F1E7;position:relative"><img src="{{ p.img }}" alt="{{ p.name }}" style="width:100%;height:100%;object-fit:cover;display:block">
+              <span onClick="{{ p.add }}" style="position:absolute;right:8px;bottom:8px;min-width:32px;height:32px;padding:0 9px;box-sizing:border-box;border-radius:100px;display:flex;align-items:center;justify-content:center;font:600 13px 'DM Sans',sans-serif;cursor:pointer;box-shadow:0 2px 6px rgba(27,42,24,.2);background:{{ p.btnBg }};color:{{ p.btnFg }}">{{ p.btn }}</span>
+            </div>
+            <div style="padding:9px 10px 11px;display:flex;flex-direction:column;gap:2px"><span style="font:500 12px/1.3 'DM Sans',sans-serif;color:#1B2A18">{{ p.name }}</span><span style="font:600 12px 'DM Sans',sans-serif;color:#1B2A18">{{ p.priceFmt }}</span></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  <sc-if value="{{ showCoach }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;left:12px;right:12px;bottom:78px;z-index:3;background:#1B2A18;border-radius:14px;padding:13px 14px 12px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(27,42,24,.35)">
+    <div style="font:600 13px 'DM Sans',sans-serif;color:#FCFBF7">Your five tabs, just this once</div>
+    <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));text-align:center;font:500 11px 'DM Sans',sans-serif;color:#D8E2C4"><span>Home</span><span>Shop</span><span>Orders</span><span>Plans</span><span>Wallet</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:8px;border-top:1px solid rgba(252,251,247,.12)"><span style="font:400 11px/1.4 'DM Sans',sans-serif;color:rgba(252,251,247,.65)">Your account is behind your photo, top right.</span><span onClick="{{ dismissCoach }}" style="flex:none;padding:7px 13px;border-radius:100px;background:#A8B98C;color:#1B2A18;font:600 12px 'DM Sans',sans-serif;cursor:pointer">Got it</span></div>
+  </div>
+  </sc-if>
+  <div style="display:flex;justify-content:space-around;padding:8px 0 18px;border-top:1px solid rgba(27,42,24,.08);flex:none;background:#FCFBF7"><a href="#6b" aria-label="Home" title="Home" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:#1B2A18"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:#4A5D2E"></span></a><a href="#6c" aria-label="Shop" title="Shop" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2z"></path><path d="M9 8V6.5a3 3 0 016 0V8"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6e" aria-label="Orders" title="Orders" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path><path d="M9 8h6M9 12h6"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6f" aria-label="Plans" title="Plans" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6g" aria-label="Wallet" title="Wallet" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2.5"></rect><path d="M3 10h18"></path><circle cx="16.5" cy="15" r="1.2" fill="currentColor"></circle></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a></div>
+</div></div>
+
+<div class="dv-opt" id="6c"><div class="dv-olabel"><a class="dv-oid" href="#6c">6c</a>Shop · filter, search, plan it</div>
+<div class="phone" data-screen-label="6c Shop">
+  <div style="display:flex;justify-content:space-between;padding:14px 22px 0;font:500 12px 'DM Sans',sans-serif;color:#1B2A18;flex:none"><span>9:41</span><span>●●● ▮</span></div>
+  <div style="display:flex;flex-direction:column;gap:12px;padding:12px 20px 12px;flex:none">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font:400 30px/1 'Instrument Serif',serif;color:#1B2A18">Shop</span>
+      <a href="#6d" aria-label="Cart" style="position:relative;width:40px;height:40px;border-radius:50%;border:1px solid rgba(27,42,24,.14);display:flex;align-items:center;justify-content:center;color:#1B2A18">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2z"></path><path d="M9 8V6.5a3 3 0 016 0V8"></path></svg>
+        <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;border-radius:9px;background:#4A5D2E;color:#FCFBF7;font:600 10px 'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center">{{ cartCount }}</span></sc-if>
+      </a>
+    </div>
+    <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Search puddings, smoothies, dry fruits…" style="border:1px solid rgba(27,42,24,.14);border-radius:100px;padding:12px 16px;background:#fff;font:400 13.5px 'DM Sans',sans-serif;color:#1B2A18;outline:none" style-focus="border-color:#4A5D2E">
+    <div style="display:flex;gap:7px;overflow-x:auto;margin:0 -20px;padding:0 20px">
+      <sc-for list="{{ cats }}" as="c" hint-placeholder-count="4"><span onClick="{{ c.go }}" style="flex:none;display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:100px;font:500 12.5px 'DM Sans',sans-serif;cursor:pointer;transition:all .2s;background:{{ c.bg }};color:{{ c.fg }};border:1px solid {{ c.bd }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ c.dot }}"></span>{{ c.label }}</span></sc-for>
+    </div>
+    <div style="font:400 11.5px/1.45 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ catNote }}</div>
+  </div>
+  <div style="flex:1;overflow:auto;padding:0 20px 16px">
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px">
+      <sc-for list="{{ shopList }}" as="p" hint-placeholder-count="6">
+        <div style="border:1px solid rgba(27,42,24,.1);border-radius:14px;overflow:hidden;background:#fff;display:flex;flex-direction:column">
+          <div style="height:118px;background:#F4F1E7;position:relative"><img src="{{ p.img }}" alt="{{ p.name }}" style="width:100%;height:100%;object-fit:cover;display:block"><span style="position:absolute;top:8px;left:8px;font:500 9.5px 'JetBrains Mono',monospace;letter-spacing:.06em;padding:3px 6px;border-radius:4px;background:#FCFBF7;color:{{ p.c }}">{{ p.tag }}</span></div>
+          <div style="padding:10px 11px 11px;display:flex;flex-direction:column;gap:3px;flex:1">
+            <span style="font:500 12.5px/1.3 'DM Sans',sans-serif;color:#1B2A18">{{ p.name }}</span>
+            <span style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">{{ p.meta }}</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:8px">
+              <span style="font:600 13px 'DM Sans',sans-serif;color:#1B2A18">{{ p.priceFmt }}</span>
+              <sc-if value="{{ p.notIn }}" hint-placeholder-val="{{ true }}"><span onClick="{{ p.add }}" style="padding:7px 13px;border-radius:100px;background:#1B2A18;color:#FCFBF7;font:600 12px 'DM Sans',sans-serif;cursor:pointer" style-active="transform:scale(.95)">Add</span></sc-if>
+              <sc-if value="{{ p.inCart }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;border-radius:100px;background:#4A5D2E;color:#FCFBF7;font:600 12.5px 'DM Sans',sans-serif"><span onClick="{{ p.dec }}" style="width:28px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer">−</span><span style="min-width:14px;text-align:center">{{ p.qty }}</span><span onClick="{{ p.add }}" style="width:28px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer">+</span></div></sc-if>
+            </div>
+            <sc-if value="{{ p.plan }}" hint-placeholder-val="{{ false }}"><span onClick="{{ p.openPlan }}" style="margin-top:7px;text-align:center;padding:7px 8px;border-radius:100px;border:1px solid {{ p.planBd }};background:{{ p.planBg }};font:600 11px 'DM Sans',sans-serif;color:#1B2A18;cursor:pointer">{{ p.planLabel }}</span></sc-if>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ shopEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:40px 10px;text-align:center;font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">Nothing matches “{{ q }}”. Try “chia” or “dry fruits”.</div></sc-if>
+  </div>
+  <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ true }}">
+  <a href="#6d" style="margin:0 14px 10px;padding:12px 16px;border-radius:14px;background:#1B2A18;display:flex;justify-content:space-between;align-items:center;box-shadow:0 6px 18px rgba(27,42,24,.25);flex:none;text-decoration:none">
+    <div style="display:flex;flex-direction:column;gap:1px"><span style="font:600 13.5px 'DM Sans',sans-serif;color:#FCFBF7">{{ cartCount }} in cart · {{ cartTotal }}</span><span style="font:400 11px 'DM Sans',sans-serif;color:#A8B98C">{{ cartParts }}</span></div>
+    <span style="padding:9px 14px;border-radius:100px;background:#A8B98C;color:#1B2A18;font:600 12.5px 'DM Sans',sans-serif">View cart →</span>
+  </a>
+  </sc-if>
+  <sc-if value="{{ hasSheet }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(27,42,24,.42);z-index:5"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;z-index:6;background:#FCFBF7;border-radius:22px 22px 0 0;padding:10px 20px 22px;display:flex;flex-direction:column;gap:13px;box-shadow:0 -10px 30px rgba(27,42,24,.2)">
+    <span style="align-self:center;width:38px;height:4px;border-radius:2px;background:rgba(27,42,24,.2)"></span>
+    <div style="display:flex;gap:12px;align-items:center">
+      <img src="{{ sh.img }}" alt="" style="width:50px;height:50px;border-radius:10px;object-fit:cover;flex:none;background:#F4F1E7">
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:500 10px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#1B2A18">BUILD A PLAN</span><span style="font:600 14px 'DM Sans',sans-serif;color:#1B2A18">{{ sh.name }}</span><span style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">{{ sh.oneOff }} one-off</span></div>
+      <span onClick="{{ closeSheet }}" style="width:34px;height:34px;border-radius:50%;border:1px solid rgba(27,42,24,.14);display:flex;align-items:center;justify-content:center;font:400 17px 'DM Sans',sans-serif;color:#1B2A18;cursor:pointer;flex:none">×</span>
+    </div>
+    <sc-for list="{{ sheetGroups }}" as="g" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <span style="font:500 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ g.label }}</span>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px">
+          <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><span onClick="{{ o.pick }}" style="display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 4px;border-radius:10px;cursor:pointer;text-align:center;transition:all .15s;background:{{ o.bg }};color:{{ o.fg }};border:1px solid {{ o.bd }}"><span style="font:600 12px 'DM Sans',sans-serif">{{ o.label }}</span><span style="font:400 10px 'DM Sans',sans-serif;opacity:.75">{{ o.sub }}</span></span></sc-for>
+        </div>
+      </div>
+    </sc-for>
+    <div style="background:#F4F1E7;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:600 15px 'DM Sans',sans-serif;color:#1B2A18">{{ sh.perFmt }} per delivery</span><span style="font:500 12px 'DM Sans',sans-serif;color:#1B2A18">{{ sh.n }} deliveries</span></div>
+      <div style="font:500 12px 'DM Sans',sans-serif;color:#4A5D2E">{{ sh.totalFmt }} total · you save {{ sh.saveFmt }}</div>
+      <div style="font:400 11px/1.45 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Skip or pause any day. Skipped deliveries move to the end, nothing is lost.</div>
+    </div>
+    <div onClick="{{ addPlan }}" style="text-align:center;font:500 14.5px 'DM Sans',sans-serif;padding:15px;border-radius:12px;transition:all .2s;cursor:pointer;background:#1B2A18;color:#FCFBF7" style-active="transform:scale(.98)">{{ sh.cta }}</div>
+  </div>
+  </sc-if>
+  <div style="display:flex;justify-content:space-around;padding:8px 0 18px;border-top:1px solid rgba(27,42,24,.08);flex:none;background:#FCFBF7"><a href="#6b" aria-label="Home" title="Home" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6c" aria-label="Shop" title="Shop" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:#1B2A18"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2z"></path><path d="M9 8V6.5a3 3 0 016 0V8"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:#4A5D2E"></span></a><a href="#6e" aria-label="Orders" title="Orders" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path><path d="M9 8h6M9 12h6"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6f" aria-label="Plans" title="Plans" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6g" aria-label="Wallet" title="Wallet" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2.5"></rect><path d="M3 10h18"></path><circle cx="16.5" cy="15" r="1.2" fill="currentColor"></circle></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a></div>
+</div></div>
+
+<div class="dv-opt" id="6d"><div class="dv-olabel"><a class="dv-oid" href="#6d">6d</a>Cart · three parts, one payment</div>
+<div class="phone" data-screen-label="6d Cart">
+  <div style="display:flex;justify-content:space-between;padding:14px 22px 0;font:500 12px 'DM Sans',sans-serif;color:#1B2A18;flex:none"><span>9:41</span><span>●●● ▮</span></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px 0;flex:none">
+    <div style="display:flex;align-items:center;gap:12px"><a href="#6c" style="width:40px;height:40px;border-radius:50%;border:1px solid rgba(27,42,24,.14);display:flex;align-items:center;justify-content:center;font:400 18px 'DM Sans',sans-serif;color:#1B2A18;text-decoration:none">←</a><span style="font:400 28px/1 'Instrument Serif',serif;color:#1B2A18">Cart</span></div>
+    <span style="font:500 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">{{ cartCount }} in cart</span>
+  </div>
+  <sc-if value="{{ cartEmpty }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center">
+    <div style="font:400 28px/1.1 'Instrument Serif',serif;color:#1B2A18">Nothing here yet</div>
+    <div style="font:400 13px/1.55 'DM Sans',sans-serif;color:rgba(27,42,24,.6);max-width:250px">Add something to eat now, or build a plan from any pudding or smoothie.</div>
+    <a href="#6c" style="margin-top:8px;padding:12px 18px;border-radius:100px;background:#1B2A18;color:#FCFBF7;font:600 13px 'DM Sans',sans-serif;text-decoration:none">Browse the shop</a>
+  </div>
+  </sc-if>
+  <sc-if value="{{ isPlaced }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:30px 22px 22px">
+    <div style="width:64px;height:64px;border-radius:50%;background:#4A5D2E;color:#FCFBF7;display:flex;align-items:center;justify-content:center;font:400 30px 'DM Sans',sans-serif">✓</div>
+    <div style="font:400 34px/1.08 'Instrument Serif',serif;color:#1B2A18">Order placed</div>
+    <div style="font:400 13px/1.55 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">{{ placedSub }}</div>
+    <div style="display:flex;flex-direction:column;border:1px solid rgba(27,42,24,.1);border-radius:14px;overflow:hidden;background:#fff">
+      <sc-for list="{{ placedLines }}" as="l" hint-placeholder-count="3"><div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-top:1px solid {{ l.bt }}"><span style="flex:none;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.06em;padding:3px 7px;border-radius:4px;background:{{ l.bg }};color:{{ l.c }}">{{ l.tag }}</span><span style="font:400 12.5px/1.45 'DM Sans',sans-serif;color:#1B2A18">{{ l.text }}</span></div></sc-for>
+    </div>
+    <a href="#6e" style="text-align:center;font:500 14.5px 'DM Sans',sans-serif;padding:15px;border-radius:12px;transition:all .2s;cursor:pointer;margin-top:auto;background:#1B2A18;color:#FCFBF7;text-decoration:none">Track in Orders →</a>
+    <div onClick="{{ resetCart }}" style="text-align:center;font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);cursor:pointer">↺ Reset the cart demo</div>
+  </div>
+  </sc-if>
+  <sc-if value="{{ cartFull }}" hint-placeholder-val="{{ true }}">
+  <div style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:12px;padding:16px 20px 14px">
+    <sc-if value="{{ hasNow }}" hint-placeholder-val="{{ true }}"><div style="flex:none;border:1px solid rgba(27,42,24,.1);border-radius:14px;overflow:hidden;background:#fff"><div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:rgba(74,93,46,.1);font:500 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#4A5D2E"><span>NOW</span><span style="font:500 11px 'DM Sans',sans-serif;letter-spacing:0">Arrives in {{ eta }}</span></div><sc-for list="{{ nowItems }}" as="it" hint-placeholder-count="1"><div style="display:flex;gap:11px;align-items:center;padding:11px 13px;border-top:1px solid rgba(27,42,24,.07)"><img src="{{ it.img }}" alt="" style="width:44px;height:44px;border-radius:9px;object-fit:cover;flex:none;background:#F4F1E7"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:500 12.5px/1.3 'DM Sans',sans-serif;color:#1B2A18">{{ it.name }}</span><span style="font:600 12px 'DM Sans',sans-serif;color:#1B2A18">{{ it.lineFmt }}</span></div><div style="display:flex;align-items:center;border-radius:100px;border:1px solid rgba(27,42,24,.18);font:600 12.5px 'DM Sans',sans-serif;color:#1B2A18;flex:none"><span onClick="{{ it.dec }}" style="width:28px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer">−</span><span style="min-width:14px;text-align:center">{{ it.qty }}</span><span onClick="{{ it.add }}" style="width:28px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer">+</span></div></div></sc-for></div></sc-if>
+    <sc-if value="{{ hasPlans }}" hint-placeholder-val="{{ true }}"><div style="flex:none;border:1px solid rgba(27,42,24,.1);border-radius:14px;overflow:hidden;background:#fff"><div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:rgba(27,42,24,.07);font:500 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#1B2A18"><span>PLAN</span><span style="font:500 11px 'DM Sans',sans-serif;letter-spacing:0">Paid upfront into plan balance</span></div>
+      <sc-for list="{{ planItems }}" as="pl" hint-placeholder-count="1"><div style="display:flex;gap:11px;align-items:center;padding:11px 13px;border-top:1px solid rgba(27,42,24,.07);align-items:flex-start"><img src="{{ pl.img }}" alt="" style="width:44px;height:44px;border-radius:9px;object-fit:cover;flex:none;background:#F4F1E7"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:500 12.5px/1.3 'DM Sans',sans-serif;color:#1B2A18">{{ pl.name }}</span><span style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">{{ pl.desc }}</span><span style="font:600 12px 'DM Sans',sans-serif;color:#1B2A18">{{ pl.priceLine }}</span><div style="display:flex;gap:16px;margin-top:3px;font:500 11.5px 'DM Sans',sans-serif"><a href="#6c" onClick="{{ pl.edit }}" style="color:#4A5D2E">Edit plan</a><span onClick="{{ pl.remove }}" style="color:rgba(27,42,24,.55);cursor:pointer">Remove</span></div></div></div></sc-for></div></sc-if>
+    <sc-if value="{{ hasShips }}" hint-placeholder-val="{{ true }}"><div style="flex:none;border:1px solid rgba(27,42,24,.1);border-radius:14px;overflow:hidden;background:#fff"><div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:rgba(139,106,70,.12);font:500 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#8B6A46"><span>SHIPS</span><span style="font:500 11px 'DM Sans',sans-serif;letter-spacing:0">Courier · 3–5 days</span></div><sc-for list="{{ shipItems }}" as="it" hint-placeholder-count="1"><div style="display:flex;gap:11px;align-items:center;padding:11px 13px;border-top:1px solid rgba(27,42,24,.07)"><img src="{{ it.img }}" alt="" style="width:44px;height:44px;border-radius:9px;object-fit:cover;flex:none;background:#F4F1E7"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:500 12.5px/1.3 'DM Sans',sans-serif;color:#1B2A18">{{ it.name }}</span><span style="font:600 12px 'DM Sans',sans-serif;color:#1B2A18">{{ it.lineFmt }}</span></div><div style="display:flex;align-items:center;border-radius:100px;border:1px solid rgba(27,42,24,.18);font:600 12.5px 'DM Sans',sans-serif;color:#1B2A18;flex:none"><span onClick="{{ it.dec }}" style="width:28px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer">−</span><span style="min-width:14px;text-align:center">{{ it.qty }}</span><span onClick="{{ it.add }}" style="width:28px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer">+</span></div></div></sc-for></div></sc-if>
+    <div style="flex:none;border:1px solid rgba(27,42,24,.1);border-radius:14px;overflow:hidden;background:#fff;padding:13px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:600 13px 'DM Sans',sans-serif;color:#1B2A18">Deliver to</span><span style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">{{ locShort }}</span></div>
+      <input value="{{ addr }}" onChange="{{ onAddr }}" placeholder="Flat, building and street" style="border:1.5px solid {{ addrBd }};border-radius:10px;padding:11px 12px;background:#FCFBF7;font:400 13.5px 'DM Sans',sans-serif;color:#1B2A18;outline:none" style-focus="border-color:#4A5D2E">
+    </div>
+    <div onClick="{{ toggleCredit }}" style="flex:none;border:1px solid rgba(27,42,24,.1);border-radius:14px;overflow:hidden;background:#fff;padding:12px 13px;display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer">
+      <div style="display:flex;flex-direction:column;gap:2px"><span style="font:600 13px 'DM Sans',sans-serif;color:#1B2A18">Use ₹150 welcome credit</span><span style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">On eat-now and pantry items</span></div>
+      <span style="width:42px;height:24px;border-radius:12px;position:relative;display:block;flex:none;transition:background .2s;background:{{ crTrk }}"><span style="position:absolute;top:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:left .2s;left:{{ crKnob }}"></span></span>
+    </div>
+    <div style="flex:none;display:flex;flex-direction:column;gap:7px;padding:2px 2px 0">
+      <sc-for list="{{ bill }}" as="b" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;font:400 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.7)"><span>{{ b.label }}</span><span style="color:{{ b.c }}">{{ b.val }}</span></div></sc-for>
+      <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(27,42,24,.1);font:600 14.5px 'DM Sans',sans-serif;color:#1B2A18"><span>To pay</span><span>{{ payFmt }}</span></div>
+    </div>
+  </div>
+  <div style="flex:none;padding:10px 20px 22px;border-top:1px solid rgba(27,42,24,.08);display:flex;flex-direction:column;gap:8px">
+    <div style="text-align:center;font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);color:{{ payHintC }}">{{ payHint }}</div>
+    <div onClick="{{ pay }}" style="text-align:center;font:500 14.5px 'DM Sans',sans-serif;padding:15px;border-radius:12px;transition:all .2s;cursor:pointer;background:{{ payBg }};color:{{ payFg }}">Pay {{ payFmt }}</div>
+  </div>
+  </sc-if>
+</div></div>
+
+<div class="dv-opt" id="6e"><div class="dv-olabel"><a class="dv-oid" href="#6e">6e</a>Orders · one order, three parts</div>
+<div class="phone" data-screen-label="6e Orders">
+  <div style="display:flex;justify-content:space-between;padding:14px 20px 0;font:500 12px 'DM Sans',sans-serif;color:#1B2A18"><span>9:41</span><span>●●● ▮</span></div>
+  <div style="padding:14px 20px 12px;font:500 15px 'DM Sans',sans-serif;color:#1B2A18">My orders</div>
+  <div style="display:flex;gap:8px;padding:0 20px 14px;font:500 12px 'DM Sans',sans-serif"><span style="color:#FCFBF7;background:#1B2A18;padding:8px 13px;border-radius:100px">All</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.16);padding:8px 13px;border-radius:100px">Active</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.16);padding:8px 13px;border-radius:100px">Past</span></div>
+  <div style="flex:1;padding:0 20px;display:flex;flex-direction:column;gap:12px">
+    <div style="border:1px solid rgba(27,42,24,.12);border-radius:12px;overflow:hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 13px;background:#F4F1E7"><div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">Order SU-24817</div><div style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:2px">22 Sep, 6:42 pm · ₹10,648 · 3 parts</div></div><div style="font:400 11px 'DM Sans',sans-serif;color:#4A5D2E">Invoice</div></div>
+      <div style="padding:12px 13px;border-bottom:1px solid rgba(27,42,24,.07);border-left:3px solid #4A5D2E">
+        <div style="display:flex;justify-content:space-between"><span style="font:500 10px 'JetBrains Mono',monospace;color:#4A5D2E;letter-spacing:.07em">EAT NOW</span><span style="font:500 11px 'DM Sans',sans-serif;color:#4A5D2E">Out for delivery</span></div>
+        <div style="font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-top:7px">Tikki × 1 · Smoothie × 1</div>
+        <div style="display:flex;gap:4px;margin-top:10px"><span style="flex:1;height:3px;border-radius:2px;background:#4A5D2E"></span><span style="flex:1;height:3px;border-radius:2px;background:#4A5D2E"></span><span style="flex:1;height:3px;border-radius:2px;background:#4A5D2E"></span><span style="flex:1;height:3px;border-radius:2px;background:rgba(27,42,24,.14)"></span></div>
+        <div style="display:flex;justify-content:space-between;font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:6px"><span>Rider 12 min away</span><span>Track live</span></div>
+      </div>
+      <div style="padding:12px 13px;border-bottom:1px solid rgba(27,42,24,.07);border-left:3px solid #1B2A18">
+        <div style="display:flex;justify-content:space-between"><span style="font:500 10px 'JetBrains Mono',monospace;color:#1B2A18;letter-spacing:.07em">SUBSCRIPTION</span><span style="font:500 11px 'DM Sans',sans-serif;color:#1B2A18">Active</span></div>
+        <div style="font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-top:7px">Chia Pudding · alt. days · 30 jars</div>
+        <div style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:6px">2 of 30 delivered · next 24 Sep, 7–9 am · manage in My Plans</div>
+      </div>
+      <div style="padding:12px 13px;border-left:3px solid #8B6A46">
+        <div style="display:flex;justify-content:space-between"><span style="font:500 10px 'JetBrains Mono',monospace;color:#8B6A46;letter-spacing:.07em">PANTRY</span><span style="font:500 11px 'DM Sans',sans-serif;color:#8B6A46">Sourcing</span></div>
+        <div style="font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-top:7px">Kashmiri Dry Fruits 500g</div>
+        <div style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:6px">Expected dispatch 24 Sep · delivery by 27 Sep</div>
+      </div>
+    </div>
+    <div style="border:1px solid rgba(27,42,24,.12);border-radius:12px;padding:12px 13px;border-left:3px solid #1B2A18">
+      <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">Order SU-24802</div><div style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:2px">19 Sep · ₹698 · scheduled</div></div><span style="font:500 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.5)">Delivered</span></div>
+      <div style="font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-top:7px">Peri Peri House Fries × 2 · arrived 8:04 pm</div>
+      <div style="display:flex;gap:8px;margin-top:11px;font:500 11.5px 'DM Sans',sans-serif"><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:8px 12px;border-radius:8px">Reorder</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:8px 12px;border-radius:8px">Rate</span></div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:space-around;padding:8px 0 18px;border-top:1px solid rgba(27,42,24,.08);flex:none;background:#FCFBF7"><a href="#6b" aria-label="Home" title="Home" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6c" aria-label="Shop" title="Shop" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2z"></path><path d="M9 8V6.5a3 3 0 016 0V8"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6e" aria-label="Orders" title="Orders" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:#1B2A18"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path><path d="M9 8h6M9 12h6"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:#4A5D2E"></span></a><a href="#6f" aria-label="Plans" title="Plans" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6g" aria-label="Wallet" title="Wallet" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2.5"></rect><path d="M3 10h18"></path><circle cx="16.5" cy="15" r="1.2" fill="currentColor"></circle></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a></div>
+</div></div>
+
+<div class="dv-opt" id="6f"><div class="dv-olabel"><a class="dv-oid" href="#6f">6f</a>Plans · skip, pause, change slot</div>
+<div class="phone" data-screen-label="6f Plans">
+  <div style="display:flex;justify-content:space-between;padding:14px 20px 0;font:500 12px 'DM Sans',sans-serif;color:#1B2A18"><span>9:41</span><span>●●● ▮</span></div>
+  <div style="padding:14px 20px 12px;display:flex;justify-content:space-between;align-items:center"><span style="font:500 15px 'DM Sans',sans-serif;color:#1B2A18">My plans</span><span style="font:500 11.5px 'DM Sans',sans-serif;color:#4A5D2E">+ New plan</span></div>
+  <div style="flex:1;padding:0 20px;display:flex;flex-direction:column;gap:13px">
+    <div style="border:1px solid rgba(27,42,24,.14);border-radius:13px;padding:14px">
+      <div style="display:flex;gap:11px;align-items:center">
+        <div style="width:52px;height:52px;position:relative;flex:none"><image-slot id="plan-jar-v2" src="assets/products/pudding-jar.png" shape="rounded" radius="9" placeholder="jar"></image-slot></div>
+        <div style="flex:1"><div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18">Chocolate Protein Chia Pudding</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-top:3px">Alternate days · 7–9 am · ₹300/jar</div></div>
+        <span style="font:500 10px 'JetBrains Mono',monospace;color:#4A5D2E;background:rgba(74,93,46,.12);padding:5px 8px;border-radius:5px">ACTIVE</span>
+      </div>
+      <div style="margin-top:13px">
+        <div style="display:flex;justify-content:space-between;font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-bottom:6px"><span>2 of 30 deliveries</span><span>₹8,404 left in wallet</span></div>
+        <div style="height:5px;border-radius:3px;background:rgba(27,42,24,.1);overflow:hidden"><div style="width:7%;height:100%;background:#4A5D2E"></div></div>
+      </div>
+      <div style="margin-top:14px">
+        <div style="font:500 11px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:8px">Next two weeks</div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;font:500 9.5px 'DM Sans',sans-serif;text-align:center">
+          <span style="color:rgba(27,42,24,.4)">M</span><span style="color:rgba(27,42,24,.4)">T</span><span style="color:rgba(27,42,24,.4)">W</span><span style="color:rgba(27,42,24,.4)">T</span><span style="color:rgba(27,42,24,.4)">F</span><span style="color:rgba(27,42,24,.4)">S</span><span style="color:rgba(27,42,24,.4)">S</span>
+          <span style="padding:7px 0;border-radius:6px;background:rgba(27,42,24,.06);color:rgba(27,42,24,.35)">22</span>
+          <span style="padding:7px 0;border-radius:6px;background:#4A5D2E;color:#FCFBF7">23</span>
+          <span style="padding:7px 0;border-radius:6px;background:rgba(27,42,24,.06);color:rgba(27,42,24,.35)">24</span>
+          <span style="padding:7px 0;border-radius:6px;background:#4A5D2E;color:#FCFBF7">25</span>
+          <span style="padding:7px 0;border-radius:6px;background:rgba(27,42,24,.06);color:rgba(27,42,24,.35)">26</span>
+          <span style="padding:7px 0;border-radius:6px;background:#4A5D2E;color:#FCFBF7">27</span>
+          <span style="padding:7px 0;border-radius:6px;background:rgba(27,42,24,.06);color:rgba(27,42,24,.35)">28</span>
+          <span style="padding:7px 0;border-radius:6px;background:#4A5D2E;color:#FCFBF7">29</span>
+          <span style="padding:7px 0;border-radius:6px;background:rgba(27,42,24,.06);color:rgba(27,42,24,.35)">30</span>
+          <span style="padding:7px 0;border-radius:6px;border:1px dashed rgba(27,42,24,.3);color:rgba(27,42,24,.45)">1</span>
+          <span style="padding:7px 0;border-radius:6px;background:rgba(27,42,24,.06);color:rgba(27,42,24,.35)">2</span>
+          <span style="padding:7px 0;border-radius:6px;background:#4A5D2E;color:#FCFBF7">3</span>
+          <span style="padding:7px 0;border-radius:6px;background:rgba(27,42,24,.06);color:rgba(27,42,24,.35)">4</span>
+          <span style="padding:7px 0;border-radius:6px;background:#4A5D2E;color:#FCFBF7">5</span>
+        </div>
+        <div style="font:400 10px 'DM Sans',sans-serif;color:rgba(27,42,24,.5);margin-top:7px">Dashed = skipped by you. Skipped deliveries move to the end of the plan.</div>
+      </div>
+      <div style="display:flex;gap:7px;margin-top:13px;font:500 11.5px 'DM Sans',sans-serif"><span style="flex:1;text-align:center;color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:10px;border-radius:8px">Skip a day</span><span style="flex:1;text-align:center;color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:10px;border-radius:8px">Pause</span><span style="flex:1;text-align:center;color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:10px;border-radius:8px">Change slot</span></div>
+    </div>
+    <div style="border:1px solid rgba(27,42,24,.12);border-radius:13px;padding:14px;opacity:.72">
+      <div style="display:flex;gap:11px;align-items:center">
+        <div style="width:52px;height:52px;position:relative;flex:none"><image-slot id="plan-bottle-v2" src="assets/products/dragonfruit-bottle.png" shape="rounded" radius="9" placeholder="bottle"></image-slot></div>
+        <div style="flex:1"><div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18">Dragonfruit Smoothie</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-top:3px">Weekly · Sat 7–9 am · ₹283/bottle</div></div>
+        <span style="font:500 10px 'JetBrains Mono',monospace;color:#8B6A46;background:rgba(139,106,70,.12);padding:5px 8px;border-radius:5px">PAUSED</span>
+      </div>
+      <div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-top:11px">6 of 8 deliveries used · resumes when you say so · ₹566 left</div>
+      <div style="display:flex;gap:7px;margin-top:12px;font:500 11.5px 'DM Sans',sans-serif"><span style="flex:1;text-align:center;color:#FCFBF7;background:#4A5D2E;padding:10px;border-radius:8px">Resume</span><span style="flex:1;text-align:center;color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:10px;border-radius:8px">Extend plan</span></div>
+    </div>
+    <div style="border:1px dashed rgba(27,42,24,.2);border-radius:13px;padding:14px;display:flex;justify-content:space-between;align-items:center"><div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">Ended · Kashmiri Muesli</div><div style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:3px">Daily · 1 month · completed 12 Sep</div></div><span style="font:500 11.5px 'DM Sans',sans-serif;color:#4A5D2E">Renew</span></div>
+  </div>
+  <div style="display:flex;justify-content:space-around;padding:8px 0 18px;border-top:1px solid rgba(27,42,24,.08);flex:none;background:#FCFBF7"><a href="#6b" aria-label="Home" title="Home" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6c" aria-label="Shop" title="Shop" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2z"></path><path d="M9 8V6.5a3 3 0 016 0V8"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6e" aria-label="Orders" title="Orders" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path><path d="M9 8h6M9 12h6"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6f" aria-label="Plans" title="Plans" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:#1B2A18"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:#4A5D2E"></span></a><a href="#6g" aria-label="Wallet" title="Wallet" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2.5"></rect><path d="M3 10h18"></path><circle cx="16.5" cy="15" r="1.2" fill="currentColor"></circle></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a></div>
+</div></div>
+
+<div class="dv-opt" id="6g"><div class="dv-olabel"><a class="dv-oid" href="#6g">6g</a>Wallet</div>
+<div class="phone" data-screen-label="6g Wallet">
+  <div style="display:flex;justify-content:space-between;padding:14px 20px 0;font:500 12px 'DM Sans',sans-serif;color:#1B2A18"><span>9:41</span><span>●●● ▮</span></div>
+  <div style="padding:14px 20px 12px;font:500 15px 'DM Sans',sans-serif;color:#1B2A18">Wallet</div>
+  <div style="margin:0 20px;background:#1B2A18;border-radius:15px;padding:20px;display:flex;flex-direction:column;gap:12px">
+    <div style="font:500 10.5px 'JetBrains Mono',monospace;color:#A8B98C;letter-spacing:.09em">TOTAL BALANCE</div>
+    <div style="font:400 40px 'Instrument Serif',serif;color:#FCFBF7">₹9,815</div>
+    <div style="display:flex;gap:10px">
+      <div style="flex:1;background:rgba(252,251,247,.1);border-radius:10px;padding:11px 12px"><div style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(252,251,247,.6)">Plan balance</div><div style="font:500 15px 'DM Sans',sans-serif;color:#FCFBF7;margin-top:3px">₹8,404</div><div style="font:400 9.5px 'DM Sans',sans-serif;color:rgba(252,251,247,.5);margin-top:2px">28 deliveries left</div></div>
+      <div style="flex:1;background:rgba(252,251,247,.1);border-radius:10px;padding:11px 12px"><div style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(252,251,247,.6)">Spendable credit</div><div style="font:500 15px 'DM Sans',sans-serif;color:#FCFBF7;margin-top:3px">₹1,411</div><div style="font:400 9.5px 'DM Sans',sans-serif;color:rgba(252,251,247,.5);margin-top:2px">refunds + referrals</div></div>
+    </div>
+    <div style="font:400 10.5px/1.55 'DM Sans',sans-serif;color:rgba(252,251,247,.6)">Plan balance pays for your subscription deliveries only and can't be withdrawn. Spendable credit works on any eat-now or pantry order.</div>
+  </div>
+  <div style="display:flex;gap:9px;padding:14px 20px 0;font:500 12.5px 'DM Sans',sans-serif"><div style="flex:1;text-align:center;color:#FCFBF7;background:#4A5D2E;padding:13px;border-radius:10px">Top up credit</div><div style="flex:1;text-align:center;color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:13px;border-radius:10px">Refer &amp; earn ₹150</div></div>
+  <div style="flex:1;padding:18px 20px 0;display:flex;flex-direction:column;gap:11px;overflow:hidden">
+    <div style="font:500 12px 'DM Sans',sans-serif;color:#1B2A18">Activity</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:1px solid rgba(27,42,24,.07)"><div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">Delivery · Chia Pudding</div><div style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:2px">22 Sep, 7:48 am · plan balance</div></div><div style="font:500 13px 'DM Sans',sans-serif;color:#1B2A18">−₹300</div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:1px solid rgba(27,42,24,.07)"><div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">Referral reward · Meher S.</div><div style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:2px">21 Sep · spendable credit</div></div><div style="font:500 13px 'DM Sans',sans-serif;color:#4A5D2E">+₹150</div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:1px solid rgba(27,42,24,.07)"><div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">Plan loaded · 2 months, alt. days</div><div style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:2px">20 Sep · UPI via Razorpay</div></div><div style="font:500 13px 'DM Sans',sans-serif;color:#4A5D2E">+₹9,004</div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">Cancelled delivery refunded</div><div style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:2px">18 Sep · spendable credit</div></div><div style="font:500 13px 'DM Sans',sans-serif;color:#4A5D2E">+₹300</div></div>
+    <div style="margin-top:6px;background:#F4F1E7;border-radius:10px;padding:11px 12px;font:400 10.5px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Need money back out of your wallet? Write to support@spoonupfoods.com — withdrawals are reviewed case by case and aren't automatic.</div>
+  </div>
+  <div style="display:flex;justify-content:space-around;padding:8px 0 18px;border-top:1px solid rgba(27,42,24,.08);flex:none;background:#FCFBF7"><a href="#6b" aria-label="Home" title="Home" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6c" aria-label="Shop" title="Shop" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2z"></path><path d="M9 8V6.5a3 3 0 016 0V8"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6e" aria-label="Orders" title="Orders" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path><path d="M9 8h6M9 12h6"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6f" aria-label="Plans" title="Plans" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6g" aria-label="Wallet" title="Wallet" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:#1B2A18"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2.5"></rect><path d="M3 10h18"></path><circle cx="16.5" cy="15" r="1.2" fill="currentColor"></circle></svg><span style="width:4px;height:4px;border-radius:50%;background:#4A5D2E"></span></a></div>
+</div></div>
+
+<div class="dv-opt" id="6h"><div class="dv-olabel"><a class="dv-oid" href="#6h">6h</a>Account · opened from your photo on Home</div>
+<div class="phone" data-screen-label="6h Account">
+  <div style="display:flex;justify-content:space-between;padding:14px 22px 0;font:500 12px 'DM Sans',sans-serif;color:#1B2A18;flex:none"><span>9:41</span><span>●●● ▮</span></div>
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 20px 0;flex:none">
+    <a href="#6b" style="width:40px;height:40px;border-radius:50%;border:1px solid rgba(27,42,24,.14);display:flex;align-items:center;justify-content:center;font:400 18px 'DM Sans',sans-serif;color:#1B2A18;text-decoration:none">←</a>
+    <span style="font:500 15px 'DM Sans',sans-serif;color:#1B2A18">Account</span>
+  </div>
+  <div style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:16px;padding:18px 20px 16px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:60px;height:60px;border-radius:50%;background:#4A5D2E;color:#FCFBF7;display:flex;align-items:center;justify-content:center;font:600 20px 'DM Sans',sans-serif;flex:none">AR</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:400 26px/1.1 'Instrument Serif',serif;color:#1B2A18">Ananya Rao</span><span style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">+91 98450 12021 · member since Mar 2026</span></div>
+      <span style="font:500 12px 'DM Sans',sans-serif;color:#4A5D2E">Edit</span>
+    </div>
+    <div style="flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid rgba(27,42,24,.1);border-radius:14px;overflow:hidden">
+      <div style="padding:12px;display:flex;flex-direction:column;gap:2px;background:#F4F1E7"><span style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Wallet</span><span style="font:600 15px 'DM Sans',sans-serif;color:#1B2A18">₹9,815</span></div>
+      <div style="padding:12px;display:flex;flex-direction:column;gap:2px;background:#F4F1E7;border-left:1px solid rgba(27,42,24,.08)"><span style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Active plans</span><span style="font:600 15px 'DM Sans',sans-serif;color:#1B2A18">1 · 1 paused</span></div>
+      <div style="padding:12px;display:flex;flex-direction:column;gap:2px;background:#F4F1E7;border-left:1px solid rgba(27,42,24,.08)"><span style="font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Orders</span><span style="font:600 15px 'DM Sans',sans-serif;color:#1B2A18">34</span></div>
+    </div>
+    <div style="flex:none;background:#1B2A18;border-radius:14px;padding:15px 16px;display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 10px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#A8B98C">REFER &amp; EARN · 3 FRIENDS JOINED</div>
+      <div style="font:400 13px/1.5 'DM Sans',sans-serif;color:rgba(252,251,247,.8)">You both get ₹150 when a friend places their first order.</div>
+      <div style="display:flex;gap:8px">
+        <span style="flex:1;padding:11px 12px;border-radius:9px;border:1px dashed rgba(168,185,140,.6);font:500 14px 'JetBrains Mono',monospace;color:#FCFBF7;letter-spacing:.06em">ANANYA150</span>
+        <span onClick="{{ copyCode }}" style="padding:11px 14px;border-radius:9px;font:600 12.5px 'DM Sans',sans-serif;cursor:pointer;transition:all .2s;background:{{ copyBg }};color:#1B2A18">{{ copyLabel }}</span>
+      </div>
+    </div>
+    <div style="flex:none;display:flex;flex-direction:column;border:1px solid rgba(27,42,24,.1);border-radius:14px;overflow:hidden;background:#fff">
+      <sc-for list="{{ acctRows }}" as="r" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 15px;border-top:1px solid {{ r.bt }};min-height:44px;box-sizing:border-box">
+          <span style="font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18">{{ r.label }}</span>
+          <span style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">{{ r.meta }} ›</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="flex:none;display:flex;flex-direction:column;border:1px solid rgba(27,42,24,.1);border-radius:14px;overflow:hidden;background:#fff">
+      <div onClick="{{ toggleNotif }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 15px;cursor:pointer">
+        <div style="display:flex;flex-direction:column;gap:2px"><span style="font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18">Delivery alerts</span><span style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">{{ notifSub }}</span></div>
+        <span style="width:42px;height:24px;border-radius:12px;position:relative;display:block;flex:none;transition:background .2s;background:{{ notifTrk }}"><span style="position:absolute;top:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:left .2s;left:{{ notifKnob }}"></span></span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 15px;border-top:1px solid rgba(27,42,24,.07)"><span style="font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18">Help &amp; support</span><span style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">Chat · call ›</span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 15px;border-top:1px solid rgba(27,42,24,.07)"><span style="font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18">Terms &amp; policies</span><span style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">›</span></div>
+    </div>
+    <a href="#6a" onClick="{{ restart }}" style="text-align:center;font:500 13px 'DM Sans',sans-serif;color:#A34A2A;padding:6px">Sign out</a>
+    <div style="text-align:center;font:400 10.5px 'JetBrains Mono',monospace;color:rgba(27,42,24,.4)">SpoonUp v1.4.0</div>
+  </div>
+  <div style="display:flex;justify-content:space-around;padding:8px 0 18px;border-top:1px solid rgba(27,42,24,.08);flex:none;background:#FCFBF7"><a href="#6b" aria-label="Home" title="Home" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6c" aria-label="Shop" title="Shop" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2z"></path><path d="M9 8V6.5a3 3 0 016 0V8"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6e" aria-label="Orders" title="Orders" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path><path d="M9 8h6M9 12h6"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6f" aria-label="Plans" title="Plans" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a><a href="#6g" aria-label="Wallet" title="Wallet" style="width:48px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:rgba(27,42,24,.4)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2.5"></rect><path d="M3 10h18"></path><circle cx="16.5" cy="15" r="1.2" fill="currentColor"></circle></svg><span style="width:4px;height:4px;border-radius:50%;background:transparent"></span></a></div>
+</div></div>
+</div>
+</section>
+
+
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>class Component extends DCLogic {
+  SEEDPLAN = { pid: 'pudding', freq: 'daily', slot: 0, len: 30, start: 0 };
+  state = { step: 'welcome', slide: 0, phone: '', otp: '', verifying: false, otpErr: false, timer: 0, google: false, name: '', pin: '', refOpen: false, ref: '', guest: false,
+    homeMode: 'new', coach: true, skipped: false, cart: { dragon: 1, dry: 1 }, plans: [this.SEEDPLAN], cat: 'all', q: '', sheet: null,
+    addr: '', useCredit: true, placed: false, notif: true, copied: false };
+  SLIDES = [
+    { img: 'assets/generated/eat-now.jpg', tag: 'EAT NOW', c: '#4A5D2E', text: 'Warm, fresh, at your door in ~35 min.' },
+    { img: 'assets/generated/week-jars.jpg', tag: 'SUBSCRIBE', c: '#1B2A18', text: 'Your jar, every morning. Skip any day.' },
+    { img: 'assets/generated/pantry.jpg', tag: 'PANTRY', c: '#8B6A46', text: 'Dry fruits & muesli, shipped anywhere.' }
+  ];
+  PINS = { '560095': ['Koramangala', '~35 min'], '560034': ['Koramangala', '~35 min'], '560102': ['HSR Layout', '~40 min'], '560076': ['BTM Layout', '~40 min'], '560047': ['Ejipura', '~35 min'], '560038': ['Indiranagar', '~45 min'], '560103': ['Bellandur', '~45 min'] };
+  PRODUCTS = [
+    { id: 'pudding', name: 'Chocolate Protein Chia Pudding', img: 'pudding-jar.png', t: 'now', plan: true, price: 349, meta: '200 ml · 23g protein' },
+    { id: 'chia', name: 'Mango Chia Pudding', img: 'chia.png', t: 'now', plan: true, price: 299, meta: '200 ml · 12g protein' },
+    { id: 'dragon', name: 'Dragonfruit Smoothie', img: 'dragonfruit-bottle.png', t: 'now', plan: true, price: 329, meta: '300 ml · no added sugar' },
+    { id: 'smoothie', name: 'Green Glow Smoothie', img: 'smoothie.png', t: 'now', plan: true, price: 299, meta: '300 ml' },
+    { id: 'tikki', name: 'Sabudana Sweet Potato Tikki', img: 'tikki.png', t: 'now', plan: false, price: 249, meta: '4 pc · air-fried' },
+    { id: 'fries', name: 'Peri Peri House Fries', img: 'fries.png', t: 'now', plan: false, price: 349, meta: 'Baked, not fried' },
+    { id: 'dry', name: 'Kashmiri Dry Fruits', img: 'dryfruit.png', t: 'ships', plan: false, price: 899, meta: '500 g · sourced per order' },
+    { id: 'muesli', name: 'Kashmiri Muesli', img: 'muesli.png', t: 'ships', plan: false, price: 449, meta: '400 g' },
+    { id: 'modak', name: 'Dry Fruit Modak', img: 'modak.png', t: 'ships', plan: false, price: 399, meta: 'Box of 6' }
+  ];
+  FREQS = [['daily', 'Daily', 'Every day'], ['alt', 'Alt days', 'Every other'], ['wk', 'Weekdays', 'Mon–Fri']];
+  SLOTS = [['7–9 am', 'Breakfast'], ['12–2 pm', 'Lunch'], ['6–8 pm', 'Evening']];
+  LENS = [[7, '1 week', '5% off', 0.05], [14, '2 weeks', '10% off', 0.10], [30, '1 month', '18% off', 0.18]];
+  STARTS = [['Tomorrow', 'Fri 25 Sep'], ['Saturday', '26 Sep'], ['Monday', '28 Sep']];
+  componentDidMount() {
+    this.tick = 0;
+    this.iv = setInterval(() => {
+      this.tick++;
+      const s = this.state, up = {};
+      if (s.step === 'welcome' && this.tick % 4 === 0) up.slide = (s.slide + 1) % 3;
+      if (s.timer > 0) up.timer = s.timer - 1;
+      if (Object.keys(up).length) this.setState(up);
+    }, 1000);
+  }
+  componentWillUnmount() { clearInterval(this.iv); clearTimeout(this.to); clearTimeout(this.cto); }
+  fmt = n => '₹' + Math.round(n).toLocaleString('en-IN');
+  prod = id => this.PRODUCTS.find(p => p.id === id);
+  add = id => this.setState(s => ({ cart: { ...s.cart, [id]: (s.cart[id] || 0) + 1 }, placed: false }));
+  dec = id => this.setState(s => { const c = { ...s.cart }; c[id] = (c[id] || 0) - 1; if (c[id] <= 0) delete c[id]; return { cart: c }; });
+  calc = pl => {
+    const p = this.prod(pl.pid), L = this.LENS.find(l => l[0] === pl.len);
+    const n = pl.freq === 'daily' ? pl.len : pl.freq === 'alt' ? Math.ceil(pl.len / 2) : Math.round(pl.len * 5 / 7);
+    const per = Math.round(p.price * (1 - L[3]));
+    return { p, n, per, total: per * n, save: (p.price - per) * n };
+  };
+  openPlan = pid => this.setState(s => {
+    const i = s.plans.findIndex(x => x.pid === pid);
+    return { sheet: i >= 0 ? { ...s.plans[i], edit: i } : { pid, freq: 'daily', slot: 0, len: 30, start: 0, edit: -1 } };
+  });
+  setSheet = patch => this.setState(s => ({ sheet: { ...s.sheet, ...patch } }));
+
+  renderVals() {
+    const s = this.state, ink = '#1B2A18', mute = 'rgba(27,42,24,.12)', red = '#A34A2A';
+    const stepNo = { phone: 1, otp: 2, profile: 3 }[s.step] || 0;
+    const ph = s.phone, phoneFmt = ph.length > 5 ? ph.slice(0, 5) + ' ' + ph.slice(5) : ph, phoneOk = ph.length === 10;
+    const pinHit = this.PINS[s.pin], pinFull = s.pin.length === 6;
+    const profOk = s.name.trim() && pinFull;
+    const T = { now: ['NOW', '#4A5D2E'], ships: ['SHIPS', '#8B6A46'], plan: ['PLAN', ink] };
+    const loc = pinHit ? [s.pin, pinHit[0], pinHit[1]] : ['560102', 'HSR Layout', '~40 min'];
+    const isNew = s.homeMode === 'new';
+    const first = s.name.trim().split(' ')[0] || 'Priya';
+
+    const prods = this.PRODUCTS.map(p => {
+      const qty = s.cart[p.id] || 0, planned = s.plans.some(x => x.pid === p.id);
+      const tagK = s.cat === 'plan' ? 'plan' : p.t;
+      return { ...p, img: 'assets/products/' + p.img, priceFmt: this.fmt(p.price), tag: T[tagK][0], c: T[tagK][1], qty, inCart: qty > 0, notIn: qty === 0,
+        add: () => this.add(p.id), dec: () => this.dec(p.id), openPlan: () => this.openPlan(p.id),
+        planLabel: planned ? '✓ On a plan · edit' : 'Plan it · from ' + this.fmt(p.price * 0.82) + ' each',
+        planBg: planned ? 'rgba(74,93,46,.1)' : 'transparent', planBd: planned ? 'rgba(74,93,46,.35)' : 'rgba(27,42,24,.2)',
+        btn: qty ? '✓ ' + qty : '+', btnBg: qty ? '#4A5D2E' : '#FCFBF7', btnFg: qty ? '#FCFBF7' : ink };
+    });
+    const q = s.q.trim().toLowerCase();
+    const shopList = prods.filter(p => (s.cat === 'all' || (s.cat === 'plan' ? p.plan : p.t === s.cat)) && (!q || (p.name + ' ' + p.meta).toLowerCase().includes(q)));
+    const catDefs = [['all', 'All', 'rgba(27,42,24,.3)'], ['now', 'Eat now', '#4A5D2E'], ['plan', 'Subscribe', ink], ['ships', 'Pantry', '#8B6A46']];
+    const cats = catDefs.map(([k, label, dot]) => { const on = s.cat === k; return { label, dot: on ? '#FCFBF7' : dot, bg: on ? ink : '#fff', fg: on ? '#FCFBF7' : ink, bd: on ? ink : 'rgba(27,42,24,.14)', go: () => this.setState({ cat: k }) }; });
+    const notes = { all: 'Eat-now items reach ' + loc[0] + ' in ' + loc[2] + ' · pantry ships in 3–5 days', now: 'Arrives in ' + loc[2] + ' to ' + loc[1] + ' ' + loc[0], plan: 'Tap “Plan it” on any of these to pick days, a time slot and how long. Longer plans save more.', ships: 'Ships by courier in 3–5 days · free over ₹999' };
+
+    const nowItems = prods.filter(p => p.qty && p.t === 'now').map(p => ({ ...p, lineFmt: this.fmt(p.qty * p.price) }));
+    const shipItems = prods.filter(p => p.qty && p.t === 'ships').map(p => ({ ...p, lineFmt: this.fmt(p.qty * p.price) }));
+    const planItems = s.plans.map((pl, i) => {
+      const c = this.calc(pl), F = this.FREQS.find(f => f[0] === pl.freq);
+      return { name: c.p.name, img: 'assets/products/' + c.p.img, desc: F[1] + ' · ' + this.SLOTS[pl.slot][0] + ' · ' + c.n + ' deliveries · from ' + this.STARTS[pl.start][1],
+        priceLine: this.fmt(c.per) + ' each · ' + this.fmt(c.total), edit: () => this.openPlan(pl.pid),
+        remove: () => this.setState(st => ({ plans: st.plans.filter((x, j) => j !== i) })), total: c.total };
+    });
+    const nowSub = nowItems.reduce((a, p) => a + p.qty * p.price, 0), shipSub = shipItems.reduce((a, p) => a + p.qty * p.price, 0), planSub = planItems.reduce((a, p) => a + p.total, 0);
+    const nowFee = nowSub && nowSub < 299 ? 30 : 0, shipFee = shipSub && shipSub < 999 ? 49 : 0;
+    const credit = s.useCredit ? Math.min(150, nowSub + shipSub) : 0;
+    const pay = nowSub + shipSub + planSub + nowFee + shipFee - credit;
+    const cartCount = nowItems.concat(shipItems).reduce((a, p) => a + p.qty, 0) + planItems.length;
+    const parts = [nowItems.length && 'Now', planItems.length && 'Plan', shipItems.length && 'Ships'].filter(Boolean);
+    const bill = [nowSub && ['Eat now', this.fmt(nowSub)], planSub && ['Plan, ' + planItems.length + (planItems.length > 1 ? ' plans' : ' plan'), this.fmt(planSub)], shipSub && ['Pantry', this.fmt(shipSub)],
+      ['Delivery', nowFee + shipFee ? this.fmt(nowFee + shipFee) : 'Free'], credit && ['Welcome credit', '−' + this.fmt(credit)]].filter(Boolean)
+      .map(([label, val]) => ({ label, val, c: val[0] === '−' || val === 'Free' ? '#4A5D2E' : ink }));
+    const addrOk = s.addr.trim().length >= 5;
+
+    const sh = s.sheet;
+    let shV = {}, sheetGroups = [];
+    if (sh) {
+      const c = this.calc(sh);
+      shV = { name: c.p.name, img: 'assets/products/' + c.p.img, oneOff: this.fmt(c.p.price), n: c.n, perFmt: this.fmt(c.per), totalFmt: this.fmt(c.total), saveFmt: this.fmt(c.save), cta: (sh.edit >= 0 ? 'Update plan · ' : 'Add plan to cart · ') + this.fmt(c.total) };
+      const mk = (label, arr, isOn, pick) => ({ label, opts: arr.map((o, i) => { const on = isOn(o, i); return { label: o[1] === undefined ? o[0] : (typeof o[0] === 'number' ? o[1] : (o.length > 2 ? o[1] : o[0])), sub: typeof o[0] === 'number' ? o[2] : (o.length > 2 ? o[2] : o[1]), bg: on ? ink : '#fff', fg: on ? '#FCFBF7' : ink, bd: on ? ink : 'rgba(27,42,24,.14)', pick: () => pick(o, i) }; }) });
+      sheetGroups = [
+        mk('How often', this.FREQS, o => o[0] === sh.freq, o => this.setSheet({ freq: o[0] })),
+        mk('Time slot', this.SLOTS, (o, i) => i === sh.slot, (o, i) => this.setSheet({ slot: i })),
+        mk('For how long', this.LENS, o => o[0] === sh.len, o => this.setSheet({ len: o[0] })),
+        mk('First delivery', this.STARTS, (o, i) => i === sh.start, (o, i) => this.setSheet({ start: i }))
+      ];
+    }
+    const placedLines = [
+      nowItems.length && { k: 'now', text: 'Rider brings it in ' + loc[2] + '. Live tracking in Orders.' },
+      ...s.plans.map(pl => ({ k: 'plan', text: 'First jar ' + this.STARTS[pl.start][0].toLowerCase() + ', ' + this.SLOTS[pl.slot][0] + '. Skip any day from Plans.' })),
+      shipItems.length && { k: 'ships', text: 'Leaves in 1–2 days; we text the tracking link.' }
+    ].filter(Boolean).map((l, i) => ({ ...l, tag: T[l.k][0], c: T[l.k][1], bg: l.k === 'now' ? 'rgba(74,93,46,.12)' : l.k === 'ships' ? 'rgba(139,106,70,.13)' : 'rgba(27,42,24,.08)', bt: i ? 'rgba(27,42,24,.07)' : 'transparent' }));
+
+    const restart = () => this.setState({ step: 'welcome', phone: '', otp: '', otpErr: false, name: '', pin: '', ref: '', refOpen: false, guest: false, google: false, slide: 0 });
+    const hm = on => ({ bg: on ? ink : 'rgba(27,42,24,.08)', fg: on ? '#FCFBF7' : ink });
+
+    return {
+      isWelcome: s.step === 'welcome', inFlow: stepNo > 0, isPhoneStep: s.step === 'phone', isOtpStep: s.step === 'otp', isProfileStep: s.step === 'profile', isDone: s.step === 'done',
+      slides: this.SLIDES.map((x, i) => ({ img: x.img, op: i === s.slide ? 1 : 0 })),
+      slideTag: this.SLIDES[s.slide].tag, slideColor: this.SLIDES[s.slide].c, slideText: this.SLIDES[s.slide].text,
+      dots: this.SLIDES.map((x, i) => ({ w: i === s.slide ? '22px' : '7px', bg: i === s.slide ? ink : 'rgba(27,42,24,.2)', go: () => { this.tick = 0; this.setState({ slide: i }); } })),
+      nextSlide: () => { this.tick = 0; this.setState({ slide: (s.slide + 1) % 3 }); },
+      toPhone: () => this.setState({ step: 'phone', google: false }),
+      viaGoogle: () => this.setState({ step: 'phone', google: true, name: 'Priya Nair' }),
+      asGuest: () => this.setState({ step: 'done', guest: true }),
+      back: () => this.setState({ step: { phone: 'welcome', otp: 'phone', profile: 'phone' }[s.step], otp: '', verifying: false, otpErr: false }),
+      prog: [1, 2, 3].map(i => ({ bg: i <= stepNo ? ink : mute })), stepNo,
+      phoneKicker: s.google ? 'SIGNED IN WITH GOOGLE' : 'SIGN IN OR SIGN UP',
+      phoneHead: s.google ? 'Now, your number' : 'What\u2019s your number?',
+      phoneSub: s.google ? 'Riders call this number if they can\u2019t find your door. We\u2019ll verify it once.' : 'We\u2019ll text you a 6-digit code. New here? The same number creates your account.',
+      phoneHint: phoneOk ? 'Looks good' : ph.length ? (10 - ph.length) + ' more digit' + (10 - ph.length > 1 ? 's' : '') + ' to go' : 'Enter your 10-digit mobile number',
+      phoneFmt, phoneOk, onPhone: e => this.setState({ phone: e.target.value.replace(/\D/g, '').slice(0, 10) }),
+      phoneBorder: phoneOk ? '#4A5D2E' : 'rgba(27,42,24,.16)',
+      phoneBtnBg: phoneOk ? ink : 'rgba(27,42,24,.08)', phoneBtnFg: phoneOk ? '#FCFBF7' : 'rgba(27,42,24,.4)',
+      sendCode: () => { if (phoneOk) this.setState({ step: 'otp', otp: '', otpErr: false, timer: 30 }); },
+      otp: s.otp,
+      otpBoxes: [0, 1, 2, 3, 4, 5].map(i => ({ d: s.otp[i] || '', border: s.otpErr ? red : s.verifying ? '#4A5D2E' : i === s.otp.length ? ink : s.otp[i] ? 'rgba(27,42,24,.3)' : 'rgba(27,42,24,.12)' })),
+      onOtp: e => {
+        const v = e.target.value.replace(/\D/g, '').slice(0, 6);
+        clearTimeout(this.to);
+        if (v.length === 6 && v === '000000') return this.setState({ otp: v, otpErr: true, verifying: false });
+        this.setState({ otp: v, otpErr: false, verifying: v.length === 6 });
+        if (v.length === 6) this.to = setTimeout(() => this.setState({ step: 'profile', verifying: false }), 900);
+      },
+      otpStatus: s.otpErr ? 'That code didn\u2019t match. Check the SMS and type it again.' : s.verifying ? 'Verifying…' : 'Didn\u2019t get it?',
+      otpStatusC: s.otpErr ? red : 'rgba(27,42,24,.6)',
+      resendLabel: s.timer > 0 ? 'Resend in 0:' + String(s.timer).padStart(2, '0') : 'Resend code',
+      resendC: s.timer > 0 ? 'rgba(27,42,24,.4)' : '#4A5D2E',
+      resend: () => { if (!s.timer) this.setState({ timer: 30, otp: '', otpErr: false }); },
+      name: s.name, pin: s.pin, ref: s.ref,
+      onName: e => this.setState({ name: e.target.value }),
+      onPin: e => this.setState({ pin: e.target.value.replace(/\D/g, '').slice(0, 6) }),
+      onRef: e => this.setState({ ref: e.target.value.toUpperCase().replace(/\s/g, '').slice(0, 12) }),
+      pinShow: pinFull, pinC: pinHit ? '#4A5D2E' : '#8B6A46', pinBg: pinHit ? 'rgba(74,93,46,.1)' : 'rgba(139,106,70,.12)',
+      pinText: pinHit ? pinHit[0] + ' · eat-now in ' + pinHit[1] + ', plus plans and pantry' : 'Our kitchen doesn\u2019t reach here yet, but pantry orders still ship to you in 3–5 days.',
+      refOpen: s.refOpen, refClosed: !s.refOpen, openRef: () => this.setState({ refOpen: true }),
+      profHint: !s.name.trim() ? 'Add your name to continue' : !pinFull ? 'Enter your 6-digit pincode to continue' : 'All set',
+      profBtnBg: profOk ? ink : 'rgba(27,42,24,.08)', profBtnFg: profOk ? '#FCFBF7' : 'rgba(27,42,24,.4)',
+      finish: () => { if (profOk) this.setState({ step: 'done', guest: false }); },
+      doneTitle: s.guest ? 'Have a look around' : 'Welcome, ' + first,
+      doneSub: s.guest ? 'Browse everything. We\u2019ll ask for your number when you check out.' : pinHit ? 'You\u2019re set up for ' + pinHit[0] + '. Your first eat-now order can be with you in ' + pinHit[1] + '.' : 'You\u2019re all set. Pantry orders ship to your pincode in 3–5 days.',
+      refBonus: !s.guest && s.ref.length > 2, refUpper: s.ref,
+      doneCta: s.guest ? 'Start browsing →' : 'Order your first breakfast →', doneHref: s.guest ? '#6c' : '#6b',
+      enterApp: () => this.setState({ homeMode: 'new', coach: true }),
+      restart,
+
+      homeNew: () => this.setState({ homeMode: 'new' }), homeRet: () => this.setState({ homeMode: 'ret' }),
+      hmNewBg: hm(isNew).bg, hmNewFg: hm(isNew).fg, hmRetBg: hm(!isNew).bg, hmRetFg: hm(!isNew).fg,
+      isNewHome: isNew, isReturnHome: !isNew, showCoach: isNew && s.coach, dismissCoach: () => this.setState({ coach: false }),
+      locText: isNew ? loc[1] + ' ' + loc[0] + ' · ' + loc[2] + ' ▾' : 'Koramangala 560095 · ~35 min ▾',
+      homeIni: isNew ? first[0].toUpperCase() : 'AR',
+      homeHello: isNew ? 'Hi ' + first + ', welcome in' : 'Good morning, Ananya',
+      homeSub: isNew ? 'Eat-now reaches ' + loc[1] + ' in ' + loc[2] + '.' : 'Day 3 of your chia plan. Nice going.',
+      nudgeKicker: s.ref.length > 2 ? 'FROM ' + s.ref : 'WELCOME CREDIT',
+      goShopAll: () => this.setState({ cat: 'all' }),
+      startPlan: () => { this.setState({ cat: 'plan' }); this.openPlan('pudding'); },
+      tiles: [['now', 'NOW', '#4A5D2E', 'Eat now', loc[2], 'eat-now.jpg'], ['plan', 'PLAN', ink, 'Subscribe', 'Save up to 18%', 'week-jars.jpg'], ['ships', 'SHIPS', '#8B6A46', 'Pantry', '3–5 days', 'pantry.jpg']]
+        .map(([k, tag, c, label, sub, img]) => ({ tag, c, label, sub, img: 'assets/generated/' + img, go: () => this.setState({ cat: k }) })),
+      planHead: s.skipped ? 'TOMORROW · SKIPPED' : 'TOMORROW · 7–9 AM',
+      planSub: s.skipped ? 'Moved to the end of your plan · nothing charged' : 'Delivery 3 of 30 · ₹8,404 in wallet',
+      skipLabel: s.skipped ? 'Undo' : 'Skip', skipBg: s.skipped ? '#A8B98C' : 'rgba(252,251,247,.12)', skipFg: s.skipped ? ink : '#FCFBF7',
+      toggleSkip: () => this.setState({ skipped: !s.skipped }),
+      rowTitle: isNew ? 'Popular in ' + loc[1] : 'Order again',
+      again: prods.filter(p => (isNew ? ['pudding', 'dragon', 'tikki'] : ['tikki', 'dragon', 'fries']).includes(p.id)),
+      cartHint: cartCount ? 'Cart · ' + cartCount : 'See all',
+
+      cats, catNote: notes[s.cat], q: s.q, onQ: e => this.setState({ q: e.target.value }),
+      shopList, shopEmpty: shopList.length === 0,
+      hasCart: cartCount > 0, cartCount, cartTotal: this.fmt(pay),
+      cartParts: parts.length > 1 ? 'Arrives in ' + parts.length + ' parts · ' + parts.join(' + ') : parts[0] === 'Ships' ? 'Ships in 3–5 days' : parts[0] === 'Plan' ? 'Plan starts ' + this.STARTS[s.plans[0].start][0].toLowerCase() : 'Arrives in ' + loc[2],
+      hasSheet: !!sh, sh: shV, sheetGroups, closeSheet: () => this.setState({ sheet: null }),
+      addPlan: () => this.setState(st => {
+        const { edit, ...pl } = st.sheet, plans = st.plans.slice();
+        if (edit >= 0) plans[edit] = pl; else plans.push(pl);
+        return { plans, sheet: null, placed: false };
+      }),
+
+      cartEmpty: !s.placed && cartCount === 0, isPlaced: s.placed, cartFull: !s.placed && cartCount > 0,
+      hasNow: nowItems.length > 0, hasPlans: planItems.length > 0, hasShips: shipItems.length > 0,
+      nowItems, shipItems, planItems, eta: loc[2], locShort: loc[1] + ' · ' + loc[0],
+      addr: s.addr, onAddr: e => this.setState({ addr: e.target.value }), addrBd: addrOk ? 'rgba(74,93,46,.5)' : 'rgba(27,42,24,.16)',
+      toggleCredit: () => this.setState({ useCredit: !s.useCredit }),
+      crTrk: s.useCredit ? '#4A5D2E' : 'rgba(27,42,24,.2)', crKnob: s.useCredit ? '20px' : '2px',
+      bill, payFmt: this.fmt(pay),
+      payHint: addrOk ? 'Paying by UPI · change on the next step' : 'Add your flat and street above to continue',
+      payHintC: addrOk ? 'rgba(27,42,24,.55)' : '#8B6A46',
+      payBg: addrOk ? ink : 'rgba(27,42,24,.08)', payFg: addrOk ? '#FCFBF7' : 'rgba(27,42,24,.4)',
+      pay: () => { if (addrOk) this.setState({ placed: true }); },
+      placedSub: parts.length > 1 ? 'Your order arrives in ' + parts.length + ' parts. Each one is tracked on its own in Orders.' : 'We\u2019ve got it. Track it in Orders.',
+      placedLines,
+      resetCart: () => this.setState({ placed: false, cart: { dragon: 1, dry: 1 }, plans: [this.SEEDPLAN], addr: '' }),
+
+      copyLabel: s.copied ? 'Copied ✓' : 'Copy', copyBg: s.copied ? '#D8E2C4' : '#A8B98C',
+      copyCode: () => { this.setState({ copied: true }); clearTimeout(this.cto); this.cto = setTimeout(() => this.setState({ copied: false }), 1600); },
+      acctRows: [['My orders', '2 active'], ['My plans', '1 active · 1 paused'], ['Wallet', '₹9,815'], ['Saved addresses', 'Home, Office'], ['Payment methods', 'UPI · 1 card']].map(([label, meta], i) => ({ label, meta, bt: i ? 'rgba(27,42,24,.07)' : 'transparent' })),
+      notifSub: s.notif ? 'Rider updates and plan reminders' : 'Off, but we\u2019ll still text you if a delivery is late',
+      notifTrk: s.notif ? '#4A5D2E' : 'rgba(27,42,24,.2)', notifKnob: s.notif ? '20px' : '2px',
+      toggleNotif: () => this.setState({ notif: !s.notif })
+    };
+  }
+}
+</script>
+</body>
+</html>

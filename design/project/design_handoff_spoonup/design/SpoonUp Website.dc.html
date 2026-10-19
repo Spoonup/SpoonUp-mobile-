@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+body{margin:0;background:#EDEAE1;font-family:"DM Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#4A5D2E;text-decoration:none}a:hover{color:#1B2A18}
+.dv-turn{padding:44px 48px 36px;border-bottom:1px solid rgba(27,42,24,.1)}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+.dv-tid{font:500 10px "JetBrains Mono",monospace;padding:3px 7px;background:#1B2A18;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 "DM Sans",sans-serif;color:#1B2A18}
+.dv-tsub{margin:0 0 24px;font:400 12.5px/1.6 "DM Sans",sans-serif;color:rgba(27,42,24,.55);max-width:760px}
+.dv-opts{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px}
+.dv-oid{font:500 10.5px "JetBrains Mono",monospace;padding:3px 7px;background:rgba(27,42,24,.09);color:#1B2A18;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 "DM Sans",sans-serif;color:rgba(27,42,24,.55)}
+.dv-card{max-width:100%;background:#FCFBF7;border:1px solid rgba(27,42,24,.1);border-radius:10px;box-shadow:0 2px 10px rgba(27,42,24,.07);overflow:hidden}
+.dv-opt:target .dv-oid{background:#4A5D2E;color:#fff}
+.dv-next{margin:26px 0 0;font:12px/1.6 "DM Sans",sans-serif;color:rgba(27,42,24,.5)}
+.ph{background-image:repeating-linear-gradient(135deg,#E4E0D2 0 7px,#DAD5C4 7px 14px);display:flex;align-items:center;justify-content:center;text-align:center;font:400 9.5px/1.4 "JetBrains Mono",monospace;color:rgba(27,42,24,.5);letter-spacing:.02em;padding:6px}
+.phone{width:390px;height:812px;background:#FCFBF7;border:9px solid #1B2A18;border-radius:42px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+</style>
+</helmet>
+
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="#F4F1E7"/><circle cx="200" cy="140" r="58" fill="#1B2A18"/><circle cx="200" cy="140" r="34" fill="#F4F1E7"/><rect x="192" y="140" width="16" height="78" rx="8" fill="#1B2A18"/><text x="200" y="262" font-family="Georgia,serif" font-size="30" fill="#1B2A18" text-anchor="middle">SpoonUp</text></svg>
+</template>
+
+<div style="display:flex;gap:10px;padding:18px 48px 0;font:500 12.5px 'DM Sans',sans-serif">
+<a href="SpoonUp Website.dc.html" style="padding:8px 14px;border-radius:100px;background:#1B2A18;color:#FCFBF7">Website</a>
+<a href="SpoonUp Mobile App.dc.html" style="padding:8px 14px;border-radius:100px;color:#1B2A18;border:1px solid rgba(27,42,24,.2)">Mobile app</a>
+</div>
+
+<section class="dv-turn" id="web">
+<div class="dv-thd"><a class="dv-tid" href="#web">A</a><span class="dv-tname">Website — customer journey</span></div>
+<p class="dv-tsub">In flow order: land → browse → build a plan → cart → check out (sign-in happens inline here) → confirmation → manage the account. The standalone sign-in page <a class="dv-oid" href="#3a">3a</a> is for people who tap "Sign in" in the header. Palette from the logo: forest #1B2A18, olive #4A5D2E, almond #8B6A46 on warm cream. Headlines in Instrument Serif, UI in DM Sans. Order types are colour-coded everywhere: <strong style="color:#4A5D2E">Kitchen / Now</strong>, <strong style="color:#1B2A18">Plan</strong>, <strong style="color:#8B6A46">Pantry</strong>. The plan builder <a class="dv-oid" href="#2a">2a</a> is clickable.</p>
+<div class="dv-opts">
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Web — Home / landing</div>
+<div class="dv-card" style="width:1280px">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid rgba(27,42,24,.08);background:#FCFBF7">
+    <img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:52px;width:auto;display:block;object-fit:contain">
+    <div style="display:flex;gap:30px;font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18">
+      <span>Eat Now</span><span>Subscribe</span><span>Pantry &amp; Dry Fruits</span><span>Our Story</span>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div style="display:flex;align-items:center;gap:8px;font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;padding:9px 14px;border-radius:100px;background:#F4F1E7;border:1px solid rgba(27,42,24,.1)"><span style="width:7px;height:7px;border-radius:50%;background:#4A5D2E"></span>Koramangala 560095 · ~35 min<span style="color:rgba(27,42,24,.45)">▾</span></div>
+      <div style="font:500 13px 'DM Sans',sans-serif;color:#1B2A18;padding:9px 14px;border:1px solid rgba(27,42,24,.18);border-radius:100px">Sign in</div>
+      <div style="display:flex;gap:7px;align-items:center;font:500 13px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:10px 18px;border-radius:100px">Cart · 3</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:#F4F1E7">
+    <div style="padding:74px 48px 74px 40px;display:flex;flex-direction:column;justify-content:center;gap:22px">
+      <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#8B6A46;text-transform:uppercase">Good food, higher days</div>
+      <div style="font:400 62px/1.02 'Instrument Serif',serif;color:#1B2A18;text-wrap:pretty">Food that tastes like a<br><em>craving</em>, works like a<br>nutrition plan.</div>
+      <div style="font:400 16px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.7);max-width:430px">Protein puddings, smoothies and real-ingredient snacks made fresh in our kitchen. Plus a hand-sourced pantry of dry fruits. No compromise on taste, none on what's inside.</div>
+      <div style="display:flex;gap:12px;margin-top:6px">
+        <div style="font:500 14px 'DM Sans',sans-serif;color:#FCFBF7;background:#4A5D2E;padding:14px 26px;border-radius:100px">Order in 30 min</div>
+        <div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18;padding:14px 26px;border-radius:100px;border:1px solid rgba(27,42,24,.2)">Build a subscription</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;font:400 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.65)"><span style="width:7px;height:7px;border-radius:50%;background:#4A5D2E"></span>Delivering to <strong style="font-weight:500;color:#1B2A18">Koramangala 560095</strong> in ~35 min<span style="color:#4A5D2E;font-weight:500;margin-left:4px">Change</span></div>
+      <div style="display:flex;gap:26px;margin-top:18px;font:400 12px/1.4 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">
+        <div><div style="font:400 22px 'Instrument Serif',serif;color:#1B2A18">23g</div>protein per jar</div>
+        <div><div style="font:400 22px 'Instrument Serif',serif;color:#1B2A18">0g</div>added refined sugar</div>
+        <div><div style="font:400 22px 'Instrument Serif',serif;color:#1B2A18">4.8</div>avg. rating</div>
+      </div>
+    </div>
+    <div style="height:560px;position:relative"><image-slot id="home-hero-v2" src="assets/generated/kitchen.jpg" shape="rect" style="width:100%;height:100%" placeholder="Hero — hand lifting a spoon from a pudding jar, daylight · 1400×1120"></image-slot></div>
+  </div>
+  <div style="padding:52px 40px 12px;display:flex;align-items:baseline;justify-content:space-between">
+    <div style="font:400 34px/1.1 'Instrument Serif',serif;color:#1B2A18">Three ways to eat with us</div>
+    <div style="font:500 13px 'DM Sans',sans-serif;color:#4A5D2E">See everything →</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:22px 40px 52px">
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:10px;overflow:hidden;background:#FCFBF7">
+      <div style="height:180px;position:relative"><image-slot id="home-now" src="assets/generated/eat-now.jpg" shape="rect" placeholder="Smoothie + tikki flat-lay"></image-slot></div>
+      <div style="padding:20px">
+        <div style="display:inline-block;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#4A5D2E;background:rgba(74,93,46,.1);padding:5px 9px;border-radius:4px">NOW · 30–45 MIN</div>
+        <div style="font:400 23px/1.2 'Instrument Serif',serif;color:#1B2A18;margin:12px 0 8px">Eat Now</div>
+        <div style="font:400 13.5px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">Straight from the kitchen. Smoothies, puddings, tikkis — or schedule it for 8pm tonight.</div>
+      </div>
+    </div>
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:10px;overflow:hidden;background:#FCFBF7">
+      <div style="height:180px;position:relative"><image-slot id="home-plan" src="assets/generated/week-jars.jpg" shape="rect" placeholder="Row of pudding jars"></image-slot></div>
+      <div style="padding:20px">
+        <div style="display:inline-block;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#1B2A18;background:rgba(27,42,24,.09);padding:5px 9px;border-radius:4px">PLAN · UP TO 18% OFF</div>
+        <div style="font:400 23px/1.2 'Instrument Serif',serif;color:#1B2A18;margin:12px 0 8px">Subscribe</div>
+        <div style="font:400 13.5px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">Daily, alternate days or weekly. Pay once into your wallet, we deduct per delivery.</div>
+      </div>
+    </div>
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:10px;overflow:hidden;background:#FCFBF7">
+      <div style="height:180px;position:relative"><image-slot id="home-pantry" src="assets/generated/pantry.jpg" shape="rect" placeholder="Almonds &amp; pistachios in pouches"></image-slot></div>
+      <div style="padding:20px">
+        <div style="display:inline-block;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#8B6A46;background:rgba(139,106,70,.12);padding:5px 9px;border-radius:4px">SHIPS · 3–5 DAYS</div>
+        <div style="font:400 23px/1.2 'Instrument Serif',serif;color:#1B2A18;margin:12px 0 8px">Pantry</div>
+        <div style="font:400 13.5px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">Kashmiri dry fruits, muesli and modak — sourced per order, never sitting in a warehouse.</div>
+      </div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);background:#1B2A18;align-items:center">
+    <div style="height:400px;position:relative"><image-slot id="home-founder-v2" src="assets/generated/founders.jpg" style="width:100%;height:100%" shape="rect" placeholder="Founders in the kitchen, candid"></image-slot></div>
+    <div style="padding:56px 48px;display:flex;flex-direction:column;gap:20px">
+      <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#A8B98C;text-transform:uppercase">Why we started</div>
+      <div style="font:400 36px/1.2 'Instrument Serif',serif;color:#FCFBF7">We never asked anyone to stop loving food.</div>
+      <div style="font:400 15px/1.7 'DM Sans',sans-serif;color:rgba(252,251,247,.78);max-width:480px">SpoonUp started at home, with recipes built for a foodie who had run his health into the ground and wasn't willing to live on salads. Eat healthy, eat longer, live longer — without giving up the part of you that loves to eat.</div>
+      <div style="font:500 13.5px 'DM Sans',sans-serif;color:#FCFBF7;border-bottom:1px solid rgba(252,251,247,.4);align-self:flex-start;padding-bottom:3px">Read our story</div>
+    </div>
+  </div>
+  <div style="padding:44px 40px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;background:#F4F1E7">
+    <div style="font:400 26px/1.15 'Instrument Serif',serif;color:#1B2A18">What people keep<br>coming back for</div>
+    <div style="font:400 13.5px/1.7 'DM Sans',sans-serif;color:rgba(27,42,24,.7)">“The pudding replaced my 4pm biscuit habit. I stopped noticing it was the healthy option.”<div style="margin-top:10px;font-weight:500;color:#1B2A18">Ananya R. · Bengaluru</div></div>
+    <div style="font:400 13.5px/1.7 'DM Sans',sans-serif;color:rgba(27,42,24,.7)">“Alternate-day plan, wallet does the rest. I haven't thought about breakfast in two months.”<div style="margin-top:10px;font-weight:500;color:#1B2A18">Karthik M. · Pune</div></div>
+    <div style="font:400 13.5px/1.7 'DM Sans',sans-serif;color:rgba(27,42,24,.7)">“Dry fruits arrived in four days and tasted like they were packed that morning.”<div style="margin-top:10px;font-weight:500;color:#1B2A18">Meher S. · Delhi</div></div>
+  </div>
+  <div style="padding:34px 40px;display:flex;justify-content:space-between;align-items:flex-start;background:#FCFBF7;border-top:1px solid rgba(27,42,24,.08);font:400 12.5px/2 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">
+    <div style="display:flex;flex-direction:column;gap:6px"><img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:52px;width:auto;align-self:flex-start;object-fit:contain;margin-bottom:8px"><span>Good food, higher days.</span></div>
+    <div><div style="font-weight:500;color:#1B2A18">Shop</div>Eat Now<br>Subscriptions<br>Pantry</div>
+    <div><div style="font-weight:500;color:#1B2A18">Company</div>Our story<br>Contact us<br>Careers</div>
+    <div><div style="font-weight:500;color:#1B2A18">Policies</div>Terms &amp; conditions<br>Privacy policy<br>Returns &amp; refunds<br>Shipping policy<br>Wallet &amp; subscription terms</div>
+  </div>
+</div></div>
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Web — Shop: one primary action per card, add-to-cart feedback</div>
+<div class="dv-card" style="width:1280px;position:relative">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid rgba(27,42,24,.08)">
+    <img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:46px;width:auto;object-fit:contain">
+    <div style="display:flex;gap:28px;font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18"><span style="color:#4A5D2E;border-bottom:2px solid #4A5D2E;padding-bottom:3px">Shop all</span><span>Subscribe</span><span>Pantry</span><span>Our Story</span></div>
+    <div style="display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:8px;font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;padding:9px 14px;border-radius:100px;background:#F4F1E7;border:1px solid rgba(27,42,24,.1)"><span style="width:7px;height:7px;border-radius:50%;background:#4A5D2E"></span>Koramangala 560095 · ~35 min<span style="color:rgba(27,42,24,.45)">▾</span></div><div style="font:500 13px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:10px 18px;border-radius:100px">Cart · 3</div></div>
+  </div>
+  <div style="position:absolute;bottom:24px;right:40px;z-index:2;display:flex;align-items:center;gap:14px;background:#1B2A18;color:#FCFBF7;border-radius:12px;padding:12px 14px 12px 12px;box-shadow:0 10px 30px rgba(27,42,24,.25)">
+    <div style="width:44px;height:44px;border-radius:8px;overflow:hidden;flex:none;position:relative"><image-slot id="toast-tikki" src="assets/products/tikki.png" shape="rounded" radius="8" style="width:100%;height:100%" placeholder="tikki"></image-slot></div>
+    <div><div style="font:500 13px 'DM Sans',sans-serif">Added to cart</div><div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(252,251,247,.7);margin-top:2px">Sabudana Sweet Potato Tikki · ₹249</div></div>
+    <div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;background:#A8B98C;padding:9px 14px;border-radius:8px;margin-left:10px">View cart · 3</div>
+  </div>
+  <div style="display:flex;gap:14px;padding:26px 40px 18px;align-items:center;flex-wrap:wrap">
+    <div style="font:400 30px 'Instrument Serif',serif;color:#1B2A18;margin-right:10px">Shop all</div>
+    <div style="font:500 12.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:9px 16px;border-radius:100px">All · 24</div>
+    <div style="font:500 12.5px 'DM Sans',sans-serif;color:#4A5D2E;padding:9px 16px;border-radius:100px;border:1px solid rgba(74,93,46,.35)">Eat now</div>
+    <div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;padding:9px 16px;border-radius:100px;border:1px solid rgba(27,42,24,.2)">Subscribable</div>
+    <div style="font:500 12.5px 'DM Sans',sans-serif;color:#8B6A46;padding:9px 16px;border-radius:100px;border:1px solid rgba(139,106,70,.35)">Pantry · ships</div>
+    <div style="margin-left:auto;display:flex;gap:10px;font:500 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)"><span>High protein</span><span>·</span><span>Under ₹300</span><span>·</span><span>Sort: Popular</span></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:12px 40px 44px">
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:10px;overflow:hidden;background:#fff">
+      <div style="height:180px;position:relative"><image-slot id="pl-choco-v2" src="assets/products/pudding-jar.png" shape="rect" placeholder="Choco pudding"></image-slot><div style="position:absolute;top:10px;left:10px;pointer-events:none;font:500 9.5px 'JetBrains Mono',monospace;color:#FCFBF7;background:#4A5D2E;padding:4px 8px;border-radius:4px">NOW · 30 MIN</div></div>
+      <div style="padding:16px">
+        <div style="font:500 15px 'DM Sans',sans-serif;color:#1B2A18">Chocolate Protein Chia Pudding</div>
+        <div style="font:400 12px/1.5 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin:5px 0 10px">23g protein · 190 kcal · 200ml jar</div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font:500 17px 'DM Sans',sans-serif;color:#1B2A18">₹349</span><span style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.45);text-decoration:line-through">₹399</span></div>
+        <div style="font:400 11.5px 'DM Sans',sans-serif;color:#4A5D2E;margin-top:4px">from ₹286/jar on a plan</div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px"><div style="text-align:center;font:500 12.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:11px;border-radius:7px">Add to cart</div><div style="text-align:center;font:500 12px 'DM Sans',sans-serif;color:#4A5D2E">Subscribe &amp; save →</div></div>
+      </div>
+    </div>
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:10px;overflow:hidden;background:#fff">
+      <div style="height:180px;position:relative"><image-slot id="pl-berry-v2" src="assets/products/dragonfruit-bottle.png" shape="rect" placeholder="Berry smoothie"></image-slot><div style="position:absolute;top:10px;left:10px;pointer-events:none;font:500 9.5px 'JetBrains Mono',monospace;color:#FCFBF7;background:#4A5D2E;padding:4px 8px;border-radius:4px">NOW · 30 MIN</div></div>
+      <div style="padding:16px">
+        <div style="font:500 15px 'DM Sans',sans-serif;color:#1B2A18">Dragonfruit Smoothie</div>
+        <div style="font:400 12px/1.5 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin:5px 0 10px">6g protein · 165 kcal · 300ml</div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font:500 17px 'DM Sans',sans-serif;color:#1B2A18">₹329</span></div>
+        <div style="font:400 11.5px 'DM Sans',sans-serif;color:#4A5D2E;margin-top:4px">from ₹270/bottle on a plan</div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px"><div style="text-align:center;font:500 12.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:11px;border-radius:7px">Add to cart</div><div style="text-align:center;font:500 12px 'DM Sans',sans-serif;color:#4A5D2E">Subscribe &amp; save →</div></div>
+      </div>
+    </div>
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:10px;overflow:hidden;background:#fff">
+      <div style="height:180px;position:relative"><image-slot id="pl-tikki" src="assets/products/tikki.png" shape="rect" placeholder="Ragi tikkis"></image-slot><div style="position:absolute;top:10px;left:10px;pointer-events:none;font:500 9.5px 'JetBrains Mono',monospace;color:#FCFBF7;background:#4A5D2E;padding:4px 8px;border-radius:4px">NOW · 45 MIN</div></div>
+      <div style="padding:16px">
+        <div style="font:500 15px 'DM Sans',sans-serif;color:#1B2A18">Sabudana Sweet Potato Tikki</div>
+        <div style="font:400 12px/1.5 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin:5px 0 10px">8g protein · 230 kcal · 4 pc</div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font:500 17px 'DM Sans',sans-serif;color:#1B2A18">₹249</span></div>
+        <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.45);margin-top:4px">Eat-now only</div>
+        <div style="margin-top:12px"><div style="text-align:center;font:500 12.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:11px;border-radius:7px">Add to cart</div></div>
+      </div>
+    </div>
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:10px;overflow:hidden;background:#fff">
+      <div style="height:180px;position:relative"><image-slot id="pl-mango" src="assets/products/fries.png" shape="rect" placeholder="Mango lassi pudding"></image-slot><div style="position:absolute;top:10px;left:10px;pointer-events:none;font:500 9.5px 'JetBrains Mono',monospace;color:#FCFBF7;background:#4A5D2E;padding:4px 8px;border-radius:4px">NOW · 30 MIN</div></div>
+      <div style="padding:16px">
+        <div style="font:500 15px 'DM Sans',sans-serif;color:#1B2A18">Peri Peri House Fries</div>
+        <div style="font:400 12px/1.5 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin:5px 0 10px">Sweet potato · 260 kcal · serves 1</div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font:500 17px 'DM Sans',sans-serif;color:#1B2A18">₹229</span></div>
+        <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.45);margin-top:4px">Eat-now only</div>
+        <div style="margin-top:12px"><div style="text-align:center;font:500 12.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:11px;border-radius:7px">Add to cart</div></div>
+      </div>
+    </div>
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:10px;overflow:hidden;background:#fff">
+      <div style="height:180px;position:relative"><image-slot id="pl-almond" src="assets/products/dryfruit.png" shape="rect" placeholder="Almonds"></image-slot><div style="position:absolute;top:10px;left:10px;pointer-events:none;font:500 9.5px 'JetBrains Mono',monospace;color:#FCFBF7;background:#8B6A46;padding:4px 8px;border-radius:4px">SHIPS · 3–5 DAYS</div></div>
+      <div style="padding:16px">
+        <div style="font:500 15px 'DM Sans',sans-serif;color:#1B2A18">Kashmiri Dry Fruits</div>
+        <div style="font:400 12px/1.5 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin:5px 0 10px">500g · sourced per order</div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font:500 17px 'DM Sans',sans-serif;color:#1B2A18">₹899</span></div>
+        <div style="font:400 11.5px 'DM Sans',sans-serif;color:#8B6A46;margin-top:4px">Free shipping over ₹999</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px"><div style="display:flex;gap:6px"><span style="font:500 11.5px 'DM Sans',sans-serif;color:#8B6A46;background:rgba(139,106,70,.1);border:1.5px solid #8B6A46;padding:5px 12px;border-radius:100px">500g</span><span style="font:500 11.5px 'DM Sans',sans-serif;color:#1B2A18;border:1px solid rgba(27,42,24,.15);padding:5.5px 12px;border-radius:100px">1kg</span></div><div style="text-align:center;font:500 12.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:11px;border-radius:7px">Add to cart</div></div>
+      </div>
+    </div>
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:10px;overflow:hidden;background:#fff">
+      <div style="height:180px;position:relative"><image-slot id="pl-pista" src="assets/products/muesli.png" shape="rect" placeholder="Pistachios"></image-slot><div style="position:absolute;top:10px;left:10px;pointer-events:none;font:500 9.5px 'JetBrains Mono',monospace;color:#FCFBF7;background:#8B6A46;padding:4px 8px;border-radius:4px">SHIPS · 3–5 DAYS</div></div>
+      <div style="padding:16px">
+        <div style="font:500 15px 'DM Sans',sans-serif;color:#1B2A18">Kashmiri Muesli</div>
+        <div style="font:400 12px/1.5 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin:5px 0 10px">400g · no added sugar</div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font:500 17px 'DM Sans',sans-serif;color:#1B2A18">₹640</span></div>
+        <div style="font:400 11.5px 'DM Sans',sans-serif;color:#8B6A46;margin-top:4px">Free shipping</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px"><div style="display:flex;gap:6px"><span style="font:500 11.5px 'DM Sans',sans-serif;color:#8B6A46;background:rgba(139,106,70,.1);border:1.5px solid #8B6A46;padding:5px 12px;border-radius:100px">400g</span><span style="font:500 11.5px 'DM Sans',sans-serif;color:#1B2A18;border:1px solid rgba(27,42,24,.15);padding:5.5px 12px;border-radius:100px">800g</span></div><div style="text-align:center;font:500 12.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:11px;border-radius:7px">Add to cart</div></div>
+      </div>
+    </div>
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:10px;overflow:hidden;background:#fff">
+      <div style="height:180px;position:relative"><image-slot id="pl-dates" src="assets/products/modak.png" shape="rect" placeholder="Medjool dates"></image-slot><div style="position:absolute;top:10px;left:10px;pointer-events:none;font:500 9.5px 'JetBrains Mono',monospace;color:#FCFBF7;background:#8B6A46;padding:4px 8px;border-radius:4px">SHIPS · 3–5 DAYS</div></div>
+      <div style="padding:16px">
+        <div style="font:500 15px 'DM Sans',sans-serif;color:#1B2A18">Pan Dry Fruit Gulkand Modak</div>
+        <div style="font:400 12px/1.5 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin:5px 0 10px">12 pc · gifting box</div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font:500 17px 'DM Sans',sans-serif;color:#1B2A18">₹560</span></div>
+        <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.45);margin-top:4px">Made fresh, ships chilled</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px"><div style="display:flex;gap:6px"><span style="font:500 11.5px 'DM Sans',sans-serif;color:#8B6A46;background:rgba(139,106,70,.1);border:1.5px solid #8B6A46;padding:5px 12px;border-radius:100px">12 pc</span><span style="font:500 11.5px 'DM Sans',sans-serif;color:#1B2A18;border:1px solid rgba(27,42,24,.15);padding:5.5px 12px;border-radius:100px">24 pc</span></div><div style="text-align:center;font:500 12.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:11px;border-radius:7px">Add to cart</div></div>
+      </div>
+    </div>
+    <div style="border:1px dashed rgba(27,42,24,.22);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center;background:#F4F1E7">
+      <div style="font:400 20px/1.25 'Instrument Serif',serif;color:#1B2A18">Build a plan<br>instead</div>
+      <div style="font:400 12px/1.55 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Pick a product, a rhythm and a duration. Save up to 18%.</div>
+      <div style="font:500 12.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#4A5D2E;padding:10px 18px;border-radius:100px">Open builder</div>
+    </div>
+  </div>
+</div></div>
+
+<div class="dv-opt" id="2a"><div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Web — Subscribe / plan builder (click options — they select)</div>
+<div class="dv-card" style="width:1280px">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid rgba(27,42,24,.08)">
+    <img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:46px;width:auto;object-fit:contain">
+    <div style="display:flex;gap:28px;font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18"><span>Eat Now</span><span style="color:#4A5D2E;border-bottom:2px solid #4A5D2E;padding-bottom:3px">Subscribe</span><span>Pantry</span><span>Our Story</span></div>
+    <div style="display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:8px;font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;padding:9px 14px;border-radius:100px;background:#F4F1E7;border:1px solid rgba(27,42,24,.1)"><span style="width:7px;height:7px;border-radius:50%;background:#4A5D2E"></span>Koramangala 560095 · ~35 min<span style="color:rgba(27,42,24,.45)">▾</span></div><div style="font:500 13px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:10px 18px;border-radius:100px">Cart · 3</div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:#F4F1E7;align-items:center">
+    <div style="padding:56px 44px 56px 40px;display:flex;flex-direction:column;gap:18px">
+      <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#8B6A46;text-transform:uppercase">Subscriptions</div>
+      <div style="font:400 52px/1.05 'Instrument Serif',serif;color:#1B2A18">Decide once.<br>Then just <em>eat</em>.</div>
+      <div style="font:400 15.5px/1.7 'DM Sans',sans-serif;color:rgba(27,42,24,.7);max-width:440px">Pick a product, a rhythm and a duration. You pay for the whole plan up front — it sits in your SpoonUp wallet and we deduct one delivery at a time. Skip days, pause, change your slot; the deliveries you paid for never expire.</div>
+      <div style="display:flex;gap:22px;font:400 12px/1.4 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">
+        <div><div style="font:400 22px 'Instrument Serif',serif;color:#1B2A18">up to 18%</div>off vs one-off</div>
+        <div><div style="font:400 22px 'Instrument Serif',serif;color:#1B2A18">4 rhythms</div>daily to weekly</div>
+        <div><div style="font:400 22px 'Instrument Serif',serif;color:#1B2A18">0 fees</div>to pause or skip</div>
+      </div>
+    </div>
+    <div style="height:440px;position:relative"><image-slot id="sub-hero-v2" src="assets/generated/week-jars.jpg" style="width:100%;height:100%" shape="rect" placeholder="Plan hero — a week of jars on linen, overhead"></image-slot></div>
+  </div>
+
+  <div style="padding:48px 40px 16px;display:flex;align-items:baseline;justify-content:space-between">
+    <div style="font:400 32px 'Instrument Serif',serif;color:#1B2A18">Build your plan</div>
+    <div style="font:400 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">Everything below is editable later from My Plans</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:24px;padding:12px 40px 48px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:26px">
+      <div>
+        <div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:12px">1 · Choose a product</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+          <div style="border:2px solid #4A5D2E;border-radius:10px;overflow:hidden;background:#fff">
+            <div style="height:120px;position:relative"><image-slot id="sub-choco-v2" src="assets/products/pudding-jar.png" shape="rect" placeholder="Choco pudding jar"></image-slot></div>
+            <div style="padding:13px"><div style="font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18">Chocolate Protein Chia Pudding</div><div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-top:4px">23g protein · 200ml · {{ basePriceFmt }} one-off</div></div>
+          </div>
+          <div style="border:1px solid rgba(27,42,24,.12);border-radius:10px;overflow:hidden;background:#fff">
+            <div style="height:120px;position:relative"><image-slot id="sub-berry-v2" src="assets/products/dragonfruit-bottle.png" shape="rect" placeholder="Berry smoothie"></image-slot></div>
+            <div style="padding:13px"><div style="font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18">Dragonfruit Smoothie</div><div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-top:4px">6g protein · 300ml · ₹329 one-off</div></div>
+          </div>
+          <div style="border:1px solid rgba(27,42,24,.12);border-radius:10px;overflow:hidden;background:#fff">
+            <div style="height:120px;position:relative"><image-slot id="sub-mango" src="assets/products/muesli.png" shape="rect" placeholder="Mango lassi pudding"></image-slot></div>
+            <div style="padding:13px"><div style="font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18">Kashmiri Muesli</div><div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-top:4px">400g pack · ₹640 one-off</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:12px">2 · How often?</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:11px;font:500 13px 'DM Sans',sans-serif">
+          <sc-for list="{{ freqOpts }}" as="o" hint-placeholder-count="3">
+            <div onClick="{{ o.pick }}" style="border:1.5px solid {{ o.border }};border-radius:10px;padding:14px;background:{{ o.bg }};color:{{ o.fg }};cursor:pointer;">{{ o.label }}<div style="font:400 11px 'DM Sans',sans-serif;color:{{ o.subc }};margin-top:4px">{{ o.note }}</div></div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div>
+        <div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:12px">3 · For how long?</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:11px;font:500 13px 'DM Sans',sans-serif">
+          <sc-for list="{{ monthOpts }}" as="o" hint-placeholder-count="3">
+            <div onClick="{{ o.pick }}" style="border:1.5px solid {{ o.border }};border-radius:10px;padding:14px;background:{{ o.bg }};color:{{ o.fg }};cursor:pointer;">{{ o.label }}<div style="font:400 11px 'DM Sans',sans-serif;color:{{ o.subc }};margin-top:4px">{{ o.note }}</div></div>
+          </sc-for>
+        </div>
+        <div style="font:400 12px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:10px">The discount is always tied to the number of deliveries in the plan, never to the calendar. Pause or skip and the deliveries you paid for simply move to the end.</div>
+      </div>
+
+      <div>
+        <div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:12px">4 · First delivery</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:11px;font:500 13px 'DM Sans',sans-serif;margin-bottom:18px">
+          <sc-for list="{{ startOpts }}" as="o" hint-placeholder-count="3">
+            <div onClick="{{ o.pick }}" style="border:1.5px solid {{ o.border }};border-radius:10px;padding:14px;background:{{ o.bg }};color:{{ o.fg }};cursor:pointer;text-align:center">{{ o.label }}<div style="font:400 11px 'DM Sans',sans-serif;color:{{ o.subc }};margin-top:4px">{{ o.note }}</div></div>
+          </sc-for>
+        </div>
+        <div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:12px">5 · Time slot &amp; address</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:11px;font:500 13px 'DM Sans',sans-serif;margin-bottom:11px">
+          <sc-for list="{{ slotOpts }}" as="o" hint-placeholder-count="3">
+            <div onClick="{{ o.pick }}" style="border:1.5px solid {{ o.border }};border-radius:10px;padding:14px;background:{{ o.bg }};color:{{ o.fg }};cursor:pointer;text-align:center">{{ o.label }}<div style="font:400 11px 'DM Sans',sans-serif;color:{{ o.subc }};margin-top:4px">{{ o.note }}</div></div>
+          </sc-for>
+        </div>
+        <div style="border:1px solid rgba(27,42,24,.12);background:#fff;border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;font:400 13px 'DM Sans',sans-serif;color:#1B2A18"><span>Home · 402, Sunrise Residency, Koramangala 5th Block</span><span style="font-weight:500;color:#4A5D2E">Change</span></div>
+      </div>
+    </div>
+
+    <div style="background:#1B2A18;border-radius:12px;padding:26px;display:flex;flex-direction:column;gap:13px;position:sticky;top:20px">
+      <div style="font:500 11px 'JetBrains Mono',monospace;color:#A8B98C;letter-spacing:.1em">YOUR PLAN</div>
+      <div style="font:400 26px/1.25 'Instrument Serif',serif;color:#FCFBF7">Chocolate Protein Chia Pudding</div>
+      <div style="font:400 13px/1.6 'DM Sans',sans-serif;color:rgba(252,251,247,.75)">{{ freq }} · {{ monthsLabel }} · {{ deliveries }} deliveries · {{ slot }}<br>First delivery {{ startLabel }}</div>
+      <div style="display:flex;justify-content:space-between;font:400 13px 'DM Sans',sans-serif;color:rgba(252,251,247,.75);border-top:1px solid rgba(252,251,247,.15);padding-top:13px"><span>{{ basePriceFmt }} × {{ deliveries }}</span><span>{{ gross }}</span></div>
+      <div style="display:flex;justify-content:space-between;font:400 13px 'DM Sans',sans-serif;color:#A8B98C"><span>Plan discount {{ pct }}</span><span>{{ discount }}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid rgba(252,251,247,.15);padding-top:13px"><span style="font:500 13.5px 'DM Sans',sans-serif;color:#FCFBF7">Plan price</span><span style="font:500 30px 'DM Sans',sans-serif;color:#FCFBF7">{{ net }}</span></div>
+      <div style="font:400 12px 'DM Sans',sans-serif;color:rgba(252,251,247,.7)">{{ perDelivery }} · against {{ basePriceFmt }} buying one-off</div>
+      <sc-if value="{{ showSavings }}" hint-placeholder-val="{{ true }}">
+        <div style="background:rgba(168,185,140,.16);border-radius:9px;padding:12px 13px;font:500 12.5px/1.5 'DM Sans',sans-serif;color:#D8E2C4">{{ savingsLine }}</div>
+      </sc-if>
+      <div style="text-align:center;font:500 14.5px 'DM Sans',sans-serif;color:#FCFBF7;padding:16px;border-radius:10px;margin-top:4px;background:{{ accent }}">{{ payCta }}</div>
+      <div style="text-align:center;font:400 11.5px 'DM Sans',sans-serif;color:rgba(252,251,247,.65);margin-top:-4px">Adds to your cart · paid into your plan wallet at checkout</div>
+      <div style="display:flex;flex-direction:column;gap:7px;border-top:1px solid rgba(252,251,247,.15);padding-top:13px;font:400 12px/1.5 'DM Sans',sans-serif;color:rgba(252,251,247,.85)">
+        <div style="display:flex;gap:9px"><span style="color:#A8B98C">✓</span>Skip or pause any day, free — skipped deliveries move to the end</div>
+        <div style="display:flex;gap:9px"><span style="color:#A8B98C">✓</span>Paid deliveries never expire</div>
+        <div style="display:flex;gap:9px"><span style="color:#A8B98C">✓</span>Change slot, address or start date from My plans</div>
+      </div>
+      <div style="font:400 10.5px/1.6 'DM Sans',sans-serif;color:rgba(252,251,247,.55)">Plan balance is used only for this plan's deliveries and can't be withdrawn. For exceptions, email support@spoonupfoods.com. See Wallet &amp; Subscription terms.</div>
+    </div>
+  </div>
+
+  <div style="background:#F4F1E7;padding:44px 40px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:26px">
+    <div style="font:400 28px/1.2 'Instrument Serif',serif;color:#1B2A18">How the wallet works</div>
+    <div style="font:400 13.5px/1.75 'DM Sans',sans-serif;color:rgba(27,42,24,.7)"><strong style="color:#1B2A18">1 · You pay for the plan.</strong> The discounted amount lands in your SpoonUp wallet as a plan balance, ring-fenced to that subscription.<br><br><strong style="color:#1B2A18">2 · We deduct per delivery.</strong> Each jar delivered draws its own rate — you always see the remaining balance and remaining deliveries.</div>
+    <div style="font:400 13.5px/1.75 'DM Sans',sans-serif;color:rgba(27,42,24,.7)"><strong style="color:#1B2A18">3 · Skip freely.</strong> Skipped days move to the end of the plan, so nothing is lost.<br><br><strong style="color:#1B2A18">4 · No withdrawals.</strong> Plan balance isn't cashable. Genuine exceptions are handled over email, case by case.</div>
+  </div>
+</div></div>
+
+<div class="dv-opt" id="4a"><div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>Web — Cart, three deliveries in one basket</div>
+<div class="dv-card" style="width:1280px">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid rgba(27,42,24,.08);background:#FCFBF7">
+    <img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:46px;width:auto;object-fit:contain">
+    <div style="display:flex;gap:28px;font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18"><span>Eat Now</span><span>Subscribe</span><span>Pantry</span><span>Our Story</span></div>
+    <div style="display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:8px;font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;padding:9px 14px;border-radius:100px;background:#F4F1E7;border:1px solid rgba(27,42,24,.1)"><span style="width:7px;height:7px;border-radius:50%;background:#4A5D2E"></span>Koramangala 560095 · ~35 min<span style="color:rgba(27,42,24,.45)">▾</span></div><div style="font:500 13px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:10px 18px;border-radius:100px">Cart · 3</div></div>
+  </div>
+  <div style="padding:30px 40px 10px;display:flex;align-items:baseline;gap:14px"><div style="font:400 36px 'Instrument Serif',serif;color:#1B2A18">Your cart</div><div style="font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">4 items · arrives in 3 separate deliveries</div></div>
+  <div style="display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:28px;padding:14px 40px 48px;align-items:start;background:#FCFBF7">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:#FFFFFF;border:1px solid rgba(74,93,46,.25);border-left:3px solid #4A5D2E;border-radius:12px;padding:16px 18px 6px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px"><span style="font:500 10.5px 'JetBrains Mono',monospace;color:#4A5D2E;letter-spacing:.08em">EAT NOW · FROM OUR KITCHEN</span><div style="display:flex;background:#F4F1E7;border-radius:100px;padding:3px;font:500 11.5px 'DM Sans',sans-serif"><span style="padding:6px 12px;border-radius:100px;background:#4A5D2E;color:#FCFBF7">Now · ~40 min</span><span style="padding:6px 12px;border-radius:100px;color:#1B2A18">Schedule</span></div></div>
+          <div style="display:flex;gap:14px;align-items:center;padding:12px 0;border-top:1px solid rgba(27,42,24,.07)"><div style="width:64px;height:64px;position:relative;flex:none"><image-slot id="cart-w-tikki" src="assets/products/tikki.png" shape="rounded" radius="9" style="width:100%;height:100%" placeholder="product"></image-slot></div><div style="flex:1;min-width:0"><div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18">Sabudana Sweet Potato Tikki</div><div style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.58);margin-top:3px">4 pc · 8g protein</div></div><div style="display:flex;align-items:center;border:1px solid rgba(27,42,24,.16);border-radius:8px;font:500 13px 'DM Sans',sans-serif;color:#1B2A18"><span style="padding:6px 10px;color:rgba(27,42,24,.5)">−</span><span style="padding:6px 4px;min-width:14px;text-align:center">1</span><span style="padding:6px 10px;color:rgba(27,42,24,.5)">+</span></div><div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18;width:70px;text-align:right">₹249</div></div><div style="display:flex;gap:14px;align-items:center;padding:12px 0;border-top:1px solid rgba(27,42,24,.07)"><div style="width:64px;height:64px;position:relative;flex:none"><image-slot id="cart-w-smoothie" src="assets/products/dragonfruit-bottle.png" shape="rounded" radius="9" style="width:100%;height:100%" placeholder="product"></image-slot></div><div style="flex:1;min-width:0"><div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18">Dragonfruit Smoothie</div><div style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.58);margin-top:3px">300ml · 6g protein</div></div><div style="display:flex;align-items:center;border:1px solid rgba(27,42,24,.16);border-radius:8px;font:500 13px 'DM Sans',sans-serif;color:#1B2A18"><span style="padding:6px 10px;color:rgba(27,42,24,.5)">−</span><span style="padding:6px 4px;min-width:14px;text-align:center">1</span><span style="padding:6px 10px;color:rgba(27,42,24,.5)">+</span></div><div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18;width:70px;text-align:right">₹329</div></div>
+        </div>
+      <div style="background:#FFFFFF;border:1px solid rgba(27,42,24,.2);border-left:3px solid #1B2A18;border-radius:12px;padding:16px 18px 6px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px"><span style="font:500 10.5px 'JetBrains Mono',monospace;color:#1B2A18;letter-spacing:.08em">SUBSCRIPTION PLAN</span><span style="font:500 12px 'DM Sans',sans-serif;color:#4A5D2E">Edit plan</span></div>
+          <div style="display:flex;gap:14px;align-items:center;padding:12px 0;border-top:1px solid rgba(27,42,24,.07)"><div style="width:64px;height:64px;position:relative;flex:none"><image-slot id="cart-w-plan" src="assets/products/pudding-jar.png" shape="rounded" radius="9" style="width:100%;height:100%" placeholder="product"></image-slot></div><div style="flex:1;min-width:0"><div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18">Chocolate Protein Chia Pudding</div><div style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.58);margin-top:3px">Alternate days · 2 months · 30 deliveries · 7–9 am<br>First delivery tomorrow, Thu 24 Sep · ₹300 per delivery</div></div><div style="text-align:right;width:110px"><div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18">₹9,004</div><div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.45);text-decoration:line-through">₹10,470</div></div></div>
+        </div>
+      <div style="background:#FFFFFF;border:1px solid rgba(139,106,70,.3);border-left:3px solid #8B6A46;border-radius:12px;padding:16px 18px 6px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px"><span style="font:500 10.5px 'JetBrains Mono',monospace;color:#8B6A46;letter-spacing:.08em">PANTRY · SHIPS IN 3–5 DAYS</span><span style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Free shipping over ₹999 · add ₹100 more</span></div>
+          <div style="display:flex;gap:14px;align-items:center;padding:12px 0;border-top:1px solid rgba(27,42,24,.07)"><div style="width:64px;height:64px;position:relative;flex:none"><image-slot id="cart-w-dry" src="assets/products/dryfruit.png" shape="rounded" radius="9" style="width:100%;height:100%" placeholder="product"></image-slot></div><div style="flex:1;min-width:0"><div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18">Kashmiri Dry Fruits</div><div style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.58);margin-top:3px">500g · sourced per order</div></div><div style="display:flex;align-items:center;border:1px solid rgba(27,42,24,.16);border-radius:8px;font:500 13px 'DM Sans',sans-serif;color:#1B2A18"><span style="padding:6px 10px;color:rgba(27,42,24,.5)">−</span><span style="padding:6px 4px;min-width:14px;text-align:center">1</span><span style="padding:6px 10px;color:rgba(27,42,24,.5)">+</span></div><div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18;width:70px;text-align:right">₹899</div></div>
+        </div>
+    </div>
+    <div style="background:#F4F1E7;border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:11px;position:sticky;top:20px">
+      <div style="font:400 22px 'Instrument Serif',serif;color:#1B2A18">Summary</div>
+      <div style="display:flex;justify-content:space-between;font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.72)"><span>Items</span><span>₹11,947</span></div>
+      <div style="display:flex;justify-content:space-between;font:400 13px 'DM Sans',sans-serif;color:#4A5D2E"><span>Plan discount (14%)</span><span>−₹1,466</span></div>
+      <div style="display:flex;justify-content:space-between;font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.72)"><span>Delivery &amp; packaging</span><span>₹49</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid rgba(27,42,24,.12);padding-top:12px"><span style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18">Estimated total</span><span style="font:500 24px 'DM Sans',sans-serif;color:#1B2A18">₹10,530</span></div>
+      <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">Coupons and GST are applied at checkout.</div>
+      <div style="text-align:center;font:500 14.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#4A5D2E;padding:15px;border-radius:10px;margin-top:4px">Continue to checkout</div>
+      <div style="font:400 11.5px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.6);text-align:center">No account needed first — you'll verify your phone number at checkout.</div>
+    </div>
+  </div>
+</div></div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Web — Checkout: inline sign-in, schedule, clear addresses and wallet</div>
+<div class="dv-card" style="width:1080px">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 36px;border-bottom:1px solid rgba(27,42,24,.08)">
+    <img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:42px;width:auto;object-fit:contain">
+    <div style="display:flex;gap:18px;font:500 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.45)"><span>Cart</span><span style="color:#1B2A18">Checkout</span><span>Done</span></div>
+    <div style="font:500 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">Secure checkout</div>
+  </div>
+  <div style="display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)">
+    <div style="padding:30px 36px;display:flex;flex-direction:column;gap:24px">
+      <div style="font:400 30px 'Instrument Serif',serif;color:#1B2A18">Checkout</div>
+      <div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:10px">1 · Your details</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(74,93,46,.4);background:rgba(74,93,46,.05);border-radius:9px;padding:13px 15px">
+          <div><div style="font:500 13px 'DM Sans',sans-serif;color:#1B2A18">Ananya Rao · +91 98861 22321</div><div style="font:400 11.5px 'DM Sans',sans-serif;color:#4A5D2E;margin-top:2px">✓ Verified with a one-time code</div></div>
+          <span style="font:500 11.5px 'DM Sans',sans-serif;color:#4A5D2E">Not you?</span>
+        </div>
+        <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.5);margin-top:7px">New here? Enter your number and the code we send — that's your account. No password.</div>
+      </div>
+      <div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:10px">2 · Delivery address</div>
+        <div style="display:flex;gap:12px;align-items:center;border:1px solid rgba(74,93,46,.45);background:rgba(74,93,46,.05);border-radius:9px;padding:13px 15px"><span style="width:16px;height:16px;border-radius:50%;border:1.5px solid #4A5D2E;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:8px;height:8px;border-radius:50%;background:#4A5D2E"></span></span><div style="flex:1"><div style="font:500 13px 'DM Sans',sans-serif;color:#1B2A18">Home · 402, Sunrise Residency, Koramangala 5th Block</div><div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.58);margin-top:2px">Bengaluru 560095 · for the kitchen order and your plan</div></div></div>
+        <div style="font:500 12px 'DM Sans',sans-serif;color:#8B6A46;margin:14px 0 8px">Where should the pantry shipment go?</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:12px;align-items:center;border:1px solid rgba(74,93,46,.45);background:rgba(74,93,46,.05);border-radius:9px;padding:13px 15px"><span style="width:16px;height:16px;border-radius:50%;border:1.5px solid #4A5D2E;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:8px;height:8px;border-radius:50%;background:#4A5D2E"></span></span><div style="flex:1"><div style="font:500 13px 'DM Sans',sans-serif;color:#1B2A18">Same address (Home)</div><div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.58);margin-top:2px">Courier · 3–5 days</div></div></div>
+          <div style="display:flex;gap:12px;align-items:center;border:1px solid rgba(27,42,24,.12);background:#FFFFFF;border-radius:9px;padding:13px 15px"><span style="width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(27,42,24,.3);display:flex;align-items:center;justify-content:center;flex:none"></span><div style="flex:1"><div style="font:500 13px 'DM Sans',sans-serif;color:#1B2A18">Office · WeWork Galaxy, Residency Road</div><div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.58);margin-top:2px">Weekdays 10 am–6 pm</div></div></div>
+        </div>
+      </div>
+      <div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:10px">3 · When should the kitchen order arrive?</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px"><div style="display:flex;background:#F4F1E7;border-radius:100px;padding:3px;font:500 11.5px 'DM Sans',sans-serif"><span style="padding:6px 12px;border-radius:100px;color:#1B2A18">As soon as possible · ~40 min</span><span style="padding:6px 12px;border-radius:100px;background:#4A5D2E;color:#FCFBF7">Schedule</span></div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><span style="font:500 12px 'DM Sans',sans-serif;padding:8px 13px;border-radius:8px;border:1px solid rgba(27,42,24,.15);color:#1B2A18">Today 7–8 pm</span><span style="font:500 12px 'DM Sans',sans-serif;padding:8px 13px;border-radius:8px;background:#4A5D2E;color:#FCFBF7">Today 8–9 pm</span><span style="font:500 12px 'DM Sans',sans-serif;padding:8px 13px;border-radius:8px;border:1px solid rgba(27,42,24,.15);color:#1B2A18">Today 9–10 pm</span><span style="font:500 12px 'DM Sans',sans-serif;padding:8px 13px;border-radius:8px;border:1px solid rgba(27,42,24,.15);color:#1B2A18">Tomorrow…</span></div>
+      </div>
+      <div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:10px">4 · Coupon</div>
+        <div style="display:flex;gap:10px"><div style="flex:1;border:1px solid rgba(27,42,24,.14);border-radius:8px;padding:12px 14px;font:500 13px 'JetBrains Mono',monospace;color:#1B2A18">SPOONUP100</div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;border:1px solid rgba(27,42,24,.2);padding:12px 18px;border-radius:8px">Remove</div></div>
+        <div style="font:400 11.5px 'DM Sans',sans-serif;color:#4A5D2E;margin-top:7px">✓ ₹100 off applied</div>
+      </div>
+      <div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:10px">5 · Payment</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:12px;align-items:center;border:1px solid rgba(74,93,46,.45);background:rgba(74,93,46,.05);border-radius:9px;padding:13px 15px"><span style="width:16px;height:16px;border-radius:50%;border:1.5px solid #4A5D2E;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:8px;height:8px;border-radius:50%;background:#4A5D2E"></span></span><div style="flex:1"><div style="font:500 13px 'DM Sans',sans-serif;color:#1B2A18">UPI</div><div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.58);margin-top:2px">GPay, PhonePe, Paytm or any UPI app</div></div></div>
+          <div style="display:flex;gap:12px;align-items:center;border:1px solid rgba(27,42,24,.12);background:#FFFFFF;border-radius:9px;padding:13px 15px"><span style="width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(27,42,24,.3);display:flex;align-items:center;justify-content:center;flex:none"></span><div style="flex:1"><div style="font:500 13px 'DM Sans',sans-serif;color:#1B2A18">Credit or debit card</div><div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.58);margin-top:2px">Visa, Mastercard, RuPay</div></div></div>
+          <div style="display:flex;gap:12px;align-items:center;border:1px solid rgba(27,42,24,.12);background:#FFFFFF;border-radius:9px;padding:13px 15px"><span style="width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(27,42,24,.3);display:flex;align-items:center;justify-content:center;flex:none"></span><div style="flex:1"><div style="font:500 13px 'DM Sans',sans-serif;color:#1B2A18">Netbanking</div><div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.58);margin-top:2px">All major banks</div></div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:12px;border:1px dashed rgba(27,42,24,.2);border-radius:9px;padding:13px 15px">
+          <div><div style="font:500 13px 'DM Sans',sans-serif;color:#1B2A18">Use SpoonUp credit · ₹1,411</div><div style="font:400 11.5px/1.5 'DM Sans',sans-serif;color:rgba(27,42,24,.58);margin-top:2px">From refunds and referrals. Works on the kitchen and pantry parts of this order.</div></div>
+          <span style="width:38px;height:22px;border-radius:100px;background:rgba(27,42,24,.18);position:relative;flex:none"><span style="position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#FFFFFF"></span></span>
+        </div>
+      </div>
+    </div>
+    <div style="padding:30px 36px;background:#F4F1E7;display:flex;flex-direction:column;gap:14px">
+      <div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">Your order · 3 deliveries</div>
+      <div style="background:#FCFBF7;border:1px solid rgba(74,93,46,.25);border-left:3px solid #4A5D2E;border-radius:8px;padding:13px 14px">
+        <div style="font:500 10px 'JetBrains Mono',monospace;color:#4A5D2E;letter-spacing:.07em">KITCHEN · TODAY 8–9 PM</div>
+        <div style="font:400 12.5px/1.7 'DM Sans',sans-serif;color:#1B2A18;margin-top:6px">Sabudana Sweet Potato Tikki × 1<br>Dragonfruit Smoothie × 1</div>
+        <div style="display:flex;justify-content:space-between;font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-top:6px"><span>To Home</span><span>₹578</span></div>
+      </div>
+      <div style="background:#FCFBF7;border:1px solid rgba(27,42,24,.2);border-left:3px solid #1B2A18;border-radius:8px;padding:13px 14px">
+        <div style="font:500 10px 'JetBrains Mono',monospace;color:#1B2A18;letter-spacing:.07em">PLAN · STARTS THU 24 SEP</div>
+        <div style="font:400 12.5px/1.7 'DM Sans',sans-serif;color:#1B2A18;margin-top:6px">Chocolate Protein Chia Pudding<br>Alternate days · 2 months · 30 deliveries · 7–9 am</div>
+        <div style="display:flex;justify-content:space-between;font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-top:6px"><span>Plan price</span><span>₹9,004</span></div>
+        <div style="font:400 11px/1.5 'DM Sans',sans-serif;color:rgba(27,42,24,.58);margin-top:5px">Goes into your plan wallet · ₹300 used per delivery · skip or pause anytime</div>
+      </div>
+      <div style="background:#FCFBF7;border:1px solid rgba(139,106,70,.3);border-left:3px solid #8B6A46;border-radius:8px;padding:13px 14px">
+        <div style="font:500 10px 'JetBrains Mono',monospace;color:#8B6A46;letter-spacing:.07em">PANTRY · ARRIVES BY 28 SEP</div>
+        <div style="font:400 12.5px/1.7 'DM Sans',sans-serif;color:#1B2A18;margin-top:6px">Kashmiri Dry Fruits 500g × 1</div>
+        <div style="display:flex;justify-content:space-between;font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;margin-top:6px"><span>To Home · courier</span><span>₹899</span></div>
+      </div>
+      <div style="border-top:1px solid rgba(27,42,24,.12);padding-top:12px;display:flex;flex-direction:column;gap:7px;font:400 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.72)">
+        <div style="display:flex;justify-content:space-between"><span>Items</span><span>₹11,947</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Plan discount (14%)</span><span style="color:#4A5D2E">−₹1,466</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Coupon SPOONUP100</span><span style="color:#4A5D2E">−₹100</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Delivery &amp; packaging</span><span>₹49</span></div>
+        <div style="display:flex;justify-content:space-between"><span>GST</span><span>₹218</span></div>
+        <div style="display:flex;justify-content:space-between;font:500 19px 'DM Sans',sans-serif;color:#1B2A18;margin-top:6px"><span>Total</span><span>₹10,648</span></div>
+      </div>
+      <div style="text-align:center;font:500 14.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#4A5D2E;padding:15px;border-radius:9px">Pay ₹10,648 with UPI</div>
+      <div style="font:400 11px/1.55 'DM Sans',sans-serif;color:rgba(27,42,24,.5);text-align:center">By paying you accept the Terms, Wallet &amp; Subscription terms and the Return policy.</div>
+    </div>
+  </div>
+</div></div>
+
+<div class="dv-opt" id="4b"><div class="dv-olabel"><a class="dv-oid" href="#4b">4b</a>Web — Order confirmed: what happens next</div>
+<div class="dv-card" style="width:1080px">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 36px;border-bottom:1px solid rgba(27,42,24,.08)">
+    <img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:42px;width:auto;object-fit:contain">
+    <div style="display:flex;gap:18px;font:500 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.45)"><span>Cart</span><span>Checkout</span><span style="color:#1B2A18">Done</span></div>
+    <div style="font:500 12.5px 'DM Sans',sans-serif;color:#4A5D2E">Ananya · My account</div>
+  </div>
+  <div style="padding:44px 48px 40px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;background:#F4F1E7">
+    <div style="width:56px;height:56px;border-radius:50%;background:#4A5D2E;color:#FCFBF7;display:flex;align-items:center;justify-content:center;font:500 26px 'DM Sans',sans-serif">✓</div>
+    <div style="font:400 42px/1.1 'Instrument Serif',serif;color:#1B2A18">Thank you, Ananya. Your order is in.</div>
+    <div style="font:400 13.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">Order SU-24817 · ₹10,648 paid with UPI · receipt sent to ananya.rao@gmail.com</div>
+  </div>
+  <div style="padding:30px 36px 10px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+    <div style="border:1px solid rgba(74,93,46,.25);border-top:3px solid #4A5D2E;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:8px;background:#FFFFFF">
+      <div style="font:500 10px 'JetBrains Mono',monospace;color:#4A5D2E;letter-spacing:.08em">KITCHEN ORDER</div>
+      <div style="font:400 22px/1.2 'Instrument Serif',serif;color:#1B2A18">Arriving today, 8–9 pm</div>
+      <div style="font:400 12.5px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">Tikki and Dragonfruit Smoothie, made fresh. We'll message you on WhatsApp when the rider leaves.</div>
+    </div>
+    <div style="border:1px solid rgba(27,42,24,.2);border-top:3px solid #1B2A18;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:8px;background:#FFFFFF">
+      <div style="font:500 10px 'JetBrains Mono',monospace;color:#1B2A18;letter-spacing:.08em">YOUR PLAN</div>
+      <div style="font:400 22px/1.2 'Instrument Serif',serif;color:#1B2A18">First jar tomorrow, 7–9 am</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:2px"><span style="font:500 11px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;border-radius:6px;padding:6px 8px;text-align:center">Thu 24</span><span style="font:500 11px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;border-radius:6px;padding:6px 8px;text-align:center">Sat 26</span><span style="font:500 11px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;border-radius:6px;padding:6px 8px;text-align:center">Mon 28</span><span style="font:500 11px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;border-radius:6px;padding:6px 8px;text-align:center">Wed 30</span><span style="font:500 11px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;border-radius:6px;padding:6px 8px;text-align:center">Fri 2</span></div>
+      <div style="font:400 12.5px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">+25 more · ₹9,004 is in your plan wallet. Skip or pause any day from My plans.</div>
+    </div>
+    <div style="border:1px solid rgba(139,106,70,.3);border-top:3px solid #8B6A46;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:8px;background:#FFFFFF">
+      <div style="font:500 10px 'JetBrains Mono',monospace;color:#8B6A46;letter-spacing:.08em">PANTRY SHIPMENT</div>
+      <div style="font:400 22px/1.2 'Instrument Serif',serif;color:#1B2A18">Arrives by Mon 28 Sep</div>
+      <div style="font:400 12.5px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">Kashmiri Dry Fruits, sourced for your order. The courier tracking link comes by WhatsApp and email once it ships.</div>
+    </div>
+  </div>
+  <div style="padding:22px 36px 36px;display:flex;gap:12px;justify-content:center;align-items:center">
+    <div style="font:500 14px 'DM Sans',sans-serif;color:#FCFBF7;background:#4A5D2E;padding:14px 26px;border-radius:10px">Track this order</div>
+    <div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18;border:1px solid rgba(27,42,24,.2);padding:14px 26px;border-radius:10px">Manage my plan</div>
+    <div style="font:500 13.5px 'DM Sans',sans-serif;color:#4A5D2E;padding:14px 10px">Continue shopping</div>
+  </div>
+  <div style="margin:0 36px 36px;background:#1B2A18;border-radius:12px;padding:18px 22px;display:flex;justify-content:space-between;align-items:center">
+    <div><div style="font:400 22px 'Instrument Serif',serif;color:#FCFBF7">Give ₹150, get ₹150</div><div style="font:400 12.5px 'DM Sans',sans-serif;color:rgba(252,251,247,.7);margin-top:3px">Share your code. When a friend places their first order, you both get ₹150 of credit.</div></div>
+    <div style="display:flex;gap:10px;align-items:center"><span style="font:500 14px 'JetBrains Mono',monospace;color:#FCFBF7;border:1px dashed rgba(252,251,247,.4);padding:10px 14px;border-radius:8px">ANANYA150</span><span style="font:500 13px 'DM Sans',sans-serif;color:#1B2A18;background:#A8B98C;padding:11px 16px;border-radius:8px">Share on WhatsApp</span></div>
+  </div>
+</div></div>
+
+<div class="dv-opt" id="3b"><div class="dv-olabel"><a class="dv-oid" href="#3b">3b</a>Web — My account: orders, tracking, plans, wallet</div>
+<div class="dv-card" style="width:1280px">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid rgba(27,42,24,.08);background:#FCFBF7">
+    <img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:46px;width:auto;object-fit:contain">
+    <div style="display:flex;gap:28px;font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18"><span>Eat Now</span><span>Subscribe</span><span>Pantry</span><span>Our Story</span></div>
+    <div style="display:flex;gap:10px;align-items:center"><div style="display:flex;gap:9px;align-items:center;font:500 13px 'DM Sans',sans-serif;color:#1B2A18;padding:6px 14px 6px 6px;border:1px solid rgba(27,42,24,.16);border-radius:100px"><span style="width:28px;height:28px;border-radius:50%;background:#4A5D2E;color:#FCFBF7;display:flex;align-items:center;justify-content:center;font:500 12px 'DM Sans',sans-serif">AR</span>Ananya</div><div style="font:500 13px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:10px 18px;border-radius:100px">Cart · 0</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:230px minmax(0,1fr);background:#F4F1E7">
+    <div style="padding:28px 18px 28px 40px;display:flex;flex-direction:column;gap:4px;border-right:1px solid rgba(27,42,24,.08);background:#FCFBF7">
+        <div style="font:500 13.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:11px 14px;border-radius:8px">Overview</div>
+        <div style="font:400 13.5px 'DM Sans',sans-serif;color:#1B2A18;padding:11px 14px;border-radius:8px">Orders</div>
+        <div style="font:400 13.5px 'DM Sans',sans-serif;color:#1B2A18;padding:11px 14px;border-radius:8px">My plans</div>
+        <div style="font:400 13.5px 'DM Sans',sans-serif;color:#1B2A18;padding:11px 14px;border-radius:8px">Wallet</div>
+        <div style="font:400 13.5px 'DM Sans',sans-serif;color:#1B2A18;padding:11px 14px;border-radius:8px">Addresses</div>
+        <div style="font:400 13.5px 'DM Sans',sans-serif;color:#1B2A18;padding:11px 14px;border-radius:8px">Refer &amp; earn</div>
+        <div style="font:400 13.5px 'DM Sans',sans-serif;color:#1B2A18;padding:11px 14px;border-radius:8px">Profile &amp; settings</div>
+        <div style="height:1px;background:rgba(27,42,24,.1);margin:14px 0"></div>
+        <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);padding:8px 14px">Help &amp; support</div>
+        <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);padding:8px 14px">Sign out</div>
+    </div>
+    <div style="padding:30px 40px 40px 32px;display:flex;flex-direction:column;gap:22px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div><div style="font:400 36px/1.1 'Instrument Serif',serif;color:#1B2A18">Good evening, Ananya</div><div style="font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-top:6px">One order on its way · next plan delivery tomorrow, 7–9 am</div></div>
+        <div style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.5)">Member since Mar 2026 · 14 orders</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+        <div style="background:#1B2A18;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:6px">
+          <div style="font:500 10.5px 'JetBrains Mono',monospace;color:#A8B98C;letter-spacing:.09em">WALLET</div>
+          <div style="font:400 32px 'Instrument Serif',serif;color:#FCFBF7">₹9,815</div>
+          <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(252,251,247,.7)">₹8,404 plan balance · ₹1,411 spendable</div>
+          <div style="display:flex;gap:8px;margin-top:8px;font:500 12px 'DM Sans',sans-serif"><span style="color:#1B2A18;background:#A8B98C;padding:8px 13px;border-radius:7px">Top up</span><span style="color:#FCFBF7;border:1px solid rgba(252,251,247,.3);padding:8px 13px;border-radius:7px">Activity</span></div>
+        </div>
+        <div style="background:#FCFBF7;border:1px solid rgba(27,42,24,.1);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:6px">
+          <div style="font:500 10.5px 'JetBrains Mono',monospace;color:#1B2A18;letter-spacing:.09em">ACTIVE PLANS</div>
+          <div style="font:400 32px 'Instrument Serif',serif;color:#1B2A18">2</div>
+          <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Chia Pudding · alt. days — 2 of 30 done</div>
+          <div style="height:5px;border-radius:3px;background:rgba(27,42,24,.1);overflow:hidden;margin-top:6px"><div style="width:7%;height:100%;background:#4A5D2E"></div></div>
+          <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-top:4px">Dragonfruit Smoothie · weekly — paused</div>
+        </div>
+        <div style="background:#FCFBF7;border:1px solid rgba(27,42,24,.1);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:6px">
+          <div style="font:500 10.5px 'JetBrains Mono',monospace;color:#8B6A46;letter-spacing:.09em">REFER &amp; EARN</div>
+          <div style="font:400 22px/1.2 'Instrument Serif',serif;color:#1B2A18">Give ₹150, get ₹150</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;border:1px dashed rgba(139,106,70,.45);border-radius:8px;padding:10px 12px;margin-top:6px"><span style="font:500 13px 'JetBrains Mono',monospace;color:#1B2A18">ANANYA150</span><span style="font:500 11.5px 'DM Sans',sans-serif;color:#8B6A46">Copy link</span></div>
+          <div style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-top:4px">3 friends joined · ₹450 earned</div>
+        </div>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid rgba(27,42,24,.1);border-radius:12px;padding:20px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">
+          <div><span style="font:400 22px 'Instrument Serif',serif;color:#1B2A18">Track your order</span><span style="font:400 12px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-left:10px">SU-24817 · placed 22 Sep, 6:42 pm · ₹10,648 · 3 parts</span></div>
+          <span style="font:500 12px 'DM Sans',sans-serif;color:#4A5D2E">Need help with this order?</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px">
+          
+          <div style="border:1px solid rgba(74,93,46,.25);border-left:3px solid #4A5D2E;border-radius:9px;padding:14px 16px;background:#FCFBF7">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font:500 10px 'JetBrains Mono',monospace;color:#4A5D2E;letter-spacing:.08em">EAT NOW</span><span style="font:500 12px 'DM Sans',sans-serif;color:#4A5D2E">Out for delivery</span></div>
+            <div style="font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18;margin-top:8px">Sabudana Tikki × 1 · Dragonfruit Smoothie × 1</div>
+            <div style="display:flex;gap:5px;margin-top:12px"><span style="flex:1;height:4px;border-radius:2px;background:#4A5D2E"></span><span style="flex:1;height:4px;border-radius:2px;background:#4A5D2E"></span><span style="flex:1;height:4px;border-radius:2px;background:#4A5D2E"></span><span style="flex:1;height:4px;border-radius:2px;background:rgba(27,42,24,.12)"></span></div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.5);margin-top:6px"><span>Placed</span><span>Preparing</span><span>On the way</span><span>Delivered</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><span style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Rider Suresh · 12 min away</span><span style="font:500 12px 'DM Sans',sans-serif;color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:7px 12px;border-radius:7px">Track live</span></div>
+          </div>
+          
+          <div style="border:1px solid rgba(27,42,24,.2);border-left:3px solid #1B2A18;border-radius:9px;padding:14px 16px;background:#FCFBF7">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font:500 10px 'JetBrains Mono',monospace;color:#1B2A18;letter-spacing:.08em">SUBSCRIPTION</span><span style="font:500 12px 'DM Sans',sans-serif;color:#1B2A18">Active</span></div>
+            <div style="font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18;margin-top:8px">Chia Pudding · alt. days · 30 jars</div>
+            <div style="display:flex;gap:5px;margin-top:12px"><span style="flex:1;height:4px;border-radius:2px;background:#1B2A18"></span><span style="flex:1;height:4px;border-radius:2px;background:#1B2A18"></span><span style="flex:1;height:4px;border-radius:2px;background:rgba(27,42,24,.12)"></span><span style="flex:1;height:4px;border-radius:2px;background:rgba(27,42,24,.12)"></span></div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.5);margin-top:6px"><span>Paid</span><span>Started</span><span>Midway</span><span>Complete</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><span style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Next: 24 Sep, 7–9 am</span><span style="font:500 12px 'DM Sans',sans-serif;color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:7px 12px;border-radius:7px">Manage plan</span></div>
+          </div>
+          
+          <div style="border:1px solid rgba(139,106,70,.3);border-left:3px solid #8B6A46;border-radius:9px;padding:14px 16px;background:#FCFBF7">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font:500 10px 'JetBrains Mono',monospace;color:#8B6A46;letter-spacing:.08em">PANTRY</span><span style="font:500 12px 'DM Sans',sans-serif;color:#8B6A46">Sourcing</span></div>
+            <div style="font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18;margin-top:8px">Kashmiri Dry Fruits 500g × 1</div>
+            <div style="display:flex;gap:5px;margin-top:12px"><span style="flex:1;height:4px;border-radius:2px;background:#8B6A46"></span><span style="flex:1;height:4px;border-radius:2px;background:#8B6A46"></span><span style="flex:1;height:4px;border-radius:2px;background:rgba(27,42,24,.12)"></span><span style="flex:1;height:4px;border-radius:2px;background:rgba(27,42,24,.12)"></span></div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);font:400 10.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.5);margin-top:6px"><span>Ordered</span><span>Sourcing</span><span>Shipped</span><span>Delivered</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><span style="font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Arrives by 27 Sep</span><span style="font:500 12px 'DM Sans',sans-serif;color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:7px 12px;border-radius:7px">Details</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;align-items:start">
+        <div style="background:#FFFFFF;border:1px solid rgba(27,42,24,.1);border-radius:12px;overflow:hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 16px 12px">
+            <span style="font:400 22px 'Instrument Serif',serif;color:#1B2A18">Previous orders</span>
+            <div style="display:flex;gap:7px;font:500 11.5px 'DM Sans',sans-serif"><span style="color:#FCFBF7;background:#1B2A18;padding:7px 12px;border-radius:100px">All</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.16);padding:7px 12px;border-radius:100px">Eat now</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.16);padding:7px 12px;border-radius:100px">Pantry</span></div>
+          </div>
+          <div style="display:grid;grid-template-columns:78px minmax(0,1fr) 64px 132px;gap:12px;padding:10px 16px;background:#F4F1E7;font:500 10px 'JetBrains Mono',monospace;color:rgba(27,42,24,.55);letter-spacing:.06em"><div>ORDER</div><div>ITEMS</div><div>TOTAL</div><div></div></div>
+          
+            <div style="display:grid;grid-template-columns:78px minmax(0,1fr) 64px 132px;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid rgba(27,42,24,.07);font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18">
+              <div><div style="font:400 11px 'JetBrains Mono',monospace">SU-24802</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:2px">19 Sep</div></div><div><div>Peri Peri House Fries × 2</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:3px"><span style="font:500 9.5px 'JetBrains Mono',monospace;color:#1B2A18;letter-spacing:.06em">SCHEDULED</span> · Delivered</div></div><div style="font-weight:500">₹458</div>
+              <div style="display:flex;gap:7px;justify-content:flex-end;align-items:center;font:500 11.5px 'DM Sans',sans-serif"><span style="color:#FCFBF7;background:#1B2A18;padding:7px 12px;border-radius:7px">Reorder</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:7px 10px;border-radius:7px">Invoice</span></div>
+            </div>
+          
+            <div style="display:grid;grid-template-columns:78px minmax(0,1fr) 64px 132px;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid rgba(27,42,24,.07);font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18">
+              <div><div style="font:400 11px 'JetBrains Mono',monospace">SU-24761</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:2px">14 Sep</div></div><div><div>Chia Pudding × 2, Tikki × 1</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:3px"><span style="font:500 9.5px 'JetBrains Mono',monospace;color:#4A5D2E;letter-spacing:.06em">EAT NOW</span> · Delivered</div></div><div style="font-weight:500">₹947</div>
+              <div style="display:flex;gap:7px;justify-content:flex-end;align-items:center;font:500 11.5px 'DM Sans',sans-serif"><span style="color:#FCFBF7;background:#1B2A18;padding:7px 12px;border-radius:7px">Reorder</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:7px 10px;border-radius:7px">Invoice</span></div>
+            </div>
+          
+            <div style="display:grid;grid-template-columns:78px minmax(0,1fr) 64px 132px;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid rgba(27,42,24,.07);font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18">
+              <div><div style="font:400 11px 'JetBrains Mono',monospace">SU-24690</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:2px">06 Sep</div></div><div><div>Kashmiri Muesli, Gulkand Modak</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:3px"><span style="font:500 9.5px 'JetBrains Mono',monospace;color:#8B6A46;letter-spacing:.06em">PANTRY</span> · Delivered</div></div><div style="font-weight:500">₹1,200</div>
+              <div style="display:flex;gap:7px;justify-content:flex-end;align-items:center;font:500 11.5px 'DM Sans',sans-serif"><span style="color:#FCFBF7;background:#1B2A18;padding:7px 12px;border-radius:7px">Reorder</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:7px 10px;border-radius:7px">Invoice</span></div>
+            </div>
+          
+            <div style="display:grid;grid-template-columns:78px minmax(0,1fr) 64px 132px;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid rgba(27,42,24,.07);font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18">
+              <div><div style="font:400 11px 'JetBrains Mono',monospace">SU-24588</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:2px">29 Aug</div></div><div><div>Dragonfruit Smoothie × 3</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-top:3px"><span style="font:500 9.5px 'JetBrains Mono',monospace;color:#4A5D2E;letter-spacing:.06em">EAT NOW</span> · Part refund</div></div><div style="font-weight:500">₹987</div>
+              <div style="display:flex;gap:7px;justify-content:flex-end;align-items:center;font:500 11.5px 'DM Sans',sans-serif"><span style="color:#FCFBF7;background:#1B2A18;padding:7px 12px;border-radius:7px">Reorder</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:7px 10px;border-radius:7px">Invoice</span></div>
+            </div>
+          <div style="padding:13px 16px;border-top:1px solid rgba(27,42,24,.07);font:500 12.5px 'DM Sans',sans-serif;color:#4A5D2E">View all 14 orders →</div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(27,42,24,.1);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 22px 'Instrument Serif',serif;color:#1B2A18">Wallet activity</span><span style="font:500 12px 'DM Sans',sans-serif;color:#4A5D2E">See all</span></div>
+          <div style="display:flex;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid rgba(27,42,24,.07)"><div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">Plan delivery · Chia Pudding</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">22 Sep · plan balance</div></div><div style="font:500 13px 'DM Sans',sans-serif;color:#1B2A18">−₹300</div></div>
+          <div style="display:flex;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid rgba(27,42,24,.07)"><div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">Referral · Meher S.</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">21 Sep · spendable</div></div><div style="font:500 13px 'DM Sans',sans-serif;color:#4A5D2E">+₹150</div></div>
+          <div style="display:flex;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid rgba(27,42,24,.07)"><div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">Plan loaded · 2 months</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">20 Sep · UPI</div></div><div style="font:500 13px 'DM Sans',sans-serif;color:#4A5D2E">+₹9,004</div></div>
+          <div style="display:flex;justify-content:space-between"><div><div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">Refund · cancelled smoothie</div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">29 Aug · spendable</div></div><div style="font:500 13px 'DM Sans',sans-serif;color:#4A5D2E">+₹329</div></div>
+          <div style="background:#F4F1E7;border-radius:9px;padding:11px 12px;font:400 11px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">Plan balance pays for subscription deliveries only and can't be withdrawn. Exceptions: support@spoonupfoods.com</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">
+        <div style="background:#FFFFFF;border:1px solid rgba(27,42,24,.1);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 20px 'Instrument Serif',serif;color:#1B2A18">Saved addresses</span><span style="font:500 12px 'DM Sans',sans-serif;color:#4A5D2E">+ Add</span></div>
+          <div style="font:400 12.5px/1.6 'DM Sans',sans-serif;color:#1B2A18"><strong style="font-weight:500">Home</strong> · 402, Sunrise Residency, Koramangala 5th Block, Bengaluru 560095 <span style="font:500 10px 'JetBrains Mono',monospace;color:#4A5D2E;margin-left:6px">DEFAULT</span></div>
+          <div style="font:400 12.5px/1.6 'DM Sans',sans-serif;color:#1B2A18"><strong style="font-weight:500">Office</strong> · WeWork Galaxy, Residency Road, Bengaluru 560025</div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(27,42,24,.1);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 20px 'Instrument Serif',serif;color:#1B2A18">Profile</span><span style="font:500 12px 'DM Sans',sans-serif;color:#4A5D2E">Edit</span></div>
+          <div style="font:400 12.5px/1.8 'DM Sans',sans-serif;color:#1B2A18">Ananya Rao · ananya.rao@gmail.com · +91 98861 22321<br><span style="color:rgba(27,42,24,.6)">Signed in with Google · WhatsApp order updates on</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div class="dv-opt" id="3a"><div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Web — Sign in / sign up</div>
+<div class="dv-card" style="width:1280px">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid rgba(27,42,24,.08);background:#FCFBF7">
+    <img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:46px;width:auto;object-fit:contain">
+    <div style="display:flex;gap:28px;font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18"><span>Eat Now</span><span>Subscribe</span><span>Pantry</span><span>Our Story</span></div>
+    <div style="display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:8px;font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;padding:9px 14px;border-radius:100px;background:#F4F1E7;border:1px solid rgba(27,42,24,.1)"><span style="width:7px;height:7px;border-radius:50%;background:#4A5D2E"></span>Koramangala 560095 · ~35 min<span style="color:rgba(27,42,24,.45)">▾</span></div><div style="font:500 13px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:10px 18px;border-radius:100px">Cart · 3</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);min-height:680px">
+    <div style="position:relative;min-height:680px"><image-slot id="signin-hero" src="assets/generated/founders.jpg" shape="rect" style="width:100%;height:100%" placeholder="Sign-in image"></image-slot>
+      <div style="position:absolute;left:32px;right:32px;bottom:32px;pointer-events:none;background:rgba(27,42,24,.86);border-radius:12px;padding:22px 24px;display:flex;flex-direction:column;gap:8px">
+        <div style="font:400 26px/1.2 'Instrument Serif',serif;color:#FCFBF7">“Eat healthy, eat longer, live longer.”</div>
+        <div style="font:400 12.5px 'DM Sans',sans-serif;color:rgba(252,251,247,.75)">Made at home, by the family behind SpoonUp.</div>
+      </div>
+    </div>
+    <div style="padding:64px 72px;display:flex;flex-direction:column;justify-content:center;gap:18px;background:#FCFBF7">
+      <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#8B6A46;text-transform:uppercase">Welcome back</div>
+      <div style="font:400 44px/1.08 'Instrument Serif',serif;color:#1B2A18">Sign in to your<br>SpoonUp account</div>
+      <div style="font:400 14.5px/1.65 'DM Sans',sans-serif;color:rgba(27,42,24,.65);max-width:420px">Track live orders, manage your plans and wallet, and reorder favourites. One account across web and app.</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;background:#1B2A18;color:#FCFBF7;font:500 14px 'DM Sans',sans-serif;padding:15px;border-radius:10px;margin-top:8px;max-width:420px"><span style="width:16px;height:16px;border-radius:50%;background:#FCFBF7;display:inline-block"></span>Continue with Google</div>
+      <div style="display:flex;align-items:center;gap:10px;font:400 11.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.45);max-width:420px"><span style="flex:1;height:1px;background:rgba(27,42,24,.12)"></span>or use your phone<span style="flex:1;height:1px;background:rgba(27,42,24,.12)"></span></div>
+      <div style="display:flex;gap:10px;max-width:420px">
+        <div style="border:1px solid rgba(27,42,24,.16);border-radius:10px;padding:14px;font:500 14px 'DM Sans',sans-serif;color:#1B2A18">+91</div>
+        <div style="flex:1;border:1px solid rgba(27,42,24,.16);border-radius:10px;padding:14px;font:400 14px 'DM Sans',sans-serif;color:rgba(27,42,24,.4)">Mobile number</div>
+      </div>
+      <div style="text-align:center;font:500 14px 'DM Sans',sans-serif;color:#FCFBF7;background:#4A5D2E;padding:15px;border-radius:10px;max-width:420px">Send OTP</div>
+      <div style="display:flex;gap:10px;max-width:420px;font:500 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.35)"><span style="flex:1;text-align:center;border:1px dashed rgba(27,42,24,.15);padding:12px;border-radius:10px">Facebook · soon</span><span style="flex:1;text-align:center;border:1px dashed rgba(27,42,24,.15);padding:12px;border-radius:10px">Apple · soon</span></div>
+      <div style="font:400 12px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.55);max-width:420px;margin-top:6px">New here? Signing in creates your account. Have a referral code? Add it after — you both get ₹150 in wallet credit.</div>
+      <div style="font:400 11px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.45);max-width:420px">By continuing you accept our Terms &amp; Conditions and Privacy Policy.</div>
+    </div>
+  </div>
+</div></div>
+
+<div class="dv-opt" id="4c"><div class="dv-olabel"><a class="dv-oid" href="#4c">4c</a>Web — 404: half-eaten cookie — "Someone ate this page"</div>
+<div class="dv-card" style="width:1280px">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid rgba(27,42,24,.08);background:#FCFBF7">
+    <img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:46px;width:auto;object-fit:contain">
+    <div style="display:flex;gap:28px;font:500 13.5px 'DM Sans',sans-serif;color:#1B2A18"><span>Eat Now</span><span>Subscribe</span><span>Pantry</span><span>Our Story</span></div>
+    <div style="display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:8px;font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18;padding:9px 14px;border-radius:100px;background:#F4F1E7;border:1px solid rgba(27,42,24,.1)"><span style="width:7px;height:7px;border-radius:50%;background:#4A5D2E"></span>Koramangala 560095 · ~35 min<span style="color:rgba(27,42,24,.45)">▾</span></div><div style="font:500 13px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:10px 18px;border-radius:100px">Cart · 0</div></div>
+  </div>
+
+  <div style="background:#F4F1E7;padding:64px 40px 60px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px;position:relative;overflow:hidden">
+    <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#8B6A46;text-transform:uppercase">Error 404 · Page not found</div>
+    <div style="display:flex;align-items:center;gap:18px">
+      <span style="font:400 230px/0.85 'Instrument Serif',serif;color:#1B2A18;letter-spacing:-.02em">4</span>
+      <div style="position:relative;width:215px;height:232px;flex:none">
+      <span style="position:absolute;left:28px;right:22px;bottom:4px;height:18px;border-radius:50%;background:rgba(27,42,24,.16);filter:blur(7px)"></span>
+      <div style="position:absolute;left:5px;top:5px;width:200px;height:200px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 38% 34%, #E2B478 0%, #C99257 45%, #A8733D 85%, #8E5E2F 100%);box-shadow:inset 0 -9px 18px rgba(90,55,25,.38), inset 0 6px 12px rgba(255,235,200,.35)">
+        <span style="position:absolute;left:58px;top:34px;width:9px;height:9px;border-radius:50%;background:rgba(255,232,196,.28)"></span><span style="position:absolute;left:120px;top:70px;width:7px;height:7px;border-radius:50%;background:rgba(255,232,196,.28)"></span><span style="position:absolute;left:32px;top:128px;width:8px;height:8px;border-radius:50%;background:rgba(255,232,196,.28)"></span><span style="position:absolute;left:96px;top:170px;width:6px;height:6px;border-radius:50%;background:rgba(255,232,196,.28)"></span><span style="position:absolute;left:140px;top:128px;width:7px;height:7px;border-radius:50%;background:rgba(255,232,196,.28)"></span>
+        <span style="position:absolute;left:40px;top:58px;width:17px;height:14px;background:#3A2314;border-radius:45% 55% 50% 40%;transform:rotate(-12deg);box-shadow:inset 1px 1px 0 rgba(255,235,210,.18)"></span><span style="position:absolute;left:82px;top:44px;width:12px;height:10px;background:#3A2314;border-radius:45% 55% 50% 40%;transform:rotate(20deg);box-shadow:inset 1px 1px 0 rgba(255,235,210,.18)"></span><span style="position:absolute;left:78px;top:108px;width:15px;height:12px;background:#3A2314;border-radius:45% 55% 50% 40%;transform:rotate(8deg);box-shadow:inset 1px 1px 0 rgba(255,235,210,.18)"></span><span style="position:absolute;left:30px;top:98px;width:11px;height:9px;background:#3A2314;border-radius:45% 55% 50% 40%;transform:rotate(-30deg);box-shadow:inset 1px 1px 0 rgba(255,235,210,.18)"></span><span style="position:absolute;left:50px;top:142px;width:18px;height:14px;background:#3A2314;border-radius:45% 55% 50% 40%;transform:rotate(15deg);box-shadow:inset 1px 1px 0 rgba(255,235,210,.18)"></span><span style="position:absolute;left:110px;top:150px;width:15px;height:12px;background:#3A2314;border-radius:45% 55% 50% 40%;transform:rotate(-8deg);box-shadow:inset 1px 1px 0 rgba(255,235,210,.18)"></span><span style="position:absolute;left:128px;top:96px;width:13px;height:11px;background:#3A2314;border-radius:45% 55% 50% 40%;transform:rotate(35deg);box-shadow:inset 1px 1px 0 rgba(255,235,210,.18)"></span><span style="position:absolute;left:150px;top:148px;width:14px;height:12px;background:#3A2314;border-radius:45% 55% 50% 40%;transform:rotate(-20deg);box-shadow:inset 1px 1px 0 rgba(255,235,210,.18)"></span><span style="position:absolute;left:166px;top:112px;width:11px;height:9px;background:#3A2314;border-radius:45% 55% 50% 40%;transform:rotate(10deg);box-shadow:inset 1px 1px 0 rgba(255,235,210,.18)"></span>
+        <span style="position:absolute;left:142px;top:-32px;width:90px;height:90px;border-radius:50%;background:#E9C893"></span><span style="position:absolute;left:170px;top:28px;width:76px;height:76px;border-radius:50%;background:#E9C893"></span><span style="position:absolute;left:104px;top:-46px;width:72px;height:72px;border-radius:50%;background:#E9C893"></span><span style="position:absolute;left:148px;top:-26px;width:78px;height:78px;border-radius:50%;background:#F4F1E7"></span><span style="position:absolute;left:176px;top:34px;width:64px;height:64px;border-radius:50%;background:#F4F1E7"></span><span style="position:absolute;left:110px;top:-40px;width:60px;height:60px;border-radius:50%;background:#F4F1E7"></span>
+      </div>
+      <span style="position:absolute;left:196px;top:112px;width:6px;height:5px;background:#C99257;border-radius:40% 60% 45% 55%;transform:rotate(20deg)"></span><span style="position:absolute;left:186px;top:146px;width:9px;height:7px;background:#A8733D;border-radius:40% 60% 45% 55%;transform:rotate(-15deg)"></span><span style="position:absolute;left:203px;top:170px;width:6px;height:5px;background:#C99257;border-radius:40% 60% 45% 55%;transform:rotate(40deg)"></span><span style="position:absolute;left:174px;top:196px;width:10px;height:8px;background:#B98347;border-radius:40% 60% 45% 55%;transform:rotate(10deg)"></span><span style="position:absolute;left:150px;top:214px;width:5px;height:4px;background:#A8733D;border-radius:40% 60% 45% 55%;transform:rotate(-30deg)"></span><span style="position:absolute;left:196px;top:208px;width:4px;height:4px;background:#C99257;border-radius:40% 60% 45% 55%;transform:rotate(0deg)"></span>
+    </div>
+      <span style="font:400 230px/0.85 'Instrument Serif',serif;color:#1B2A18;letter-spacing:-.02em">4</span>
+    </div>
+    <div style="font:400 56px/1.05 'Instrument Serif',serif;color:#1B2A18;margin-top:10px">Someone <em>ate</em> this page.</div>
+    <div style="font:400 16px/1.65 'DM Sans',sans-serif;color:rgba(27,42,24,.68);max-width:560px;text-wrap:pretty">We checked the fridge, the pantry and every delivery bag. All we found was an empty jar and a spoon. The link may be old, or the page has moved.</div>
+    <div style="display:flex;gap:10px;align-items:center;width:100%;max-width:560px;margin-top:6px">
+      <div style="flex:1;display:flex;align-items:center;gap:10px;background:#FFFFFF;border:1px solid rgba(27,42,24,.16);border-radius:100px;padding:14px 20px;font:400 14px 'DM Sans',sans-serif;color:rgba(27,42,24,.45);text-align:left">Search puddings, smoothies, dry fruits…</div>
+      <div style="font:500 14px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:14px 22px;border-radius:100px">Search</div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:4px">
+      <div style="font:500 14px 'DM Sans',sans-serif;color:#FCFBF7;background:#4A5D2E;padding:14px 26px;border-radius:100px">Back to home</div>
+      <div style="font:500 14px 'DM Sans',sans-serif;color:#1B2A18;padding:14px 26px;border-radius:100px;border:1px solid rgba(27,42,24,.2)">Track an order</div>
+    </div>
+  </div>
+
+  <div style="padding:48px 40px 12px;display:flex;align-items:baseline;justify-content:space-between">
+    <div style="font:400 32px/1.1 'Instrument Serif',serif;color:#1B2A18">Still fresh, still here</div>
+    <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">Pick up where you meant to go</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;padding:20px 40px 48px">
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:12px;overflow:hidden;background:#FCFBF7">
+        <div style="height:150px;position:relative"><image-slot id="p404-now" src="assets/generated/eat-now.jpg" shape="rect" style="width:100%;height:100%" placeholder="Eat Now"></image-slot></div>
+        <div style="padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px">
+          <div style="align-self:flex-start;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#4A5D2E;background:rgba(74,93,46,.1);padding:5px 9px;border-radius:4px">NOW · 30–45 MIN</div>
+          <div style="font:400 22px/1.2 'Instrument Serif',serif;color:#1B2A18">Eat Now</div>
+          <div style="font:400 13px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">Tikkis, smoothies and puddings from our kitchen, at your door in about 35 minutes.</div>
+          <div style="font:500 13px 'DM Sans',sans-serif;color:#4A5D2E;margin-top:4px">Order now →</div>
+        </div>
+      </div>
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:12px;overflow:hidden;background:#FCFBF7">
+        <div style="height:150px;position:relative"><image-slot id="p404-plan" src="assets/generated/week-jars.jpg" shape="rect" style="width:100%;height:100%" placeholder="Subscribe"></image-slot></div>
+        <div style="padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px">
+          <div style="align-self:flex-start;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#1B2A18;background:rgba(27,42,24,.09);padding:5px 9px;border-radius:4px">PLAN · UP TO 18% OFF</div>
+          <div style="font:400 22px/1.2 'Instrument Serif',serif;color:#1B2A18">Subscribe</div>
+          <div style="font:400 13px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">Pick a product, a rhythm and a duration. Breakfast, handled.</div>
+          <div style="font:500 13px 'DM Sans',sans-serif;color:#4A5D2E;margin-top:4px">Build a plan →</div>
+        </div>
+      </div>
+    <div style="border:1px solid rgba(27,42,24,.1);border-radius:12px;overflow:hidden;background:#FCFBF7">
+        <div style="height:150px;position:relative"><image-slot id="p404-pantry" src="assets/generated/pantry.jpg" shape="rect" style="width:100%;height:100%" placeholder="Pantry"></image-slot></div>
+        <div style="padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px">
+          <div style="align-self:flex-start;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#8B6A46;background:rgba(139,106,70,.12);padding:5px 9px;border-radius:4px">SHIPS · 3–5 DAYS</div>
+          <div style="font:400 22px/1.2 'Instrument Serif',serif;color:#1B2A18">Pantry</div>
+          <div style="font:400 13px/1.6 'DM Sans',sans-serif;color:rgba(27,42,24,.65)">Kashmiri dry fruits, muesli and modak, sourced for each order.</div>
+          <div style="font:500 13px 'DM Sans',sans-serif;color:#4A5D2E;margin-top:4px">Shop pantry →</div>
+        </div>
+      </div>
+  </div>
+
+  <div style="margin:0 40px 44px;background:#1B2A18;border-radius:12px;padding:22px 26px;display:flex;justify-content:space-between;align-items:center;gap:20px">
+    <div><div style="font:400 24px 'Instrument Serif',serif;color:#FCFBF7">Looking for something specific?</div><div style="font:400 13px 'DM Sans',sans-serif;color:rgba(252,251,247,.72);margin-top:4px">Tell us what link you followed and we'll point you to the right place.</div></div>
+    <div style="display:flex;gap:10px;font:500 13px 'DM Sans',sans-serif"><span style="color:#1B2A18;background:#A8B98C;padding:12px 18px;border-radius:9px">Chat on WhatsApp</span><span style="color:#FCFBF7;border:1px solid rgba(252,251,247,.3);padding:12px 18px;border-radius:9px">support@spoonupfoods.com</span></div>
+  </div>
+
+  <div style="padding:34px 40px;display:flex;justify-content:space-between;align-items:flex-start;background:#FCFBF7;border-top:1px solid rgba(27,42,24,.08);font:400 12.5px/2 'DM Sans',sans-serif;color:rgba(27,42,24,.6)">
+    <div style="display:flex;flex-direction:column;gap:6px"><img src="assets/spoonup-logo.png" alt="SpoonUp" style="height:52px;width:auto;align-self:flex-start;object-fit:contain;margin-bottom:8px"><span>Good food, higher days.</span></div>
+    <div><div style="font-weight:500;color:#1B2A18">Shop</div>Eat Now<br>Subscriptions<br>Pantry</div>
+    <div><div style="font-weight:500;color:#1B2A18">Company</div>Our story<br>Contact us<br>Careers</div>
+    <div><div style="font-weight:500;color:#1B2A18">Policies</div>Terms &amp; conditions<br>Privacy policy<br>Returns &amp; refunds<br>Shipping policy<br>Wallet &amp; subscription terms</div>
+  </div>
+</div></div>
+</div>
+</section>
+
+<section class="dv-turn" id="admin">
+<div class="dv-thd"><a class="dv-tid" href="#admin">C</a><span class="dv-tname">Admin panel</span></div>
+<p class="dv-tsub">Operations: all orders split by part, taking an order on a customer’s behalf, and coupons.</p>
+<div class="dv-opts">
+<div class="dv-opt" id="1d"><div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Admin — Orders, split by part</div>
+<div class="dv-card" style="width:1280px;background:#F7F6F1">
+  <div style="display:flex;min-height:760px">
+    <div style="width:210px;background:#1B2A18;padding:20px 16px;display:flex;flex-direction:column;gap:6px">
+      <div style="font:500 12px 'JetBrains Mono',monospace;color:#A8B98C;letter-spacing:.1em;padding:6px 10px 14px">SPOONUP ADMIN</div>
+      <div style="font:500 13px 'DM Sans',sans-serif;color:#FCFBF7;background:rgba(252,251,247,.12);padding:10px 12px;border-radius:7px">Orders</div>
+      <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(252,251,247,.7);padding:10px 12px">Subscriptions</div>
+      <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(252,251,247,.7);padding:10px 12px">Pantry shipments</div>
+      <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(252,251,247,.7);padding:10px 12px">Products &amp; menu</div>
+      <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(252,251,247,.7);padding:10px 12px">Customers</div>
+      <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(252,251,247,.7);padding:10px 12px">Payments &amp; wallets</div>
+      <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(252,251,247,.7);padding:10px 12px">Coupons</div>
+      <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(252,251,247,.7);padding:10px 12px">Take an order</div>
+      <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(252,251,247,.7);padding:10px 12px">Pricing by channel</div>
+      <div style="font:400 13px 'DM Sans',sans-serif;color:rgba(252,251,247,.7);padding:10px 12px">Referrals</div>
+    </div>
+    <div style="flex:1;padding:24px 28px;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font:400 26px 'Instrument Serif',serif;color:#1B2A18">Orders</div>
+        <div style="display:flex;gap:10px;font:500 12.5px 'DM Sans',sans-serif"><div style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:9px 14px;border-radius:7px">Export CSV</div><div style="color:#FCFBF7;background:#4A5D2E;padding:9px 16px;border-radius:7px">Take an order</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+        <div style="background:#fff;border:1px solid rgba(27,42,24,.1);border-radius:9px;padding:14px 16px"><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">Live kitchen orders</div><div style="font:400 28px 'Instrument Serif',serif;color:#1B2A18">14</div></div>
+        <div style="background:#fff;border:1px solid rgba(27,42,24,.1);border-radius:9px;padding:14px 16px"><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">Scheduled today</div><div style="font:400 28px 'Instrument Serif',serif;color:#1B2A18">31</div></div>
+        <div style="background:#fff;border:1px solid rgba(27,42,24,.1);border-radius:9px;padding:14px 16px"><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">Pantry to dispatch</div><div style="font:400 28px 'Instrument Serif',serif;color:#1B2A18">9</div></div>
+        <div style="background:#fff;border:1px solid rgba(27,42,24,.1);border-radius:9px;padding:14px 16px"><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">Revenue today</div><div style="font:400 28px 'Instrument Serif',serif;color:#1B2A18">₹48,210</div></div>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap;font:500 12px 'DM Sans',sans-serif">
+        <div style="color:#FCFBF7;background:#1B2A18;padding:8px 14px;border-radius:100px">All parts</div>
+        <div style="color:#4A5D2E;border:1px solid rgba(74,93,46,.35);padding:8px 14px;border-radius:100px">Eat now</div>
+        <div style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:8px 14px;border-radius:100px">Scheduled</div>
+        <div style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:8px 14px;border-radius:100px">Subscription delivery</div>
+        <div style="color:#8B6A46;border:1px solid rgba(139,106,70,.35);padding:8px 14px;border-radius:100px">Pantry</div>
+        <div style="margin-left:auto;color:rgba(27,42,24,.55);border:1px solid rgba(27,42,24,.14);padding:8px 14px;border-radius:100px">Search order ID, phone, email</div>
+      </div>
+      <div style="background:#fff;border:1px solid rgba(27,42,24,.1);border-radius:10px;overflow:hidden">
+        <div style="display:grid;grid-template-columns:150px 1fr 190px 150px 130px 110px;gap:12px;padding:12px 16px;background:#F4F1E7;font:500 10.5px 'JetBrains Mono',monospace;color:rgba(27,42,24,.6);letter-spacing:.06em">
+          <div>ORDER</div><div>CUSTOMER</div><div>PART</div><div>STATUS</div><div>VALUE</div><div>CHANNEL</div>
+        </div>
+        <div style="padding:14px 16px;border-bottom:1px solid rgba(27,42,24,.07);background:rgba(74,93,46,.03)">
+          <div style="display:grid;grid-template-columns:150px 1fr 190px 150px 130px 110px;gap:12px;align-items:center;font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px">SU-24817</div>
+            <div>Ananya Rao<div style="font-size:11px;color:rgba(27,42,24,.5)">+91 98861 ····21 · 14 orders</div></div>
+            <div style="font:500 10px 'JetBrains Mono',monospace;color:#4A5D2E">3 PARTS</div>
+            <div style="color:rgba(27,42,24,.5)">mixed — see below</div>
+            <div style="font-weight:500">₹10,648</div>
+            <div style="font-size:11.5px;color:rgba(27,42,24,.6)">Web</div>
+          </div>
+          <div style="margin-top:11px;display:flex;flex-direction:column;gap:7px;padding-left:12px">
+            <div style="display:grid;grid-template-columns:1fr 210px 130px 150px;gap:12px;align-items:center;border-left:3px solid #4A5D2E;background:#FCFBF7;border:1px solid rgba(74,93,46,.25);border-left-width:3px;border-radius:7px;padding:10px 12px;font:400 12px 'DM Sans',sans-serif;color:#1B2A18">
+              <div><span style="font:500 9.5px 'JetBrains Mono',monospace;color:#4A5D2E">EAT NOW</span> · Tikki × 1, Smoothie × 1</div>
+              <div style="color:rgba(27,42,24,.6)">Rider assigned · 12 min away</div>
+              <div style="font-weight:500">₹578</div>
+              <div style="display:flex;gap:7px;font:500 11px 'DM Sans',sans-serif"><span style="color:#FCFBF7;background:#4A5D2E;padding:6px 10px;border-radius:5px">Mark delivered</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:6px 10px;border-radius:5px">Track</span></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 210px 130px 150px;gap:12px;align-items:center;background:#FCFBF7;border:1px solid rgba(27,42,24,.2);border-left:3px solid #1B2A18;border-radius:7px;padding:10px 12px;font:400 12px 'DM Sans',sans-serif;color:#1B2A18">
+              <div><span style="font:500 9.5px 'JetBrains Mono',monospace;color:#1B2A18">SUBSCRIPTION</span> · Chia Pudding, alt. days</div>
+              <div style="color:rgba(27,42,24,.6)">Active · next 24 Sep, 8:00 am</div>
+              <div style="font-weight:500">₹9,004 <span style="font-weight:400;color:rgba(27,42,24,.5)">wallet</span></div>
+              <div style="display:flex;gap:7px;font:500 11px 'DM Sans',sans-serif"><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:6px 10px;border-radius:5px">Calendar</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:6px 10px;border-radius:5px">Pause</span></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 210px 130px 150px;gap:12px;align-items:center;background:#FCFBF7;border:1px solid rgba(139,106,70,.3);border-left:3px solid #8B6A46;border-radius:7px;padding:10px 12px;font:400 12px 'DM Sans',sans-serif;color:#1B2A18">
+              <div><span style="font:500 9.5px 'JetBrains Mono',monospace;color:#8B6A46">PANTRY</span> · Dry Fruits 500g × 1</div>
+              <div style="color:rgba(27,42,24,.6)">Sourcing · vendor confirmed</div>
+              <div style="font-weight:500">₹899</div>
+              <div style="display:flex;gap:7px;font:500 11px 'DM Sans',sans-serif"><span style="color:#FCFBF7;background:#8B6A46;padding:6px 10px;border-radius:5px">Add AWB</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:6px 10px;border-radius:5px">Invoice</span></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:150px 1fr 190px 150px 130px 110px;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(27,42,24,.07);font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px">SU-24816</div>
+          <div>Karthik Menon<div style="font-size:11px;color:rgba(27,42,24,.5)">+91 90042 ····09 · 6 orders</div></div>
+          <div style="font:500 10px 'JetBrains Mono',monospace;color:#1B2A18">SCHEDULED</div>
+          <div style="color:rgba(27,42,24,.65)">Queued for 8:00 pm</div>
+          <div style="font-weight:500">₹698</div>
+          <div style="font-size:11.5px;color:rgba(27,42,24,.6)">iOS</div>
+        </div>
+        <div style="display:grid;grid-template-columns:150px 1fr 190px 150px 130px 110px;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(27,42,24,.07);font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px">SU-24815</div>
+          <div>Meher Singh<div style="font-size:11px;color:rgba(27,42,24,.5)">+91 98115 ····44 · 2 orders</div></div>
+          <div style="font:500 10px 'JetBrains Mono',monospace;color:#8B6A46">PANTRY</div>
+          <div style="color:rgba(27,42,24,.65)">In transit · BlueDart</div>
+          <div style="font-weight:500">₹1,980</div>
+          <div style="font-size:11.5px;color:rgba(27,42,24,.6)">Web</div>
+        </div>
+        <div style="display:grid;grid-template-columns:150px 1fr 190px 150px 130px 110px;gap:12px;align-items:center;padding:14px 16px;font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px">SU-24814</div>
+          <div>Event · Cubbon Run<div style="font-size:11px;color:rgba(27,42,24,.5)">taken by admin · Sushant</div></div>
+          <div style="font:500 10px 'JetBrains Mono',monospace;color:#4A5D2E">EAT NOW</div>
+          <div style="color:rgba(27,42,24,.65)">Delivered · negotiated</div>
+          <div style="font-weight:500">₹800 <span style="font-weight:400;color:#8B6A46">(−₹200)</span></div>
+          <div style="font-size:11.5px;color:rgba(27,42,24,.6)">Admin</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div class="dv-opt" id="1e"><div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Admin — Take an order on behalf, with negotiated total</div>
+<div class="dv-card" style="width:1080px;background:#F7F6F1">
+  <div style="padding:26px 30px;display:flex;flex-direction:column;gap:20px">
+    <div>
+      <div style="font:400 26px 'Instrument Serif',serif;color:#1B2A18">Take an order</div>
+      <div style="font:400 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-top:5px">For walk-ins, events and phone orders. Logged against the admin who took it.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:start">
+      <div style="background:#fff;border:1px solid rgba(27,42,24,.1);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:16px">
+        <div>
+          <div style="font:500 11.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:7px">Customer</div>
+          <div style="border:1px solid rgba(27,42,24,.14);border-radius:8px;padding:11px 13px;font:400 13px 'DM Sans',sans-serif;color:#1B2A18;display:flex;justify-content:space-between"><span>+91 98861 22321 · Ananya Rao</span><span style="color:#4A5D2E;font-weight:500">Existing</span></div>
+          <div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.5);margin-top:6px">No match? A guest profile is created and merged on their first login.</div>
+        </div>
+        <div>
+          <div style="font:500 11.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:7px">Items</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(27,42,24,.1);border-radius:8px;padding:11px 13px;font:400 13px 'DM Sans',sans-serif;color:#1B2A18"><span><span style="font:500 9.5px 'JetBrains Mono',monospace;color:#4A5D2E">NOW</span> Chocolate Protein Chia Pudding × 2</span><span>₹698</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(27,42,24,.1);border-radius:8px;padding:11px 13px;font:400 13px 'DM Sans',sans-serif;color:#1B2A18"><span><span style="font:500 9.5px 'JetBrains Mono',monospace;color:#8B6A46">SHIPS</span> Kashmiri Dry Fruits 500g × 1</span><span>₹899</span></div>
+            <div style="border:1px dashed rgba(27,42,24,.2);border-radius:8px;padding:11px 13px;font:400 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.55)">+ Add product, subscription plan or custom line</div>
+          </div>
+        </div>
+        <div>
+          <div style="font:500 11.5px 'DM Sans',sans-serif;color:#1B2A18;margin-bottom:7px">Fulfilment</div>
+          <div style="display:flex;gap:8px;font:500 12px 'DM Sans',sans-serif"><span style="color:#FCFBF7;background:#1B2A18;padding:9px 14px;border-radius:100px">Handed over at event</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:9px 14px;border-radius:100px">Deliver now</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:9px 14px;border-radius:100px">Schedule</span></div>
+        </div>
+      </div>
+      <div style="background:#1B2A18;border-radius:10px;padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 11px 'JetBrains Mono',monospace;color:#A8B98C;letter-spacing:.1em">SETTLEMENT</div>
+        <div style="display:flex;justify-content:space-between;font:400 13px 'DM Sans',sans-serif;color:rgba(252,251,247,.8)"><span>List total</span><span>₹1,597</span></div>
+        <div>
+          <div style="font:400 12px 'DM Sans',sans-serif;color:rgba(252,251,247,.65);margin-bottom:7px">Amount the customer agreed to pay</div>
+          <div style="background:rgba(252,251,247,.1);border:1px solid rgba(252,251,247,.3);border-radius:8px;padding:13px 15px;font:500 26px 'DM Sans',sans-serif;color:#FCFBF7">₹1,400</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font:500 13px 'DM Sans',sans-serif;color:#A8B98C;border-top:1px solid rgba(252,251,247,.15);padding-top:12px"><span>Auto discount recorded</span><span>₹197 · 12.3%</span></div>
+        <div style="font:400 11.5px/1.55 'DM Sans',sans-serif;color:rgba(252,251,247,.55)">Booked as a negotiated discount against this order and attributed to Sushant. Item prices stay untouched, so margin reporting stays clean.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          <div style="font:500 11.5px 'DM Sans',sans-serif;color:rgba(252,251,247,.7)">Collected via</div>
+          <div style="display:flex;gap:8px;font:500 12px 'DM Sans',sans-serif"><span style="color:#1B2A18;background:#FCFBF7;padding:9px 13px;border-radius:100px">Cash</span><span style="color:rgba(252,251,247,.8);border:1px solid rgba(252,251,247,.3);padding:9px 13px;border-radius:100px">UPI QR</span><span style="color:rgba(252,251,247,.8);border:1px solid rgba(252,251,247,.3);padding:9px 13px;border-radius:100px">Payment link</span></div>
+        </div>
+        <div style="text-align:center;font:500 14px 'DM Sans',sans-serif;color:#1B2A18;background:#A8B98C;padding:14px;border-radius:9px;margin-top:6px">Create order · ₹1,400</div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div class="dv-opt" id="1f"><div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>Admin — Coupons</div>
+<div class="dv-card" style="width:1080px;background:#F7F6F1">
+  <div style="padding:26px 30px;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font:400 26px 'Instrument Serif',serif;color:#1B2A18">Coupons</div><div style="font:400 12.5px 'DM Sans',sans-serif;color:rgba(27,42,24,.6);margin-top:4px">Every coupon is single-use per account, whatever the scope.</div></div>
+      <div style="font:500 12.5px 'DM Sans',sans-serif;color:#FCFBF7;background:#4A5D2E;padding:10px 16px;border-radius:7px">New coupon</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:20px;align-items:start">
+      <div style="background:#fff;border:1px solid rgba(27,42,24,.1);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:15px">
+        <div style="font:500 12.5px 'DM Sans',sans-serif;color:#1B2A18">New coupon</div>
+        <div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-bottom:6px">Code</div><div style="border:1px solid rgba(27,42,24,.14);border-radius:8px;padding:11px 13px;font:500 13px 'JetBrains Mono',monospace;color:#1B2A18">SPOONUP100</div></div>
+        <div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-bottom:6px">Scope</div><div style="display:flex;flex-wrap:wrap;gap:7px;font:500 11.5px 'DM Sans',sans-serif"><span style="color:#FCFBF7;background:#1B2A18;padding:8px 12px;border-radius:100px">One person</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:8px 12px;border-radius:100px">Cohort</span><span style="color:#1B2A18;border:1px solid rgba(27,42,24,.18);padding:8px 12px;border-radius:100px">Everyone</span></div></div>
+        <div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-bottom:6px">Assigned to</div><div style="border:1px solid rgba(27,42,24,.14);border-radius:8px;padding:11px 13px;font:400 13px 'DM Sans',sans-serif;color:#1B2A18">Ananya Rao · +91 98861 22321</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-bottom:6px">Type</div><div style="border:1px solid rgba(27,42,24,.14);border-radius:8px;padding:11px 13px;font:400 13px 'DM Sans',sans-serif;color:#1B2A18">Flat ₹</div></div>
+          <div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-bottom:6px">Value</div><div style="border:1px solid rgba(27,42,24,.14);border-radius:8px;padding:11px 13px;font:400 13px 'DM Sans',sans-serif;color:#1B2A18">100</div></div>
+        </div>
+        <div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-bottom:6px">Applies to</div><div style="display:flex;flex-wrap:wrap;gap:7px;font:500 11.5px 'DM Sans',sans-serif"><span style="color:#4A5D2E;background:rgba(74,93,46,.12);padding:8px 12px;border-radius:100px">Eat now</span><span style="color:#8B6A46;background:rgba(139,106,70,.12);padding:8px 12px;border-radius:100px">Pantry</span><span style="color:rgba(27,42,24,.4);border:1px solid rgba(27,42,24,.12);padding:8px 12px;border-radius:100px">Subscriptions</span></div></div>
+        <div><div style="font:400 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.55);margin-bottom:6px">Channel</div><div style="display:flex;gap:7px;font:500 11.5px 'DM Sans',sans-serif"><span style="color:#FCFBF7;background:#1B2A18;padding:8px 12px;border-radius:100px">Web</span><span style="color:#FCFBF7;background:#1B2A18;padding:8px 12px;border-radius:100px">Android</span><span style="color:rgba(27,42,24,.4);border:1px solid rgba(27,42,24,.12);padding:8px 12px;border-radius:100px">iOS</span></div></div>
+        <div style="text-align:center;font:500 13px 'DM Sans',sans-serif;color:#FCFBF7;background:#1B2A18;padding:13px;border-radius:8px">Create coupon</div>
+      </div>
+      <div style="background:#fff;border:1px solid rgba(27,42,24,.1);border-radius:10px;overflow:hidden">
+        <div style="display:grid;grid-template-columns:150px 1fr 110px 110px 90px;gap:10px;padding:12px 16px;background:#F4F1E7;font:500 10.5px 'JetBrains Mono',monospace;color:rgba(27,42,24,.6);letter-spacing:.06em"><div>CODE</div><div>SCOPE</div><div>VALUE</div><div>USED</div><div>STATUS</div></div>
+        <div style="display:grid;grid-template-columns:150px 1fr 110px 110px 90px;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(27,42,24,.07);font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18;align-items:center"><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px">SPOON20</div><div>Everyone · first order</div><div>20%, max ₹150</div><div>1,284</div><div style="font:500 11px 'DM Sans',sans-serif;color:#4A5D2E">Live</div></div>
+        <div style="display:grid;grid-template-columns:150px 1fr 110px 110px 90px;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(27,42,24,.07);font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18;align-items:center"><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px">PLAN18</div><div>Cohort · lapsed subscribers (412)</div><div>₹500</div><div>96</div><div style="font:500 11px 'DM Sans',sans-serif;color:#4A5D2E">Live</div></div>
+        <div style="display:grid;grid-template-columns:150px 1fr 110px 110px 90px;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(27,42,24,.07);font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18;align-items:center"><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px">CUBBON50</div><div>Cohort · Cubbon Run event (180)</div><div>₹50</div><div>134</div><div style="font:500 11px 'DM Sans',sans-serif;color:rgba(27,42,24,.45)">Expired</div></div>
+        <div style="display:grid;grid-template-columns:150px 1fr 110px 110px 90px;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(27,42,24,.07);font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18;align-items:center"><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px">ANANYA100</div><div>One person · Ananya Rao</div><div>₹100</div><div>0 / 1</div><div style="font:500 11px 'DM Sans',sans-serif;color:#4A5D2E">Live</div></div>
+        <div style="display:grid;grid-template-columns:150px 1fr 110px 110px 90px;gap:10px;padding:14px 16px;font:400 12.5px 'DM Sans',sans-serif;color:#1B2A18;align-items:center"><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px">REFER150</div><div>Auto · referral reward</div><div>₹150 to wallet</div><div>308</div><div style="font:500 11px 'DM Sans',sans-serif;color:#4A5D2E">Live</div></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+</div>
+</section>
+
+
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;planFrequency&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Daily&quot;,&quot;Alternate days&quot;,&quot;Twice a week&quot;,&quot;Weekly&quot;],&quot;default&quot;:&quot;Alternate days&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Subscribe page&quot;},&quot;planMonths&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;1 month&quot;,&quot;2 months&quot;,&quot;3 months&quot;],&quot;default&quot;:&quot;2 months&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Subscribe page&quot;},&quot;basePrice&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:349,&quot;min&quot;:99,&quot;max&quot;:999,&quot;step&quot;:10,&quot;unit&quot;:&quot;₹&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Subscribe page&quot;},&quot;showSavings&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Subscribe page&quot;},&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#4A5D2E&quot;,&quot;options&quot;:[&quot;#4A5D2E&quot;,&quot;#1B2A18&quot;,&quot;#8B6A46&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Subscribe page&quot;}}">class Component extends DCLogic {
+  state = { freq: null, months: null, slot: "7–9 am", start: 0 };
+  renderVals() {
+    const freq = this.state.freq ?? this.props.planFrequency ?? "Alternate days";
+    const monthsLabel = this.state.months ?? this.props.planMonths ?? "2 months";
+    const base = Number(this.props.basePrice ?? 349);
+    const accent = this.props.accentColor ?? "#4A5D2E";
+    const perMonthMap = { "Daily": 30, "Alternate days": 15, "Twice a week": 8, "Weekly": 4 };
+    const perMonth = perMonthMap[freq] ?? 15;
+    const months = { "1 month": 1, "2 months": 2, "3 months": 3 }[monthsLabel] ?? 2;
+    const pct = { 1: 8, 2: 14, 3: 18 }[months];
+    const deliveries = perMonth * months;
+    const gross = base * deliveries;
+    const discount = Math.round(gross * pct / 100);
+    const net = gross - discount;
+    const r = n => "₹" + n.toLocaleString("en-IN");
+    const style = (on, green) => on
+      ? { bg: "#1B2A18", fg: "#FCFBF7", border: "#1B2A18", subc: green ? "#A8B98C" : "rgba(252,251,247,.7)" }
+      : { bg: "#FFFFFF", fg: "#1B2A18", border: "rgba(27,42,24,.14)", subc: green ? "#4A5D2E" : "rgba(27,42,24,.55)" };
+    const freqOpts = Object.keys(perMonthMap).map(k => ({ label: k, note: perMonthMap[k] + " / month", ...style(k === freq), pick: () => this.setState({ freq: k }) }));
+    const monthOpts = [["1 month", 8], ["2 months", 14], ["3 months", 18]].map(([k, p]) => ({ label: k, note: p + "% off deliveries", ...style(k === monthsLabel, true), pick: () => this.setState({ months: k }) }));
+    const starts = [["Tomorrow", "Thu 24 Sep"], ["Fri", "25 Sep"], ["Sat", "26 Sep"], ["Mon", "28 Sep"]];
+    const startOpts = starts.map(([l, n], i) => ({ label: l, note: n, ...style(i === this.state.start), pick: () => this.setState({ start: i }) }));
+    const slots = [["7–9 am", "Breakfast"], ["12–2 pm", "Lunch"], ["6–8 pm", "Evening"]];
+    const slotOpts = slots.map(([l, n]) => ({ label: l, note: n, ...style(l === this.state.slot), pick: () => this.setState({ slot: l }) }));
+    const st = starts[this.state.start];
+    return {
+      freq, monthsLabel, deliveries, pct: pct + "%",
+      freqOpts, monthOpts, startOpts, slotOpts,
+      slot: this.state.slot,
+      startLabel: this.state.start === 0 ? "tomorrow, Thu 24 Sep" : st[0] + " " + st[1],
+      gross: r(gross), discount: "−" + r(discount), net: r(net),
+      perUnit: r(Math.round(net / deliveries)),
+      basePriceFmt: r(base),
+      payCta: "Start plan · " + r(net),
+      perDelivery: r(Math.round(net / deliveries)) + " per delivery",
+      savingsLine: "You save " + r(discount) + " against buying " + deliveries + " jars one-off",
+      showSavings: this.props.showSavings ?? true,
+      accent
+    };
+  }
+}</script>
+</body>
+</html>

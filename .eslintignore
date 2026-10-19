@@ -1,0 +1,8 @@
+design/
+vendor/
+ios/Pods/
+ios/build/
+android/app/build/
+android/build/
+node_modules/
+coverage/
