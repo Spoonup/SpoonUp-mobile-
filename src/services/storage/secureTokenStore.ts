@@ -1,16 +1,15 @@
-import * as Keychain from 'react-native-keychain';
+import * as SecureStore from 'expo-secure-store';
 
-const SERVICE = 'spoonup.auth';
+const KEY = 'spoonup.auth.session';
 
 export const secureTokenStore = {
   async getToken(): Promise<string | null> {
-    const credentials = await Keychain.getGenericPassword({ service: SERVICE });
-    return credentials ? credentials.password : null;
+    return SecureStore.getItemAsync(KEY);
   },
   async setToken(token: string): Promise<void> {
-    await Keychain.setGenericPassword('session', token, { service: SERVICE });
+    await SecureStore.setItemAsync(KEY, token);
   },
   async clearToken(): Promise<void> {
-    await Keychain.resetGenericPassword({ service: SERVICE });
+    await SecureStore.deleteItemAsync(KEY);
   },
 };

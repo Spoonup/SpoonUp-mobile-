@@ -10,7 +10,8 @@ import type {
   MainTabParamList,
   RootStackParamList,
 } from '../../../navigation/types';
-import { findProduct } from '../../shop/data/products';
+import { useProducts } from '../../shop/hooks/useProducts';
+import { Button } from '../../../components/common/Button';
 import { PlanCard } from '../components/PlanCard';
 import { usePlan } from '../../plan/hooks/usePlan';
 import { CategoryTiles, type CategoryTile } from '../components/CategoryTiles';
@@ -28,14 +29,14 @@ type Props = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>
 >;
 
-const NEW_USER_REORDER = ['pudding', 'dragon', 'tikki'];
-const RETURNING_REORDER = ['tikki', 'dragon', 'fries'];
+const BESTSELLERS = 3;
 
 export const HomeScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
   const cart = useCart();
   const plan = usePlan();
   const home = useHome();
+  const products = useProducts();
   const [coachDismissed, setCoachDismissed] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const unreadNotifications = useUnreadCount(isAuthenticated);
@@ -72,50 +73,58 @@ export const HomeScreen = ({ navigation }: Props) => {
   const tiles: CategoryTile[] = [
     {
       key: 'now',
-      tag: 'NOW',
+      tag: 'NOW · 30–45 MIN',
       tagColor: colors.olive,
+      tagBg: colors.tagNowBg,
       label: 'Eat now',
-      sub: location.eta,
+      sub: 'Made fresh in our kitchen and at your door in under 45 minutes.',
       image: require('../../../assets/images/lifestyle/eat-now.jpg'),
       onPress: () => goShop('now'),
     },
     {
       key: 'plan',
-      tag: '30 DAYS',
+      tag: 'PLAN · PAY ONCE',
       tagColor: colors.ink,
+      tagBg: colors.tagPlanBg,
       label: '30-day plan',
-      sub: 'Prepaid · pay once',
+      sub: 'Pay once for the whole plan and we deliver on your schedule.',
       image: require('../../../assets/images/lifestyle/week-jars.jpg'),
-      onPress: () => goShop('plan'),
+      onPress: () => navigation.navigate('Plans'),
     },
     {
       key: 'ships',
-      tag: 'SHIPS',
+      tag: 'SHIPS · 3–5 DAYS',
       tagColor: colors.tan,
+      tagBg: colors.tagShipsBg,
       label: 'Pantry',
-      sub: '3–5 days',
+      sub: 'Kashmiri dry fruits, muesli and modak, sourced per order.',
       image: require('../../../assets/images/lifestyle/pantry.jpg'),
       onPress: () => goShop('ships'),
     },
   ];
 
-  const reorderIds = isNew ? NEW_USER_REORDER : RETURNING_REORDER;
-  const reorderItems = reorderIds.flatMap(id => {
-    const product = findProduct(id);
-    return product
-      ? [{ product, quantity: cart.quantityOf(id), onAdd: () => cart.add(id) }]
-      : [];
-  });
+  // Bestseller rows come from the catalog service; no hardcoded ids.
+  const rowItems = (category: 'now' | 'ships') =>
+    (products.data ?? [])
+      .filter(product => product.category === category)
+      .slice(0, BESTSELLERS)
+      .map(product => ({
+        product,
+        quantity: cart.quantityOf(product.id),
+        onAdd: () => cart.add(product.id),
+      }));
+  const kitchenItems = rowItems('now');
+  const pantryItems = rowItems('ships');
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top + spacing.sm }]}>
       <View style={styles.header}>
         <HomeHeader
-          area={location.area}
-          pincode={location.pincode}
-          eta={location.eta}
+          location={location}
           initials={initials}
           unread={unreadNotifications}
+          cartCount={cart.count}
+          onOpenCart={() => navigation.navigate('Cart')}
           onOpenNotifications={() => navigation.navigate('Notifications')}
           onOpenAccount={() => navigation.navigate('Account')}
         />
@@ -125,18 +134,61 @@ export const HomeScreen = ({ navigation }: Props) => {
         contentContainerStyle={[styles.content, { paddingBottom: spacing.xl }]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.greeting}>
-          <Text style={styles.hello}>
-            {isNew
-              ? `Hi ${firstName}, welcome in`
-              : `Good morning, ${firstName}`}
+        <View style={styles.hero}>
+          <Text style={styles.kicker}>GOOD FOOD, HIGHER DAYS</Text>
+          {isAuthenticated ? (
+            <Text style={styles.hello}>Good to see you, {firstName}.</Text>
+          ) : null}
+          <Text style={styles.h1}>
+            Food that tastes like a <Text style={styles.h1Italic}>craving</Text>
+            , works like a plan.
           </Text>
-          <Text style={styles.sub}>
-            {isNew
-              ? `Eat-now reaches ${location.area} in ${location.eta}.`
-              : 'Good to see you again.'}
+          <Text style={styles.lead}>
+            Made fresh in our kitchen every morning. Real ingredients, nothing
+            refined, at your door in 30 min.
           </Text>
+          <Button label="Order in 30 min" onPress={() => goShop('now')} />
+          <View style={styles.pair}>
+            <View style={styles.flex}>
+              <Button
+                variant="outline"
+                label="Build your plan"
+                onPress={() => navigation.navigate('Plans')}
+              />
+            </View>
+            <View style={styles.flex}>
+              <Button
+                variant="outline"
+                label="Shop dry fruits"
+                onPress={() => goShop('ships')}
+              />
+            </View>
+          </View>
+          <View style={styles.pair}>
+            <View style={styles.flex}>
+              <Text style={styles.stat}>0G REFINED SUGAR</Text>
+              <Text style={styles.statSub}>
+                Sweetened with fruit and dates only.
+              </Text>
+            </View>
+            <View style={styles.flex}>
+              <Text style={styles.stat}>UP TO 21G PROTEIN</Text>
+              <Text style={styles.statSub}>Printed on every dish we make.</Text>
+            </View>
+          </View>
         </View>
+
+        <View style={styles.section}>
+          <Text style={styles.h2}>Three ways to eat with us</Text>
+          <CategoryTiles tiles={tiles} />
+        </View>
+
+        <ReorderRow
+          title="Bestsellers from the kitchen"
+          actionLabel="See all kitchen items"
+          onAction={() => goShop('now')}
+          items={kitchenItems}
+        />
 
         {plan.data ? (
           <PlanCard
@@ -149,15 +201,11 @@ export const HomeScreen = ({ navigation }: Props) => {
           />
         ) : null}
 
-        <CategoryTiles tiles={tiles} />
-
         <ReorderRow
-          title={isNew ? `Popular in ${location.area}` : 'Order again'}
-          actionLabel={cart.count > 0 ? `Cart · ${cart.count}` : 'See all'}
-          onAction={() =>
-            cart.count > 0 ? navigation.navigate('Cart') : goShop('all')
-          }
-          items={reorderItems}
+          title="Bestsellers from the pantry"
+          actionLabel="See all pantry"
+          onAction={() => goShop('ships')}
+          items={pantryItems}
         />
       </ScrollView>
 
@@ -177,15 +225,24 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.lg,
-    gap: spacing.lg,
+    gap: 40,
   },
-  greeting: { gap: 4 },
-  hello: {
-    fontFamily: fontFamily.serif,
-    fontSize: 30,
-    lineHeight: 33,
+  flex: { flex: 1 },
+  hero: { gap: spacing.md },
+  kicker: { ...typography.kicker, color: colors.tanDark },
+  hello: { ...typography.titleCard, color: colors.ink },
+  h1: { ...typography.display, color: colors.ink },
+  h1Italic: { fontFamily: fontFamily.serifItalic },
+  lead: { ...typography.bodyLarge, color: colors.ink },
+  pair: { flexDirection: 'row', gap: spacing.md },
+  stat: {
+    ...typography.kicker,
+    fontSize: 11,
+    letterSpacing: 1.6,
     color: colors.ink,
   },
-  sub: { ...typography.bodySmall, fontSize: 13, color: colors.textSecondary },
+  statSub: { ...typography.body, color: colors.textSecondary, marginTop: 4 },
+  section: { gap: spacing.lg },
+  h2: { ...typography.headline, color: colors.ink },
   coach: { position: 'absolute', left: 12, right: 12, bottom: 12 },
 });

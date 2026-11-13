@@ -2,27 +2,51 @@
 
 Visually verified on the iOS Simulator for the screens listed in the Visual QA section below (2026-10-19); everything else is not. "Ready" means: real UI, loading/empty/error/validation handled, reachable in navigation, backed by a mock service. Checks run: `tsc --noEmit`, `npm run lint`, `npm test` all pass.
 
-## API seam (mock service -> endpoint it will replace; names only)
 
-| Mock file | Replaces |
+## Expo migration (branch `expo-migration`)
+
+Migrated from bare React Native 0.87 to managed Expo SDK 58 (Expo Go). Native `ios/`/`android/` removed (gitignored prebuild output). Session token storage moved from `react-native-keychain` to `expo-secure-store` (same `secureTokenStore` interface; existing stored tokens are not migrated, users sign in again). Env vars renamed to `EXPO_PUBLIC_API_BASE_URL`, `EXPO_PUBLIC_APP_ENV`, `EXPO_PUBLIC_USE_MOCKS`. Fonts load via `expo-font`. Verified: expo-doctor, tsc, lint, jest, Android bundle builds; not yet opened in Expo Go on a device.
+
+## Backend wiring (live vs mock)
+
+Switch: `EXPO_PUBLIC_USE_MOCKS` env (default true; tests run mocks). Set `EXPO_PUBLIC_USE_MOCKS=false` and `EXPO_PUBLIC_API_BASE_URL=http://<LAN-IP>:<port>` (a non-production backend) to go live. Full contract and gaps: `API-CONTRACT.md`.
+
+**Verification level: nothing has been run against a live server.** The website backend folder is configured with Supabase service credentials, so it was not started (rule: only run if it uses the local JSON DB). Everything below marked "read-only wiring" was checked against `server/index.js` and the web client and has stubbed-client unit tests (`__tests__/live.test.ts`, `payments.test.ts`, `orders.test.ts`). Android bundle export succeeds.
+
+| Feature | Live mode | Level |
+|---|---|---|
+| Login / signup / session restore / logout / 401 modal | live | read-only wiring |
+| Profile (username + email + phone, one PATCH) | live | read-only wiring |
+| Catalog, search, cart summary (GST shown as backend returns it), coupon | live | read-only wiring |
+| Addresses | live (recipient name/phone kept in memory only) | read-only wiring |
+| Delivery options (Deliver now / slots from `/api/schedule/slots`, courier for pantry) | live | read-only wiring |
+| Checkout quote | live (no client money math; coupon shows "total before coupon", final charge comes from prepare) | read-only wiring |
+| Payment (Razorpay in WebView, then backend `complete`) | live, rzp_test_ keys only; live/unknown key -> "not available", nothing charged | read-only wiring |
+| Orders list / detail / tracking timeline (from order status, courier link if present) | live | read-only wiring |
+| Guest tracking (orders remembered on this device via `x-order-token`; no reference field) | live | read-only wiring |
+| 30-day plan (dish + frequency, SUBSCRIPTION line through checkout) | live | read-only wiring |
+| Forgot password | mock info screen | backend gap |
+| Support tickets, attachments | live: "email support@spoonupfoods.com" screen | backend gap |
+| Notifications / push | live: same screen, badge empty | backend gap |
+| Home location/ETA pill | live: hidden | backend gap |
+
+Open issues: the payment WebView has never been exercised on a device or Expo Go; start with a test key and a test UPI/card. Order ETA text is never shown live (backend sends none).
+
+## API seam (mock service -> endpoint it replaces; names only)
+
+| File | Live endpoint |
 |---|---|
-| `features/auth/services/authService.ts` | send OTP, verify OTP, complete profile (website `/api/auth/*`) |
-| `features/auth/context/AuthContext.tsx` (in-memory user) | session restore / refresh / logout; 401 enters via `services/api/sessionEvents.ts` |
-| `features/account/services/profileService.ts` | update customer profile (name) |
-| `features/shop/services/catalogService.ts` (+ `data/products.ts`) | product list, product detail |
-| `features/home/data/homeMock.ts` | home content / reorder suggestions |
-| `features/cart/services/cartService.ts` | cart validate/quote (prices, totals) |
-| `features/checkout/services/checkoutService.ts` | checkout quote, coupon apply, place order |
-| `features/checkout/services/addressService.ts` | address list/create/update/delete |
-| `features/checkout/services/paymentService.ts` | create payment (Razorpay/Cashfree), verify payment status |
-| `features/orders/services/ordersService.ts` | order list, order detail, tracking |
-| `features/orders/services/guestOrderService.ts` | existing secure guest-order lookup |
-| `features/plan/services/planService.ts` | plan offer/status, create plan payment, verify |
-| `features/support/services/supportService.ts` | tickets list/get/create/reply, attachment signed-URL |
-| `features/support/services/pickAttachment.ts` | native image/document picker (library not installed) |
-| `features/notifications/services/notificationService.ts` | notifications list, mark read, mark all read |
-| `services/network/connectivity.ts` | NetInfo listener (single marked place) |
-| `services/api/client.ts` + `interceptors.ts` | real HTTP; auth-token injection; 401 already wired to session-expired UI |
+| `features/auth/services/authService.ts` | `/api/auth/login`, `/signup` |
+| `features/account/services/profileService.ts` | `PATCH /api/me` |
+| `features/shop/services/catalogService.ts` | `/api/products` |
+| `features/cart/services/cartService.ts` | `/api/cart/quote` |
+| `features/checkout/services/checkoutService.ts` | `/api/schedule/slots`, `/api/coupons/validate`, `/api/cart/quote` |
+| `features/checkout/services/addressService.ts` | `/api/me/addresses` |
+| `features/checkout/services/paymentService.ts`, `features/payments/liveCheckout.ts` | `/api/checkout/prepare`, `complete`, `abandon` |
+| `features/orders/services/ordersService.ts` | `/api/me/orders`, `/api/orders/:id` |
+| `features/orders/services/guestOrderService.ts` + `services/storage/orderTokens.ts` | `/api/orders/:id` with `x-order-token` |
+| `features/plan/services/planService.ts` | `/api/settings`, `/api/cart/quote`, checkout, `/api/me/subscriptions` |
+| `features/support/*`, `features/notifications/services/notificationService.ts`, `features/home/services/homeService.ts` | none (gap; `BackendGapScreen` in live) |
 
 ## Inventory audit (CLAUDE.md section 7)
 
@@ -32,7 +56,7 @@ Status after this pass. Gaps listed are what remains, if any.
 |---|---|---|---|---|
 | Auth | Splash | `features/onboarding/screens/SplashScreen.tsx` | Ready | Static, no data. |
 | Auth | Onboarding | `features/onboarding/screens/OnboardingScreen.tsx` | Ready | |
-| Auth | Login / Signup | `features/auth/screens/AuthScreen.tsx` (+ components) | Ready | Single phone-OTP flow (welcome, phone, OTP, profile, done) with validation + guest skip. Removed dead disabled "Continue with Google (coming soon)" button. |
+| Auth | Login / Signup | `features/auth/screens/AuthScreen.tsx`, `components/MobileLogin.tsx` | Ready (mobile login: mock only) | Default view is the mobile-number login (mockup): +91 pill field, Login, Google/Apple shown disabled with "Soon", Sign up, Skip. Mock: number then OTP (any 6 digits except 000000). Live: Login shows "Mobile sign-in isn't available yet. Use email or username." (`TODO(api)`: backend has no phone/OTP login); "Use email or username instead" opens the existing password form. Not visually verified on a device. Previous: Username-or-email + password sign in / create account (matches the website; no OTP) with validation + guest skip. Removed dead disabled "Continue with Google (coming soon)" button. |
 | Auth | Forgot Password | `features/auth/screens/HelpSignInScreen.tsx` | Ready (conflict) | CLAUDE.md says password reset; the app and website are OTP-based, so the equivalent is "Help signing in". Flag for owner. |
 | Shopping | Home | `features/home/screens/HomeScreen.tsx` | Ready | Now driven by `useHome` (TanStack Query, `homeService` mock) with skeleton loading and ErrorState + retry. Plan card, location and reorder products are still mock. No pull-to-refresh. |
 | Shopping | Categories / Search / Product Listing | `features/shop/screens/ShopScreen.tsx` | Ready | One Shop tab covers all three (category chips, search, grid), matching the design handoff. Added sort, clear-search action, pull-to-refresh. No price/protein filters (backend filter contract unknown). |
@@ -40,18 +64,18 @@ Status after this pass. Gaps listed are what remains, if any.
 | Shopping | Cart | `features/cart/screens/CartScreen.tsx` | Ready | |
 | Checkout | Checkout (+ Delivery Selection, Coupon) | `features/checkout/screens/CheckoutScreen.tsx`, `components/DeliverySection.tsx`, `CouponSection.tsx` | Ready | Delivery and coupon are sections inside Checkout, not separate screens (matches design). |
 | Checkout | Address List / Add-Edit Address | `features/checkout/screens/AddressListScreen.tsx`, `AddressFormScreen.tsx` | Ready | Added pull-to-refresh. |
-| Checkout | Payment | `features/checkout/screens/PaymentScreen.tsx` (+ `PaymentVerifyScreen.tsx`) | Ready | Verification polling screen exists. |
+| Checkout | Payment | `features/checkout/screens/PaymentScreen.tsx` (+ `RazorpayCheckoutScreen.tsx`, `PaymentVerifyScreen.tsx`) | Ready | Razorpay test-mode WebView; verification polling screen asks the backend. |
 | Checkout | Payment Success | `features/checkout/screens/OrderConfirmationScreen.tsx` | Ready | Shown only after backend verification; serves as Payment Success + Order Confirmation (no duplicate built). |
 | Checkout | Payment Failed / Cancelled | `features/checkout/screens/PaymentOutcomeScreens.tsx` | Ready | |
 | Orders | Orders | `features/orders/screens/OrdersScreen.tsx` | Ready | Pull-to-refresh now actually shows a spinner. |
 | Orders | Order Details | `features/orders/screens/OrderDetailsScreen.tsx` | Ready | No pull-to-refresh (tracking screen has it). |
 | Orders | Order Tracking | `features/orders/screens/OrderTrackingScreen.tsx` | Ready | |
-| Orders | Guest Order Tracking | `features/orders/screens/GuestTrackingScreen.tsx` | Ready | |
+| Orders | Guest Order Tracking | `features/orders/screens/GuestTrackingScreen.tsx` | Ready | Lists orders placed on this device (saved access tokens). Reference input removed: the backend has no reference lookup for guests. |
 | Plan | Plan Details / Expired Plan / Active Plan | `features/plan/screens/PlansScreen.tsx` | Ready | One tab, three states. Added pull-to-refresh. |
 | Plan | Payment / Verify | `PlanPaymentScreen.tsx`, `PlanVerifyScreen.tsx` | Ready | |
 | Plan | Success / Failed / Cancelled | `PlanSuccessScreen.tsx`, `PlanOutcomeScreens.tsx` | Ready | |
 | Account | Account | `features/account/screens/AccountScreen.tsx` | Ready | |
-| Account | Profile | `features/account/screens/ProfileScreen.tsx` | Ready (new) | Was read-only. Now edit name with validation, save/busy/error/saved states, offline-disabled save, keyboard handling. Phone read-only (login identity). |
+| Account | Profile | `features/account/screens/ProfileScreen.tsx` | Ready (new) | Was read-only. Edits username, email and mobile together (the backend requires all three), with validation and backend error text. |
 | Account | Addresses | (same as Address List) | Ready | |
 | Account | Notifications | `features/notifications/screens/NotificationsScreen.tsx` | Ready | Guest, loading, error, empty handled. Pull-to-refresh fixed. Push permission prompt not built (needs native lib). |
 | Account | Logout | `AccountScreen.tsx` | Ready | Clears secure storage, cart, query cache. |
@@ -107,3 +131,37 @@ Remaining / not verified:
 - Android: first launch shows a system "nearby devices" permission prompt in the debug build (RN dev tooling); declining made Metro unreachable, allowing it worked. Full Android flow (checkout, cart-> auth return) not run.
 - Guest Cart -> Auth -> returnTo flow not exercised end to end.
 - Metro warns about `ReactNativeFeatureFlags` export resolution (harmless warning).
+
+## Website-match redesign (DESIGN-SPEC.md pass)
+
+NOT visually verified on a device or simulator. Verified only: `tsc`, `eslint`, `jest` (42 tests), and `expo export --platform android` bundling. Check every screen on a phone before sign-off.
+
+### Changed
+- Tokens: olive pill primary Button (ink `dark`, sage `sage`, outline variants; disabled = sage fill), radius `lg` 12 / `card` 12 / `xs` 7, type scale (display 36, headline 30, title 34, `titleCard`, `amount`, `bodyLarge`, `price`), mono kicker 12 / ls 2.2, DM Sans 500 only (no 600/700), `borderInput`, `borderButton`, `tanDark`, `selectedBg`. No shadows (CartBar and ReorderRow shadows removed).
+- Components: Button, TextField (hint, Show/Hide password), Chip, ProductCard (single column, 3:2 image, solid tag, note line, Add to cart + Plan), ScreenHeader, EmptyState, Stepper (square outline in cart), BillSummary (muted panel, "Items", "Estimated total"), Section (numbered), SearchIcon.
+- Home: logo + dark Cart pill header, kicker + serif H1 with italic word, olive "Order in 30 min", two outline CTAs, stat pair, stacked "Three ways to eat with us" tiles, kitchen bestsellers, dark plan banner, pantry bestsellers (rows come from the catalog service).
+- Shop: "Shop all", pill search with icon, filters All · N / Eat now / Subscribable / Pantry · ships, Sort chips, single-column cards.
+- Product details: kept the existing screen (website has no PDP), styled by tokens.
+- Cart: "Your cart", left-accent group cards, "each" price, line total, muted summary, GST hint, site empty state with "Build a plan".
+- Checkout/Payment: numbered sections, selectable option cards (olive border + selectedBg), "Payment" section.
+- Orders: serif order id, mono status tag.
+- Plan: "SCHEDULE PLAN" kicker, "Decide once. Then just eat.", stat trio, photo, muted summary panel, "Start plan".
+- Account/Profile: serif name, muted list group, shows email/mobile (read-only).
+- Support: card tokens, mono status chip, "Prefer email" line.
+- Auth: phone-OTP flow removed (PhoneStep, OtpStep, ProfileStep, DoneStep, AuthHeader, WelcomeStep, OtpInput, useAuthFlow, serviceArea). New single sign-in / create-account screen (username-or-email + password; sign-up username, email, mobile, password, optional referral), validation mirrors the backend, guest continue, track order, Facebook/Apple "soon". `authService.login/signup` are mock by default and call `/api/auth/login` and `/api/auth/signup` (token to secure store) when `EXPO_PUBLIC_USE_MOCKS=false`; mock quirks: password `wrongpass` fails, username `taken` fails. HelpSignIn is now a "Get in touch" screen with support@spoonupfoods.com (backend has no password-reset endpoint).
+
+### Decisions (website is source of truth over CLAUDE.md)
+- Auth is username/email + password, not phone OTP (`// DECISION` in AuthScreen). Google is not shown: on the web it is a browser redirect and is not an in-app option; the site shows it as active, not "soon".
+- Optional referral code at sign-up (site has it; backend applies it).
+- "Subscribable" filter label and `/subscribe`-style wording only where the site uses it; no "subscription", "wallet", "balance" wording (noWallet test unchanged, still passes).
+- Plan keeps the fixed server-priced pass; the site's builder (product, frequency, GST, add to cart) is not built.
+
+### Not done / flagged
+- Guest checkout (site allows it): not built, app still asks guests to sign in.
+- Store credit line at checkout and referral credit display: not built (no mock/backend contract in the app).
+- Device-stored guest order list (site `/status`): not built, guest tracking still uses the reference lookup.
+- Support: the website has email-only support, the app keeps tickets (flagged in MyTicketsScreen).
+- Google sign-in, forgot-password reset: no app flow or backend endpoint.
+- Product details has no ingredients/allergens (API does not supply them).
+- Tab bar left as built (5 tabs); site has none. Chip height stays 44 for touch targets (site 38-40).
+- Serif amounts: Instrument Serif has no rupee glyph, so totals use DM Sans 500 (spec says serif).

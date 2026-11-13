@@ -16,10 +16,9 @@ export type RootStackParamList = {
   Auth:
     | {
         returnTo?: 'Checkout' | 'Support' | 'PlanPayment';
-        resetPhone?: boolean;
       }
     | undefined;
-  HelpSignIn: { phone: string };
+  HelpSignIn: undefined;
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
   Cart: undefined;
   Checkout: undefined;
@@ -32,11 +31,13 @@ export type RootStackParamList = {
   Addresses: { select?: boolean } | undefined;
   AddressForm: { addressId?: string } | undefined;
   Payment: undefined;
+  RazorpayCheckout: undefined;
   PaymentVerify: { orderId: string };
   PaymentFailed: undefined;
   PaymentCancelled: undefined;
   OrderConfirmation: { orderId: string; paymentReference: string };
-  PlanPayment: undefined;
+  // Live: the plan (dish + delivery frequency) chosen on the Plans tab.
+  PlanPayment: { productId?: string; frequency?: string } | undefined;
   PlanVerify: { planOrderId: string };
   PlanSuccess: { paymentReference: string };
   PlanFailed: undefined;

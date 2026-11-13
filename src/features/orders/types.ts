@@ -12,7 +12,10 @@ export type PaymentStatus = 'paid' | 'pending' | 'failed' | 'refunded';
 export type DeliveryType = 'immediate' | 'scheduled' | 'shipped';
 
 export type Order = {
+  // Stable lookup id (backend order id in live mode).
   id: string;
+  // Customer-facing order number, e.g. SU-24817. Show this, never `id`.
+  number: string;
   placedAt: string;
   total: number;
   status: OrderStatus;
@@ -22,6 +25,8 @@ export type Order = {
   items: { name: string; quantity: number }[];
   // Backend-provided delivery estimate text; the client never computes it.
   etaText?: string;
+  // Courier tracking URL from the backend, when the order has shipped.
+  trackingLink?: string;
 };
 
 export const STATUS_LABEL: Record<OrderStatus, string> = {

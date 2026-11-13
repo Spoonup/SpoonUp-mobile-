@@ -1,121 +1,74 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import {
-  colors,
-  fontFamily,
-  radius,
-  spacing,
-  typography,
-} from '../../../theme';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { colors, radius, typography } from '../../../theme';
 import { formatRupees } from '../../../utils/money';
 import { daysLeftLabel, formatPlanDate } from '../../plan/logic';
 import type { Plan } from '../../plan/types';
 
 type Props = { plan: Plan; onPress: () => void };
 
-// One card for all three plan states; all values come from planService.
+// Site dark plan banner. One card for all plan states; values come from planService.
 export const PlanCard = ({ plan, onPress }: Props) => {
-  if (plan.status === 'active') {
-    return (
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`30-day plan active, ${daysLeftLabel(
-          plan.daysLeft,
-        )}`}
-        onPress={onPress}
-        style={[styles.card, styles.dark]}
-      >
-        <View style={styles.flex}>
-          <Text style={[styles.kicker, { color: colors.sage }]}>
-            30-DAY PLAN · ACTIVE
-          </Text>
-          <Text style={[styles.darkTitle]}>{daysLeftLabel(plan.daysLeft)}</Text>
-          <Text style={styles.darkSub}>
-            Ends {plan.expiresAt ? formatPlanDate(plan.expiresAt) : ''}
-          </Text>
-        </View>
-        <Text style={styles.darkCta}>View →</Text>
-      </Pressable>
-    );
-  }
+  const active = plan.status === 'active';
   const expired = plan.status === 'expired';
   return (
     <View style={styles.card}>
-      {expired ? null : (
-        <View style={styles.hero}>
-          <Image
-            source={require('../../../assets/images/lifestyle/week-jars.jpg')}
-            style={styles.image}
-            resizeMode="cover"
-            accessibilityIgnoresInvertColors
-          />
-        </View>
-      )}
-      <View style={styles.body}>
-        <Text style={[styles.kicker, { color: colors.ink }]}>
-          30-DAY PLAN · PAID ONCE
+      <Text style={styles.kicker}>
+        {active ? 'SCHEDULE PLAN · ACTIVE' : 'SCHEDULE PLAN · PAY ONCE'}
+      </Text>
+      <Text style={styles.title}>
+        {active
+          ? daysLeftLabel(plan.daysLeft)
+          : expired
+          ? 'Your plan has ended'
+          : '30 days of deliveries, paid once'}
+      </Text>
+      <Text style={styles.sub}>
+        {active
+          ? `Ends ${plan.expiresAt ? formatPlanDate(plan.expiresAt) : ''}`
+          : `${
+              plan.offer.price > 0
+                ? `${formatRupees(plan.offer.price)} one-time. `
+                : ''
+            }One prepaid payment, it does not renew.`}
+      </Text>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={
+          active
+            ? '30-day plan, view'
+            : expired
+            ? 'Renew plan'
+            : 'Build your plan'
+        }
+        onPress={onPress}
+        style={styles.cta}
+      >
+        <Text style={styles.ctaText}>
+          {active ? 'View plan' : expired ? 'Renew plan' : 'Build your plan'}
         </Text>
-        <Text style={styles.title}>
-          {expired ? 'Your plan has ended' : 'Start a 30-day plan'}
-        </Text>
-        <Text style={styles.sub}>
-          {formatRupees(plan.offer.price)} one-time ·{' '}
-          {expired ? 'Renewing is a new purchase.' : 'Starts after payment.'}
-        </Text>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onPress}
-          style={styles.cta}
-        >
-          <Text style={styles.ctaText}>
-            {expired ? 'Renew plan' : 'View plan'}
-          </Text>
-        </Pressable>
-      </View>
+      </Pressable>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, gap: 4 },
   card: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    backgroundColor: colors.surfaceMuted,
-  },
-  dark: {
+    borderRadius: radius.xl,
     backgroundColor: colors.ink,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
+    padding: 24,
+    gap: 8,
+    alignItems: 'flex-start',
   },
-  darkTitle: { ...typography.label, fontSize: 18, color: colors.onDark },
-  darkSub: { ...typography.bodySmall, fontSize: 12, color: colors.onDarkMuted },
-  darkCta: { ...typography.labelSmall, color: colors.sage },
-  hero: { height: 120 },
-  image: { width: '100%', height: '100%' },
-  body: { padding: 15, gap: 5 },
-  kicker: { ...typography.kicker, fontSize: 10 },
-  title: {
-    fontFamily: fontFamily.serif,
-    fontSize: 23,
-    lineHeight: 25,
-    color: colors.ink,
-  },
-  sub: {
-    ...typography.bodySmall,
-    fontSize: 12,
-    lineHeight: 18,
-    color: colors.textSecondary,
-  },
+  kicker: { ...typography.kicker, fontSize: 11, color: colors.sage },
+  title: { ...typography.headline, color: colors.onDark },
+  sub: { ...typography.body, color: colors.onDarkMuted },
   cta: {
-    alignSelf: 'flex-start',
-    marginTop: spacing.xs,
-    minHeight: 44,
+    marginTop: 8,
+    minHeight: 48,
     justifyContent: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 26,
     borderRadius: radius.pill,
-    backgroundColor: colors.ink,
+    backgroundColor: colors.sage,
   },
-  ctaText: { ...typography.labelSmall, color: colors.onDark, fontSize: 12.5 },
+  ctaText: { ...typography.button, color: colors.ink },
 });

@@ -26,15 +26,15 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Cart'>;
 const SECTIONS = [
   {
     category: 'now',
-    tag: 'NOW',
-    note: 'Arrives in minutes',
+    tag: 'EAT NOW · FROM OUR KITCHEN',
+    note: 'Timing is set at checkout',
     color: colors.tagNow,
     bg: colors.tagNowBg,
   },
   {
     category: 'ships',
-    tag: 'SHIPS',
-    note: 'Courier, 3–5 days',
+    tag: 'PANTRY · SHIPS BY COURIER',
+    note: 'Arrives in 3–5 days',
     color: colors.tagShips,
     bg: colors.tagShipsBg,
   },
@@ -51,23 +51,21 @@ export const CartScreen = ({ navigation }: Props) => {
       ? navigation.navigate('Checkout')
       : navigation.navigate('Auth', { returnTo: 'Checkout' });
 
-  const header = (
-    <ScreenHeader
-      title="Cart"
-      onBack={navigation.goBack}
-      right={<Text style={styles.count}>{cart.count} in cart</Text>}
-    />
-  );
+  const header = <ScreenHeader title="Your cart" onBack={navigation.goBack} />;
 
   if (cart.count === 0) {
     return (
       <View style={[styles.screen, { paddingTop: insets.top }]}>
         {header}
         <EmptyState
-          title="Nothing here yet"
-          message="Add something to eat now, or stock up on pantry items."
+          title="Your cart is empty"
+          message="Nothing here yet. The kitchen is warm and the pantry is stocked."
           actionLabel="Browse the shop"
           onAction={() => navigation.navigate('MainTabs', { screen: 'Shop' })}
+          secondaryLabel="Build a plan"
+          onSecondary={() =>
+            navigation.navigate('MainTabs', { screen: 'Plans' })
+          }
         />
       </View>
     );
@@ -91,20 +89,24 @@ export const CartScreen = ({ navigation }: Props) => {
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       {header}
       <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.sub}>
+          {cart.count} {cart.count === 1 ? 'item' : 'items'}
+        </Text>
         {SECTIONS.map(section => {
           const lines = cart.lines.filter(
             line => line.product.category === section.category,
           );
           if (lines.length === 0) return null;
           return (
-            <View key={section.category} style={styles.card}>
-              <View style={[styles.cardHead, { backgroundColor: section.bg }]}>
+            <View
+              key={section.category}
+              style={[styles.card, { borderLeftColor: section.color }]}
+            >
+              <View style={styles.cardHead}>
                 <Text style={[styles.tag, { color: section.color }]}>
                   {section.tag}
                 </Text>
-                <Text style={[styles.note, { color: section.color }]}>
-                  {section.note}
-                </Text>
+                <Text style={styles.note}>{section.note}</Text>
               </View>
               {lines.map(({ product, quantity }) => (
                 <View key={product.id} style={styles.line}>
@@ -118,7 +120,7 @@ export const CartScreen = ({ navigation }: Props) => {
                       {product.name}
                     </Text>
                     <Text style={styles.price}>
-                      {formatRupees(product.price)}
+                      {formatRupees(product.price)} each
                     </Text>
                     <Pressable
                       accessibilityRole="button"
@@ -129,23 +131,36 @@ export const CartScreen = ({ navigation }: Props) => {
                       <Text style={styles.remove}>Remove</Text>
                     </Pressable>
                   </View>
-                  <Stepper
-                    variant="outline"
-                    quantity={quantity}
-                    itemName={product.name}
-                    onIncrement={() => cart.add(product.id)}
-                    onDecrement={() => cart.remove(product.id)}
-                  />
+                  <View style={styles.lineEnd}>
+                    <Stepper
+                      variant="outline"
+                      quantity={quantity}
+                      itemName={product.name}
+                      onIncrement={() => cart.add(product.id)}
+                      onDecrement={() => cart.remove(product.id)}
+                    />
+                    <Text style={styles.lineTotal}>
+                      {formatRupees(product.price * quantity)}
+                    </Text>
+                  </View>
                 </View>
               ))}
             </View>
           );
         })}
         {renderBill()}
+        <Text style={styles.hint}>
+          Coupons and GST are applied at checkout.
+        </Text>
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
         <Button
-          label={isAuthenticated ? 'Checkout' : 'Log in to checkout'}
+          // DECISION: matches website, differs from CLAUDE.md: the site allows
+          // guest checkout ("No account needed first"). Guest checkout is not
+          // built; the app still asks guests to sign in, so that copy is not used.
+          label={
+            isAuthenticated ? 'Continue to checkout' : 'Log in to checkout'
+          }
           onPress={checkout}
           disabled={!summary.data}
         />
@@ -156,12 +171,14 @@ export const CartScreen = ({ navigation }: Props) => {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.surface },
-  count: { ...typography.label, color: colors.textMuted },
+  sub: { ...typography.body, color: colors.textSecondary },
+  hint: { ...typography.labelSmall, color: colors.textSecondary },
   content: { gap: spacing.md, padding: spacing.xl },
   card: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.lg,
+    borderLeftWidth: 4,
+    borderRadius: radius.card,
     overflow: 'hidden',
     backgroundColor: colors.white,
   },
@@ -169,11 +186,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 13,
+    flexWrap: 'wrap',
+    gap: 4,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
   },
-  tag: { ...typography.kicker },
-  note: { ...typography.labelSmall },
+  tag: { ...typography.tag, fontSize: 10.5 },
+  note: { ...typography.labelSmall, color: colors.textSecondary },
   line: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -183,14 +202,16 @@ const styles = StyleSheet.create({
     borderTopColor: colors.divider,
   },
   thumb: {
-    width: 44,
-    height: 44,
-    borderRadius: 9,
+    width: 56,
+    height: 56,
+    borderRadius: radius.sm,
     backgroundColor: colors.surfaceMuted,
   },
   lineInfo: { flex: 1, gap: 2 },
-  name: { ...typography.label, color: colors.ink, lineHeight: 16 },
-  price: { ...typography.heading, fontSize: 12, color: colors.ink },
+  name: { ...typography.heading, color: colors.ink },
+  price: { ...typography.labelSmall, color: colors.textSecondary },
+  lineEnd: { alignItems: 'flex-end', gap: 6 },
+  lineTotal: { ...typography.label, color: colors.ink },
   remove: {
     ...typography.labelSmall,
     color: colors.textMuted,

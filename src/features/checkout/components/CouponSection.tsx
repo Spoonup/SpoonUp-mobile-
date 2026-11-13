@@ -28,7 +28,7 @@ export const CouponSection = ({ appliedCode, onApplied }: Props) => {
 
   if (appliedCode) {
     return (
-      <Section title="Coupon">
+      <Section step={4} title="Coupon">
         <View style={styles.applied}>
           <Text style={styles.code}>{appliedCode} applied</Text>
           <Button
@@ -46,7 +46,7 @@ export const CouponSection = ({ appliedCode, onApplied }: Props) => {
   }
 
   return (
-    <Section title="Coupon">
+    <Section step={4} title="Coupon">
       <TextField
         label="Coupon code"
         value={code}

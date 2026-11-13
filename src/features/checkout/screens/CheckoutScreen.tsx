@@ -101,7 +101,9 @@ export const CheckoutScreen = ({ navigation }: Props) => {
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets
       >
-        <Section title="Delivery address">{renderAddress()}</Section>
+        <Section step={2} title="Delivery address">
+          {renderAddress()}
+        </Section>
         <DeliverySection
           options={delivery.data}
           selectedId={option?.id}
@@ -115,7 +117,7 @@ export const CheckoutScreen = ({ navigation }: Props) => {
           appliedCode={checkout.couponCode}
           onApplied={checkout.setCouponCode}
         />
-        <Section title="Order summary">{renderSummary()}</Section>
+        <Section title="Your order">{renderSummary()}</Section>
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
         <Button
@@ -130,7 +132,7 @@ export const CheckoutScreen = ({ navigation }: Props) => {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.surface },
-  content: { gap: spacing.md, padding: spacing.xl },
+  content: { gap: spacing.xxl, padding: spacing.xl },
   note: { ...typography.bodySmall, color: colors.textSecondary },
   footer: {
     paddingHorizontal: spacing.xl,

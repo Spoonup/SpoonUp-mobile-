@@ -10,10 +10,11 @@ import { ScreenHeader } from '../../../components/common/ScreenHeader';
 import { Skeleton } from '../../../components/common/Skeleton';
 import { useOffline } from '../../../hooks/useOffline';
 import type { RootStackParamList } from '../../../navigation/types';
-import { colors, spacing, typography } from '../../../theme';
+import { colors, radius, spacing, typography } from '../../../theme';
 import { formatRupees } from '../../../utils/money';
 import { AddressCard } from '../components/AddressCard';
 import { Section } from '../components/Section';
+import { useAuth } from '../../auth/context/AuthContext';
 import { friendlyError } from '../errorMessage';
 import { useCheckoutDraft } from '../hooks/useCheckoutDraft';
 import { routeAfterSdk } from '../paymentFlow';
@@ -24,6 +25,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Payment'>;
 export const PaymentScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
   const offline = useOffline();
+  const { user } = useAuth();
   const { lines, checkout, address, option, quote } = useCheckoutDraft();
   // One key per payment screen: taps and retries reuse the same order.
   const [idempotencyKey] = useState(paymentService.newIdempotencyKey);
@@ -36,8 +38,21 @@ export const PaymentScreen = ({ navigation }: Props) => {
         option: option!,
         couponCode: checkout.couponCode,
         idempotencyKey,
+        // Recipient name/phone when known; account email is the backend's
+        // fallback for the receipt.
+        customer: {
+          name:
+            address!.name.trim().length >= 2 ? address!.name : user?.name ?? '',
+          phone: address!.phone || user?.phone || '',
+          email: user?.email ?? '',
+        },
       });
-      return { intent, outcome: await paymentService.startPayment(intent) };
+      return {
+        intent,
+        outcome: await paymentService.startPayment(intent, () =>
+          navigation.navigate('RazorpayCheckout'),
+        ),
+      };
     },
     onSuccess: ({ intent, outcome }) => {
       const next = routeAfterSdk(outcome);
@@ -71,13 +86,19 @@ export const PaymentScreen = ({ navigation }: Props) => {
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       {header}
       <ScrollView contentContainerStyle={styles.content}>
-        <Section title="Delivering to">
+        <Section step={2} title="Delivering to">
           <AddressCard address={address} />
           <Text style={styles.note}>
             {option.label} · {option.detail}
           </Text>
         </Section>
-        <Section title="Order summary">
+        <Section step={6} title="Payment">
+          <View style={styles.payCard}>
+            <Text style={styles.payTitle}>Pay online</Text>
+            <Text style={styles.note}>UPI, card or netbanking</Text>
+          </View>
+        </Section>
+        <Section title="Your order">
           {quote.data ? (
             <BillSummary summary={quote.data} />
           ) : (
@@ -96,7 +117,11 @@ export const PaymentScreen = ({ navigation }: Props) => {
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
         <Button
-          label={quote.data ? `Pay ${formatRupees(quote.data.total)}` : 'Pay'}
+          label={
+            quote.data && !quote.data.finalAtPayment
+              ? `Pay ${formatRupees(quote.data.total)}`
+              : 'Pay'
+          }
           onPress={() => pay.mutate()}
           loading={pay.isPending}
           disabled={!quote.data || offline}
@@ -108,7 +133,16 @@ export const PaymentScreen = ({ navigation }: Props) => {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.surface },
-  content: { gap: spacing.md, padding: spacing.xl },
+  content: { gap: spacing.xxl, padding: spacing.xl },
+  payCard: {
+    gap: 2,
+    padding: 14,
+    borderRadius: radius.card,
+    borderWidth: 2,
+    borderColor: colors.olive,
+    backgroundColor: colors.selectedBg,
+  },
+  payTitle: { ...typography.label, color: colors.ink },
   note: { ...typography.bodySmall, color: colors.textSecondary },
   error: { ...typography.label, color: colors.danger },
   footer: {

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { radius, typography } from '../../../theme';
+import { typography } from '../../../theme';
 import { STATUS_UI, type TicketStatus } from '../types';
 
 export const StatusChip = ({ status }: { status: TicketStatus }) => {
@@ -10,7 +10,9 @@ export const StatusChip = ({ status }: { status: TicketStatus }) => {
       accessibilityLabel={`Status: ${ui.label}`}
       style={[styles.chip, { backgroundColor: ui.bg }]}
     >
-      <Text style={[styles.label, { color: ui.color }]}>{ui.label}</Text>
+      <Text style={[styles.label, { color: ui.color }]}>
+        {ui.label.toUpperCase()}
+      </Text>
     </View>
   );
 };
@@ -20,7 +22,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: radius.pill,
+    borderRadius: 4,
   },
-  label: { ...typography.labelSmall },
+  label: { ...typography.tag },
 });

@@ -1,5 +1,7 @@
 // MOCK catalog transcribed from the Claude Design handoff (6c). Replace with
 // the backend's /api/products when the shop is wired to the API.
+import type { ImageSourcePropType } from 'react-native';
+
 export type ProductCategory = 'now' | 'ships';
 
 export type Product = {
@@ -9,7 +11,7 @@ export type Product = {
   meta: string;
   category: ProductCategory;
   canSubscribe: boolean;
-  image: number;
+  image: ImageSourcePropType;
 };
 
 export const PRODUCTS: Product[] = [
@@ -96,5 +98,11 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
+// Live catalog entries (fetched from the backend) are remembered here so the
+// cart and detail screens can resolve a product id without refetching.
+const live = new Map<string, Product>();
+export const rememberProducts = (products: Product[]) =>
+  products.forEach(product => live.set(product.id, product));
+
 export const findProduct = (id: string): Product | undefined =>
-  PRODUCTS.find(product => product.id === id);
+  live.get(id) ?? PRODUCTS.find(product => product.id === id);

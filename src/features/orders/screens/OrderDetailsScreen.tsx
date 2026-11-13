@@ -27,7 +27,7 @@ const Row = ({ label, value }: { label: string; value: string }) => (
 
 const Details = ({ order }: { order: Order }) => (
   <View style={styles.card}>
-    <Row label="Order ID" value={order.id} />
+    <Row label="Order ID" value={order.number} />
     <Row label="Placed" value={order.placedAt} />
     <Row label="Order status" value={STATUS_LABEL[order.status]} />
     <Row label="Payment" value={PAYMENT_LABEL[order.paymentStatus]} />

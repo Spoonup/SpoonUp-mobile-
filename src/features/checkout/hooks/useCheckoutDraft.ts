@@ -4,8 +4,12 @@ import { useCheckout } from '../context/CheckoutContext';
 import { checkoutService } from '../services/checkoutService';
 import { useAddresses } from './useAddresses';
 
-export const useApplyCoupon = () =>
-  useMutation({ mutationFn: checkoutService.applyCoupon });
+export const useApplyCoupon = () => {
+  const { lines } = useCart();
+  return useMutation({
+    mutationFn: (code: string) => checkoutService.applyCoupon(code, lines),
+  });
+};
 
 // Resolves the customer's selections against backend data (falling back to
 // the first available address/option) and fetches the backend quote.
@@ -44,6 +48,7 @@ export const useCheckoutDraft = () => {
         addressId: address!.id,
         deliveryOptionId: option!.id,
         couponCode: checkout.couponCode,
+        scheduledFor: option!.scheduledFor,
       }),
     enabled: !!address && !!option,
     placeholderData: previous => previous,

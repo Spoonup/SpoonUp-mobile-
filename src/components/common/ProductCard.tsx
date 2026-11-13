@@ -4,9 +4,15 @@ import { formatRupees } from '../../utils/money';
 import type { Product } from '../../features/shop/data/products';
 import { Stepper } from './Stepper';
 
+// Site tags: solid olive for kitchen items, tan for pantry (ships).
 const TAG = {
-  now: { label: 'NOW', color: colors.tagNow },
-  ships: { label: 'SHIPS', color: colors.tagShips },
+  now: { label: 'NOW · 30–45 MIN', bg: colors.tagNow, fg: colors.surface },
+  ships: { label: 'SHIPS · 3–5 DAYS', bg: colors.tan, fg: colors.surface },
+} as const;
+
+const NOTE = {
+  now: 'Eat-now only',
+  ships: 'Ships by courier',
 } as const;
 
 type Props = {
@@ -15,16 +21,21 @@ type Props = {
   onPress: () => void;
   onAdd: () => void;
   onRemove: () => void;
+  onPlan?: () => void;
 };
 
+// Single-column site card: 3:2 image, tag overlay, name, description, price,
+// note line and a full-width ink "Add to cart" button. No shadow.
 export const ProductCard = ({
   product,
   quantity,
   onPress,
   onAdd,
   onRemove,
+  onPlan,
 }: Props) => {
   const tag = TAG[product.category];
+  const note = product.canSubscribe ? 'Plan available' : NOTE[product.category];
   return (
     <View style={styles.card}>
       <Pressable
@@ -39,17 +50,23 @@ export const ProductCard = ({
             resizeMode="cover"
             accessibilityIgnoresInvertColors
           />
-          <Text style={[styles.tag, { color: tag.color }]}>{tag.label}</Text>
+          <Text
+            style={[styles.tag, { color: tag.fg, backgroundColor: tag.bg }]}
+          >
+            {tag.label}
+          </Text>
         </View>
         <View style={styles.body}>
           <Text style={styles.name}>{product.name}</Text>
           <Text style={styles.meta}>{product.meta}</Text>
+          <Text style={styles.price}>{formatRupees(product.price)}</Text>
+          <Text style={styles.note}>{note}</Text>
         </View>
       </Pressable>
       <View style={styles.footer}>
-        <Text style={styles.price}>{formatRupees(product.price)}</Text>
         {quantity > 0 ? (
           <Stepper
+            variant="outline"
             quantity={quantity}
             itemName={product.name}
             onIncrement={onAdd}
@@ -62,9 +79,19 @@ export const ProductCard = ({
             onPress={onAdd}
             style={styles.add}
           >
-            <Text style={styles.addText}>Add</Text>
+            <Text style={styles.addText}>Add to cart</Text>
           </Pressable>
         )}
+        {product.canSubscribe && onPlan ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Plan ${product.name}`}
+            onPress={onPlan}
+            style={styles.plan}
+          >
+            <Text style={styles.planText}>Plan</Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
@@ -72,45 +99,54 @@ export const ProductCard = ({
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.lg,
+    borderRadius: radius.card,
     overflow: 'hidden',
     backgroundColor: colors.white,
   },
-  imageWrap: { height: 118, backgroundColor: colors.surfaceMuted },
+  imageWrap: { aspectRatio: 1.5, backgroundColor: colors.surfaceMuted },
   image: { width: '100%', height: '100%' },
   tag: {
     ...typography.tag,
     position: 'absolute',
-    top: 8,
-    left: 8,
-    paddingVertical: 3,
-    paddingHorizontal: 6,
+    top: 10,
+    left: 10,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
     borderRadius: 4,
-    backgroundColor: colors.surface,
     overflow: 'hidden',
   },
-  body: { paddingHorizontal: 11, paddingTop: 10, gap: 3 },
-  name: { ...typography.label, color: colors.ink, lineHeight: 16 },
-  meta: { ...typography.labelSmall, color: colors.textMuted },
+  body: { padding: 16, paddingBottom: 12, gap: 4 },
+  name: { ...typography.heading, color: colors.ink },
+  meta: { ...typography.bodySmall, color: colors.textSecondary },
+  price: { ...typography.price, color: colors.ink, marginTop: 4 },
+  note: { ...typography.labelSmall, color: colors.textSecondary },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 11,
-    paddingBottom: 6,
-    paddingTop: 2,
-    marginTop: 'auto',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
-  price: { ...typography.heading, color: colors.ink },
   add: {
+    flex: 1,
     minHeight: 44,
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 13,
-    borderRadius: radius.pill,
+    borderRadius: radius.xs,
     backgroundColor: colors.ink,
   },
   addText: { ...typography.label, color: colors.onDark },
+  plan: {
+    minHeight: 44,
+    minWidth: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    borderRadius: radius.xs,
+    borderWidth: 1,
+    borderColor: colors.borderButton,
+  },
+  planText: { ...typography.label, color: colors.ink },
 });

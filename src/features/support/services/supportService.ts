@@ -1,3 +1,4 @@
+// TODO(api): backend gap, no mobile-usable endpoint for support tickets; stays mock.
 import { ApiError } from '../../../services/api/interceptors';
 import { OPEN_TICKET_CODE } from '../errorMessage';
 import type {

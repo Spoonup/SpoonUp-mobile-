@@ -1,3 +1,5 @@
+// TODO(api): backend gap, no mobile-usable endpoint for notifications / push tokens; stays mock.
+import { mocksEnabled } from '../../../services/api/mode';
 import type { AppNotification } from '../types';
 
 const delay = () => new Promise<void>(resolve => setTimeout(resolve, 400));
@@ -65,6 +67,8 @@ let items: AppNotification[] = [
 export const notificationService = {
   // MOCK: replace with API (GET /notifications, scoped to the signed-in user).
   async list(): Promise<AppNotification[]> {
+    // Live: no backend endpoint yet, so there is nothing real to show.
+    if (!mocksEnabled) return [];
     await delay();
     return items.map(n => ({ ...n }));
   },

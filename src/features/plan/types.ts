@@ -28,3 +28,23 @@ export type PlanIntent = {
   amount: number;
   idempotencyKey: string;
 };
+
+// Backend subscription row (GET /api/me/subscriptions). A plan is a fixed
+// 30-day pass: ACTIVE after verified payment, activatedAt/expiresAt set by the
+// backend.
+export type ApiSubscription = {
+  id: string;
+  status: string;
+  activatedAt: string | null;
+  expiresAt: string | null;
+  parentOrderId: string | null;
+};
+
+// Backend-priced plan quote (POST /api/cart/quote with a SUBSCRIPTION line).
+export type PlanQuote = {
+  total: number;
+  deliveryCount: number;
+  validityDays: number;
+};
+
+export type PlanOptions = { frequencies: string[]; validityDays: number };

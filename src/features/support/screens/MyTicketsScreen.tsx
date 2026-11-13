@@ -81,7 +81,12 @@ export const MyTicketsScreen = ({ navigation }: Props) => {
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
-      <ScreenHeader title="Support" onBack={navigation.goBack} />
+      <ScreenHeader title="Get in touch" onBack={navigation.goBack} />
+      {/* FLAG: the website has email-only support (support@spoonupfoods.com)
+          and no ticket system. Tickets are kept as built (CLAUDE.md). */}
+      <Text style={styles.email}>
+        Prefer email? Write to support@spoonupfoods.com.
+      </Text>
       <View style={styles.flex}>{body()}</View>
       {isAuthenticated ? (
         <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
@@ -109,7 +114,13 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   row: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
-  subject: { ...typography.heading, flex: 1, color: colors.ink },
+  subject: { ...typography.titleCard, flex: 1, color: colors.ink },
   meta: { ...typography.bodySmall, color: colors.textSecondary },
+  email: {
+    ...typography.body,
+    color: colors.textSecondary,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.md,
+  },
   footer: { paddingHorizontal: spacing.xl, paddingTop: 12 },
 });

@@ -1,4 +1,50 @@
 {
-  "name": "SpoonUp",
-  "displayName": "SpoonUp"
+  "expo": {
+    "name": "SpoonUp",
+    "slug": "spoonup",
+    "scheme": "spoonup",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "icon": "./src/assets/images/app-icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.spoonup.mobile"
+    },
+    "android": {
+      "package": "com.spoonup.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/images/app-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./src/assets/fonts/DMSans-Regular.ttf",
+            "./src/assets/fonts/DMSans-Medium.ttf",
+            "./src/assets/fonts/DMSans-SemiBold.ttf",
+            "./src/assets/fonts/DMSans-Bold.ttf",
+            "./src/assets/fonts/InstrumentSerif-Regular.ttf",
+            "./src/assets/fonts/InstrumentSerif-Italic.ttf",
+            "./src/assets/fonts/JetBrainsMono-Regular.ttf",
+            "./src/assets/fonts/JetBrainsMono-Medium.ttf"
+          ]
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./src/assets/images/spoonup-logo.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#FFFFFF"
+        }
+      ],
+      "expo-asset"
+    ]
+  }
 }

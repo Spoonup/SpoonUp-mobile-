@@ -42,7 +42,7 @@ export const OrderConfirmationScreen = ({ navigation, route }: Props) => {
           Payment received. We’re getting your order ready.
         </Text>
         <View style={styles.card}>
-          <Row label="Order ID" value={order.id} />
+          <Row label="Order ID" value={order.number} />
           <Row label="Payment reference" value={paymentReference} />
           <Row label="Delivery" value={DELIVERY_LABEL[order.deliveryType]} />
           <Row label="Address" value={order.address} />

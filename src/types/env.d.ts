@@ -1,4 +1,7 @@
-declare module '@env' {
-  export const APP_ENV: string | undefined;
-  export const API_BASE_URL: string | undefined;
+declare namespace NodeJS {
+  interface ProcessEnv {
+    EXPO_PUBLIC_APP_ENV?: string;
+    EXPO_PUBLIC_API_BASE_URL?: string;
+    EXPO_PUBLIC_USE_MOCKS?: string;
+  }
 }

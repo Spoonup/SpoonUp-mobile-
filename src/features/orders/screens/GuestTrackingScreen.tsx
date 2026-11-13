@@ -1,114 +1,92 @@
-import { useRef, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button } from '../../../components/common/Button';
+import { EmptyState } from '../../../components/common/EmptyState';
+import { ErrorState } from '../../../components/common/ErrorState';
 import { ScreenHeader } from '../../../components/common/ScreenHeader';
-import { TextField } from '../../../components/common/TextField';
-import { useOffline } from '../../../hooks/useOffline';
+import { Skeleton } from '../../../components/common/Skeleton';
+import { useRefresh } from '../../../hooks/useRefresh';
 import type { RootStackParamList } from '../../../navigation/types';
 import { colors, radius, spacing, typography } from '../../../theme';
 import { TrackingTimeline } from '../components/TrackingTimeline';
-import { trackingError } from '../errorMessage';
-import {
-  guestOrderService,
-  type GuestOrderStatus,
-} from '../services/guestOrderService';
-import { normalizeReference, validateReference } from '../tracking';
+import { guestOrderService } from '../services/guestOrderService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'GuestTracking'>;
 
+// Orders placed on this device, read back with their saved access tokens (no
+// sign-in). The backend has no reference lookup for guests.
 export const GuestTrackingScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
-  const offline = useOffline();
-  const busy = useRef(false);
-  const [value, setValue] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>();
-  const [result, setResult] = useState<GuestOrderStatus>();
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['guest-orders'],
+    queryFn: guestOrderService.listRecent,
+  });
+  const pull = useRefresh(refetch);
 
-  const submit = async () => {
-    if (busy.current) return;
-    const invalid = validateReference(value);
-    setResult(undefined);
-    setError(invalid);
-    if (invalid) return;
-    busy.current = true;
-    setLoading(true);
-    try {
-      const reference = normalizeReference(value);
-      setValue(reference);
-      setResult(await guestOrderService.trackGuestOrder(reference));
-    } catch (e) {
-      setError(trackingError(e));
-    } finally {
-      busy.current = false;
-      setLoading(false);
+  const renderBody = () => {
+    if (isLoading) return <Skeleton height={200} borderRadius={radius.lg} />;
+    if (isError || !data) return <ErrorState onRetry={refetch} />;
+    if (data.orders.length === 0) {
+      return (
+        <EmptyState
+          title="No orders on this device"
+          message="Orders you place are saved here automatically, so you can track them without signing in. If you ordered on another phone, sign in to see your orders."
+          actionLabel="Log in"
+          onAction={() => navigation.navigate('Auth')}
+        />
+      );
     }
+    return (
+      <>
+        {data.orders.map(order => (
+          <View key={order.id} style={styles.card}>
+            <Text style={styles.ref}>{order.number}</Text>
+            <Text style={styles.meta}>Placed {order.placedAt}</Text>
+            {order.etaText ? (
+              <Text accessibilityLiveRegion="polite" style={styles.eta}>
+                {order.etaText}
+              </Text>
+            ) : null}
+            <TrackingTimeline status={order.status} />
+          </View>
+        ))}
+        {data.unavailable > 0 ? (
+          <Text style={styles.meta}>
+            {data.unavailable} saved{' '}
+            {data.unavailable === 1 ? 'order' : 'orders'} couldn’t be loaded.
+            The saved link may have expired.
+          </Text>
+        ) : null}
+      </>
+    );
   };
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.screen, { paddingTop: insets.top }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <View style={[styles.screen, { paddingTop: insets.top }]}>
       <ScreenHeader title="Track an order" onBack={navigation.goBack} />
       <ScrollView
         contentContainerStyle={[
           styles.content,
           { paddingBottom: insets.bottom + spacing.xl },
         ]}
-        keyboardShouldPersistTaps="handled"
+        refreshControl={<RefreshControl {...pull} />}
       >
-        <Text style={styles.hint}>
-          Enter the confirmation or tracking reference from your order
-          confirmation.
-        </Text>
-        <TextField
-          label="Order reference"
-          value={value}
-          onChangeText={setValue}
-          autoCapitalize="characters"
-          autoCorrect={false}
-          maxLength={20}
-          error={error}
-          returnKeyType="search"
-          onSubmitEditing={submit}
-        />
-        <Button
-          label="Track order"
-          onPress={submit}
-          loading={loading}
-          disabled={offline}
-        />
-        {result ? (
-          <View style={styles.card}>
-            <Text style={styles.ref}>{result.reference}</Text>
-            <Text style={styles.meta}>Placed {result.placedAt}</Text>
-            {result.etaText ? (
-              <Text accessibilityLiveRegion="polite" style={styles.eta}>
-                {result.etaText}
-              </Text>
-            ) : null}
-            <TrackingTimeline status={result.status} />
-          </View>
-        ) : null}
+        {renderBody()}
       </ScrollView>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.surface },
   content: { gap: spacing.md, padding: spacing.xl },
-  hint: { ...typography.body, color: colors.textSecondary },
   card: {
     gap: spacing.sm,
     padding: spacing.lg,

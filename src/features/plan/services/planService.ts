@@ -1,7 +1,46 @@
-import type { PaymentStatusResult, SdkOutcome } from '../../checkout/types';
+// Live (EXPO_PUBLIC_USE_MOCKS=false): the backend has no standalone plan
+// route. Like the website, a plan is a SUBSCRIPTION cart line (product +
+// frequency) priced by /api/cart/quote and bought through checkout
+// prepare/complete; status comes from /api/me/subscriptions. Mock paths below
+// remain the default.
+import { apiClient } from '../../../services/api/client';
+import { endpoints } from '../../../services/api/endpoints';
+import { ApiError } from '../../../services/api/interceptors';
+import { mocksEnabled } from '../../../services/api/mode';
+import { secureTokenStore } from '../../../services/storage/secureTokenStore';
+import type {
+  Address,
+  PaymentStatusResult,
+  SdkOutcome,
+} from '../../checkout/types';
+import { liveCheckout, type Customer } from '../../payments/liveCheckout';
 import { paymentService } from '../../checkout/services/paymentService';
-import { derivePlan } from '../logic';
-import type { Plan, PlanIntent, PlanOffer, PlanRecord } from '../types';
+import { derivePlan, planFromSubscriptions } from '../logic';
+import type {
+  ApiSubscription,
+  Plan,
+  PlanIntent,
+  PlanOffer,
+  PlanOptions,
+  PlanQuote,
+  PlanRecord,
+} from '../types';
+
+export type PlanInput = {
+  productId: string;
+  frequency: string;
+  address: Address;
+  customer: Customer;
+};
+
+const subscriptionLine = (productId: string, frequency: string) => ({
+  id: productId,
+  quantity: 1,
+  purchaseMode: 'SUBSCRIPTION',
+  frequency,
+});
+
+const liveIntents = new Map<string, PlanIntent>();
 
 // MOCK server state: replace all of this with the backend + provider webhook.
 // Set `record` to an expired date to preview the Expired Plan screen.
@@ -32,13 +71,87 @@ export const planService = {
   // MOCK: replace with API (GET /plan). The offer is public, the plan status
   // is per user and needs auth; status is decided by the backend.
   async getPlan(): Promise<Plan> {
+    if (!mocksEnabled) {
+      const { validityDays } = await planService.getOptions();
+      // Per-plan prices come from the quote; there is no fixed offer price.
+      const offer = { price: 0, validityDays, benefits: [] };
+      if (!(await secureTokenStore.getToken())) return derivePlan(offer, null);
+      try {
+        const subs = await apiClient.get<ApiSubscription[]>(
+          endpoints.mySubscriptions,
+        );
+        return planFromSubscriptions(subs, offer);
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 401) {
+          return derivePlan(offer, null);
+        }
+        throw error;
+      }
+    }
     await delay(400);
     return derivePlan(OFFER, record);
   },
 
   // MOCK: replace with API (POST /plan/orders with an Idempotency-Key header).
   // The backend sets the amount; a repeated key returns the same order.
-  async createPlanIntent(idempotencyKey: string): Promise<PlanIntent> {
+  // Live: GET /api/settings (public): the frequencies the backend accepts and
+  // the fixed pass length.
+  async getOptions(): Promise<PlanOptions> {
+    const settings = await apiClient.get<{
+      subscriptionFrequencies?: string[];
+      subscriptionPlanDurationDays?: number;
+    }>(endpoints.settings);
+    return {
+      frequencies: settings.subscriptionFrequencies ?? [],
+      validityDays: settings.subscriptionPlanDurationDays ?? 30,
+    };
+  },
+
+  // Live: POST /api/cart/quote with a SUBSCRIPTION line. Price, GST and
+  // delivery count are the backend's.
+  async quote(productId: string, frequency: string): Promise<PlanQuote> {
+    const res = await apiClient.post<{
+      totals: { calculatedTotal: number };
+      subscriptions: { deliveryCount: number; planDurationDays: number }[];
+    }>(endpoints.cartQuote, {
+      lines: [subscriptionLine(productId, frequency)],
+    });
+    const sub = res.subscriptions[0];
+    return {
+      total: res.totals.calculatedTotal,
+      deliveryCount: sub.deliveryCount,
+      validityDays: sub.planDurationDays,
+    };
+  },
+
+  async createPlanIntent(
+    idempotencyKey: string,
+    input?: PlanInput,
+  ): Promise<PlanIntent> {
+    if (!mocksEnabled) {
+      const cached = liveIntents.get(idempotencyKey);
+      if (cached) return cached;
+      if (!input) throw new Error('Choose a plan first.');
+      // startDate is omitted: the backend defaults it (the next day).
+      const prepared = await liveCheckout.prepare(
+        {
+          lines: [subscriptionLine(input.productId, input.frequency)],
+          deliveryAddress: {
+            line1: input.address.line1,
+            city: input.address.city,
+            pincode: input.address.pincode,
+          },
+        },
+        input.customer,
+      );
+      const live = {
+        planOrderId: prepared.checkoutId,
+        amount: prepared.amount,
+        idempotencyKey,
+      };
+      liveIntents.set(idempotencyKey, live);
+      return live;
+    }
     await delay(300);
     const existing = intents.get(idempotencyKey);
     if (existing) return existing;
@@ -54,7 +167,15 @@ export const planService = {
 
   // MOCK: replace with the Razorpay SDK launch. The result is a UI hint only
   // and is never treated as proof of payment.
-  async startPayment(_intent: PlanIntent): Promise<SdkOutcome> {
+  async startPayment(
+    intent: PlanIntent,
+    open: () => void = () => {},
+  ): Promise<SdkOutcome> {
+    if (!mocksEnabled) {
+      const outcome = await liveCheckout.pay(intent.planOrderId, open);
+      if (outcome !== 'success') liveIntents.delete(intent.idempotencyKey);
+      return outcome;
+    }
     await delay(600);
     const outcome = MOCK_SDK_CYCLE[attempt % MOCK_SDK_CYCLE.length];
     attempt += 1;
@@ -65,6 +186,7 @@ export const planService = {
   // provider webhook. Reports 'pending' twice before 'paid'. Access starts
   // here, server side, only once payment is verified.
   async getPaymentStatus(planOrderId: string): Promise<PaymentStatusResult> {
+    if (!mocksEnabled) return liveCheckout.verify(planOrderId);
     await delay(400);
     if (![...intents.values()].some(i => i.planOrderId === planOrderId)) {
       return { status: 'failed' };

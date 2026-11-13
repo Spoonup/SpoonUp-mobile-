@@ -31,6 +31,9 @@ import {
 } from '../features/plan/screens/PlanOutcomeScreens';
 import { PlanSuccessScreen } from '../features/plan/screens/PlanSuccessScreen';
 import { PlanVerifyScreen } from '../features/plan/screens/PlanVerifyScreen';
+import { RazorpayCheckoutScreen } from '../features/payments/RazorpayCheckoutScreen';
+import { BackendGapScreen } from '../components/common/BackendGapScreen';
+import { mocksEnabled } from '../services/api/mode';
 import { MainTabs } from './MainTabs';
 import type { RootStackParamList } from './types';
 
@@ -51,11 +54,21 @@ export const RootNavigator = () => (
     <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} />
     <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} />
     <Stack.Screen name="GuestTracking" component={GuestTrackingScreen} />
-    <Stack.Screen name="Notifications" component={NotificationsScreen} />
+    {/* TODO(api): backend gap: no notifications or support endpoints. In live
+        mode these show an honest "email support" state, not mock data. */}
+    <Stack.Screen
+      name="Notifications"
+      component={mocksEnabled ? NotificationsScreen : BackendGapScreen}
+    />
     <Stack.Screen name="Profile" component={ProfileScreen} />
     <Stack.Screen name="Addresses" component={AddressListScreen} />
     <Stack.Screen name="AddressForm" component={AddressFormScreen} />
     <Stack.Screen name="Payment" component={PaymentScreen} />
+    <Stack.Screen
+      name="RazorpayCheckout"
+      component={RazorpayCheckoutScreen}
+      options={{ gestureEnabled: false }}
+    />
     <Stack.Screen
       name="PaymentVerify"
       component={PaymentVerifyScreen}
@@ -98,12 +111,21 @@ export const RootNavigator = () => (
       component={PlanCancelledScreen}
       options={{ gestureEnabled: false }}
     />
-    <Stack.Screen name="Support" component={MyTicketsScreen} />
-    <Stack.Screen name="CreateTicket" component={CreateTicketScreen} />
-    <Stack.Screen name="TicketDetails" component={TicketDetailsScreen} />
+    <Stack.Screen
+      name="Support"
+      component={mocksEnabled ? MyTicketsScreen : BackendGapScreen}
+    />
+    <Stack.Screen
+      name="CreateTicket"
+      component={mocksEnabled ? CreateTicketScreen : BackendGapScreen}
+    />
+    <Stack.Screen
+      name="TicketDetails"
+      component={mocksEnabled ? TicketDetailsScreen : BackendGapScreen}
+    />
     <Stack.Screen
       name="AttachmentPreview"
-      component={AttachmentPreviewScreen}
+      component={mocksEnabled ? AttachmentPreviewScreen : BackendGapScreen}
     />
   </Stack.Navigator>
 );

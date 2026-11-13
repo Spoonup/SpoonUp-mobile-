@@ -34,17 +34,3 @@ export const buildTimeline = (status: OrderStatus): TimelineStep[] => {
     state: i < at ? 'done' : i === at ? 'current' : 'upcoming',
   }));
 };
-
-const REFERENCE = /^[A-Z0-9-]{6,20}$/;
-
-export const normalizeReference = (value: string): string =>
-  value.trim().toUpperCase();
-
-export const validateReference = (value: string): string | undefined => {
-  const ref = normalizeReference(value);
-  if (!ref) return 'Enter your confirmation or tracking reference.';
-  if (!REFERENCE.test(ref)) {
-    return 'Use 6–20 letters, numbers or dashes, e.g. SU-24817.';
-  }
-  return undefined;
-};

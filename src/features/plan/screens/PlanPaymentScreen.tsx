@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../../../components/common/Button';
 import { ErrorState } from '../../../components/common/ErrorState';
@@ -17,6 +17,12 @@ import {
   typography,
 } from '../../../theme';
 import { formatRupees } from '../../../utils/money';
+import { mocksEnabled } from '../../../services/api/mode';
+import { useAuth } from '../../auth/context/AuthContext';
+import { AddressCard } from '../../checkout/components/AddressCard';
+import { useCheckout } from '../../checkout/context/CheckoutContext';
+import { useAddresses } from '../../checkout/hooks/useAddresses';
+import { EmptyState } from '../../../components/common/EmptyState';
 import { friendlyError } from '../../checkout/errorMessage';
 import { routeAfterSdk } from '../../checkout/paymentFlow';
 import { usePlan } from '../hooks/usePlan';
@@ -24,17 +30,49 @@ import { planService } from '../services/planService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PlanPayment'>;
 
-export const PlanPaymentScreen = ({ navigation }: Props) => {
+export const PlanPaymentScreen = ({ navigation, route }: Props) => {
   const insets = useSafeAreaInsets();
   const offline = useOffline();
   const plan = usePlan();
+  const { user } = useAuth();
+  const live = !mocksEnabled;
+  const { productId, frequency } = route.params ?? {};
+  const addresses = useAddresses();
+  const { addressId } = useCheckout();
+  const address =
+    addresses.data?.find(item => item.id === addressId) ?? addresses.data?.[0];
+  // Live: the backend prices the chosen plan (cart quote).
+  const quote = useQuery({
+    queryKey: ['plan-quote', productId, frequency],
+    queryFn: () => planService.quote(productId as string, frequency as string),
+    enabled: live && !!productId && !!frequency,
+  });
   // One key per payment screen: taps and retries reuse the same plan order.
   const [idempotencyKey] = useState(planService.newIdempotencyKey);
 
   const pay = useMutation({
     mutationFn: async () => {
-      const intent = await planService.createPlanIntent(idempotencyKey);
-      return { intent, outcome: await planService.startPayment(intent) };
+      const intent = await planService.createPlanIntent(
+        idempotencyKey,
+        live && productId && frequency && address
+          ? {
+              productId,
+              frequency,
+              address,
+              customer: {
+                name: user?.name ?? address.name,
+                phone: address.phone || user?.phone || '',
+                email: user?.email ?? '',
+              },
+            }
+          : undefined,
+      );
+      return {
+        intent,
+        outcome: await planService.startPayment(intent, () =>
+          navigation.navigate('RazorpayCheckout'),
+        ),
+      };
     },
     onSuccess: ({ intent, outcome }) => {
       const next = routeAfterSdk(outcome);
@@ -49,26 +87,54 @@ export const PlanPaymentScreen = ({ navigation }: Props) => {
   });
 
   const offer = plan.data?.offer;
+  const price = live ? quote.data?.total : offer?.price;
+  const validityDays = live ? quote.data?.validityDays : offer?.validityDays;
+  const ready = live ? !!quote.data && !!address : !!offer;
+
+  if (live && (!productId || !frequency)) {
+    return (
+      <View style={[styles.screen, { paddingTop: insets.top }]}>
+        <ScreenHeader title="Plan payment" onBack={navigation.goBack} />
+        <EmptyState
+          title="Choose a plan first"
+          message="Pick a dish and how often you want it on the plan tab."
+          actionLabel="Choose a plan"
+          onAction={() => navigation.navigate('MainTabs', { screen: 'Plans' })}
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <ScreenHeader title="Plan payment" onBack={navigation.goBack} />
-      {plan.isError ? (
-        <ErrorState onRetry={plan.refetch} />
+      {plan.isError || quote.isError ? (
+        <ErrorState onRetry={live ? quote.refetch : plan.refetch} />
       ) : (
         <ScrollView contentContainerStyle={styles.content}>
-          {offer ? (
+          {price !== undefined ? (
             <View style={styles.card}>
               <Text style={styles.label}>30-day plan</Text>
-              <Text style={styles.price}>{formatRupees(offer.price)}</Text>
+              <Text style={styles.price}>{formatRupees(price)}</Text>
               <Text style={styles.note}>
-                One-time payment · valid {offer.validityDays} days · no
-                automatic renewal
+                One-time payment · valid {validityDays} days · no automatic
+                renewal
               </Text>
             </View>
           ) : (
             <Skeleton height={110} borderRadius={radius.lg} />
           )}
+          {live ? (
+            address ? (
+              <AddressCard address={address} />
+            ) : (
+              <Button
+                variant="outline"
+                label="Add a delivery address"
+                onPress={() => navigation.navigate('AddressForm')}
+              />
+            )
+          ) : null}
           <Text style={styles.note}>
             Your plan starts only after we verify the payment with your bank.
           </Text>
@@ -84,10 +150,10 @@ export const PlanPaymentScreen = ({ navigation }: Props) => {
       )}
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
         <Button
-          label={offer ? `Pay ${formatRupees(offer.price)}` : 'Pay'}
+          label={price !== undefined ? `Pay ${formatRupees(price)}` : 'Pay'}
           onPress={() => pay.mutate()}
           loading={pay.isPending}
-          disabled={!offer || offline}
+          disabled={!ready || offline}
         />
       </View>
     </View>
@@ -108,7 +174,7 @@ const styles = StyleSheet.create({
   label: { ...typography.label, color: colors.textSecondary },
   // Instrument Serif has no ₹ glyph; the fallback font garbled the digits.
   price: {
-    fontFamily: fontFamily.sansSemiBold,
+    fontFamily: fontFamily.sansMedium,
     fontSize: 28,
     lineHeight: 34,
     color: colors.ink,

@@ -1,4 +1,5 @@
 import {
+  Linking,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -52,7 +53,7 @@ export const OrderTrackingScreen = ({ navigation, route }: Props) => {
           }
         >
           <View style={styles.card}>
-            <Text style={styles.orderId}>{order.id}</Text>
+            <Text style={styles.orderId}>{order.number}</Text>
             {order.etaText ? (
               <Text accessibilityLiveRegion="polite" style={styles.eta}>
                 {order.etaText}
@@ -60,6 +61,13 @@ export const OrderTrackingScreen = ({ navigation, route }: Props) => {
             ) : null}
             <TrackingTimeline status={order.status} />
           </View>
+          {order.trackingLink?.startsWith('https://') ? (
+            <Button
+              variant="outline"
+              label="Open courier tracking"
+              onPress={() => Linking.openURL(order.trackingLink as string)}
+            />
+          ) : null}
         </ScrollView>
         <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
           <Button

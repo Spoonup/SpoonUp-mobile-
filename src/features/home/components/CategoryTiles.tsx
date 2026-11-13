@@ -1,10 +1,11 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, fontFamily, typography } from '../../../theme';
+import { colors, radius, typography } from '../../../theme';
 
 export type CategoryTile = {
   key: string;
   tag: string;
   tagColor: string;
+  tagBg: string;
   label: string;
   sub: string;
   image: number;
@@ -13,8 +14,10 @@ export type CategoryTile = {
 
 type Props = { tiles: CategoryTile[] };
 
+// Site "Three ways to eat with us": stacked white tiles, image + mono tag +
+// serif title + one-line description.
 export const CategoryTiles = ({ tiles }: Props) => (
-  <View style={styles.row}>
+  <View style={styles.col}>
     {tiles.map(tile => (
       <Pressable
         key={tile.key}
@@ -23,17 +26,22 @@ export const CategoryTiles = ({ tiles }: Props) => (
         onPress={tile.onPress}
         style={({ pressed }) => [styles.tile, pressed && styles.pressed]}
       >
-        <View style={styles.imageWrap}>
-          <Image
-            source={tile.image}
-            style={styles.image}
-            resizeMode="cover"
-            accessibilityIgnoresInvertColors
-          />
-        </View>
+        <Image
+          source={tile.image}
+          style={styles.image}
+          resizeMode="cover"
+          accessibilityIgnoresInvertColors
+        />
         <View style={styles.text}>
-          <Text style={[styles.tag, { color: tile.tagColor }]}>{tile.tag}</Text>
-          <Text style={styles.label}>{tile.label} ›</Text>
+          <Text
+            style={[
+              styles.tag,
+              { color: tile.tagColor, backgroundColor: tile.tagBg },
+            ]}
+          >
+            {tile.tag}
+          </Text>
+          <Text style={styles.label}>{tile.label}</Text>
           <Text style={styles.sub}>{tile.sub}</Text>
         </View>
       </Pressable>
@@ -42,23 +50,24 @@ export const CategoryTiles = ({ tiles }: Props) => (
 );
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 9 },
+  col: { gap: 16 },
   tile: {
-    flex: 1,
-    borderRadius: 14,
+    borderRadius: radius.card,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  pressed: { transform: [{ scale: 0.97 }] },
-  imageWrap: { height: 74 },
-  image: { width: '100%', height: '100%' },
-  text: { paddingHorizontal: 10, paddingTop: 9, paddingBottom: 11, gap: 2 },
-  tag: { ...typography.tag, fontSize: 9.5 },
-  label: { ...typography.label, fontSize: 12.5, color: colors.ink },
-  sub: {
-    ...typography.labelSmall,
-    fontSize: 10.5,
-    color: colors.textMuted,
-    fontFamily: fontFamily.sans,
+  pressed: { opacity: 0.85 },
+  image: { width: '100%', aspectRatio: 2.1 },
+  text: { padding: 20, gap: 8, alignItems: 'flex-start' },
+  tag: {
+    ...typography.tag,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    overflow: 'hidden',
   },
+  label: { ...typography.titleCard, color: colors.ink },
+  sub: { ...typography.body, color: colors.textSecondary },
 });

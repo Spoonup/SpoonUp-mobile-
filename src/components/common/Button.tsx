@@ -6,7 +6,8 @@ type Props = {
   onPress: () => void;
   disabled?: boolean;
   loading?: boolean;
-  variant?: 'primary' | 'outline';
+  // primary = olive pill; outline = bordered pill; dark = ink pill; sage = on dark surfaces.
+  variant?: 'primary' | 'outline' | 'dark' | 'sage';
   accessibilityLabel?: string;
 };
 
@@ -20,6 +21,8 @@ export const Button = ({
 }: Props) => {
   const isInactive = disabled || loading;
   const isOutline = variant === 'outline';
+  const textColor =
+    isOutline || variant === 'sage' ? colors.ink : colors.onDark;
   return (
     <Pressable
       accessibilityRole="button"
@@ -29,18 +32,18 @@ export const Button = ({
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
-        isOutline ? styles.outline : styles.primary,
-        isInactive && styles.inactive,
+        styles[variant],
+        isInactive && (isOutline ? styles.inactiveOutline : styles.inactive),
         pressed && !isInactive && styles.pressed,
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={isOutline ? colors.ink : colors.onDark} />
+        <ActivityIndicator color={textColor} />
       ) : (
         <Text
           style={[
             styles.label,
-            { color: isOutline ? colors.ink : colors.onDark },
+            { color: textColor },
             isInactive && !isOutline && styles.labelInactive,
           ]}
         >
@@ -53,21 +56,24 @@ export const Button = ({
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: 50,
-    borderRadius: radius.lg,
-    paddingVertical: 15,
-    paddingHorizontal: 16,
+    minHeight: 48,
+    borderRadius: radius.pill,
+    paddingVertical: 14,
+    paddingHorizontal: 26,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  primary: { backgroundColor: colors.ink },
+  primary: { backgroundColor: colors.olive },
+  dark: { backgroundColor: colors.ink },
+  sage: { backgroundColor: colors.sage },
   outline: {
     borderWidth: 1,
-    borderColor: colors.borderStrong,
+    borderColor: colors.borderButton,
     backgroundColor: 'transparent',
   },
-  inactive: { backgroundColor: colors.disabledBg, borderColor: 'transparent' },
+  inactive: { backgroundColor: colors.sage, borderColor: 'transparent' },
+  inactiveOutline: { opacity: 0.45 },
   pressed: { transform: [{ scale: 0.98 }] },
   label: { ...typography.button, textAlign: 'center' },
-  labelInactive: { color: colors.textDisabled },
+  labelInactive: { color: colors.surface },
 });

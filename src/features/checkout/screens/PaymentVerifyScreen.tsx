@@ -43,6 +43,8 @@ export const PaymentVerifyScreen = ({ navigation, route }: Props) => {
   const handled = useRef(false);
   const next = routeAfterStatus(status.data?.status);
   const reference = status.data?.paymentReference;
+  // Live: the backend's order id; the checkout id is only a handle.
+  const confirmedOrderId = status.data?.orderId ?? orderId;
 
   useEffect(() => {
     if (handled.current) return;
@@ -57,7 +59,7 @@ export const PaymentVerifyScreen = ({ navigation, route }: Props) => {
           { name: 'MainTabs' },
           {
             name: 'OrderConfirmation',
-            params: { orderId, paymentReference: reference },
+            params: { orderId: confirmedOrderId, paymentReference: reference },
           },
         ],
       });
@@ -65,7 +67,15 @@ export const PaymentVerifyScreen = ({ navigation, route }: Props) => {
       handled.current = true;
       navigation.replace('PaymentFailed');
     }
-  }, [next, reference, orderId, cart, checkout, queryClient, navigation]);
+  }, [
+    next,
+    reference,
+    confirmedOrderId,
+    cart,
+    checkout,
+    queryClient,
+    navigation,
+  ]);
 
   const polls =
     queryClient.getQueryState(['payment-status', orderId])?.dataUpdateCount ??

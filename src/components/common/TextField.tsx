@@ -1,47 +1,101 @@
+import { useState } from 'react';
 import {
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
   type TextInputProps,
 } from 'react-native';
-import { colors, radius, typography } from '../../theme';
+import { colors, fontFamily, radius, typography } from '../../theme';
 
 type Props = TextInputProps & {
   label: string;
   error?: string;
+  hint?: string;
+  // Password field with a Show/Hide toggle (sets secureTextEntry itself).
+  password?: boolean;
 };
 
-export const TextField = ({ label, error, style, ...inputProps }: Props) => (
-  <View style={styles.wrap}>
-    <Text style={styles.label}>{label}</Text>
+export const TextField = ({
+  label,
+  error,
+  hint,
+  password,
+  style,
+  ...inputProps
+}: Props) => {
+  const [shown, setShown] = useState(false);
+  const input = (
     <TextInput
       accessibilityLabel={label}
       placeholderTextColor={colors.textDisabled}
-      style={[styles.input, error ? styles.inputError : null, style]}
+      style={[
+        styles.input,
+        error ? styles.inputError : null,
+        password ? styles.inputPassword : null,
+        style,
+      ]}
       {...inputProps}
+      secureTextEntry={password ? !shown : inputProps.secureTextEntry}
     />
-    {error ? (
-      <Text accessibilityLiveRegion="polite" style={styles.error}>
-        {error}
-      </Text>
-    ) : null}
-  </View>
-);
+  );
+  return (
+    <View style={styles.wrap}>
+      <Text style={styles.label}>{label}</Text>
+      {password ? (
+        <View>
+          {input}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={shown ? 'Hide password' : 'Show password'}
+            onPress={() => setShown(value => !value)}
+            hitSlop={6}
+            style={styles.toggle}
+          >
+            <Text style={styles.toggleText}>{shown ? 'Hide' : 'Show'}</Text>
+          </Pressable>
+        </View>
+      ) : (
+        input
+      )}
+      {error ? (
+        <Text accessibilityLiveRegion="polite" style={styles.error}>
+          {error}
+        </Text>
+      ) : hint ? (
+        <Text style={styles.hint}>{hint}</Text>
+      ) : null}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   wrap: { gap: 6 },
   label: { ...typography.label, color: colors.ink },
   input: {
-    minHeight: 50,
+    minHeight: 48,
     borderWidth: 1,
-    borderColor: colors.borderStrong,
-    borderRadius: radius.md + 3,
+    borderColor: colors.borderInput,
+    borderRadius: radius.sm,
     paddingHorizontal: 14,
     backgroundColor: colors.white,
     color: colors.ink,
-    fontSize: 15,
+    fontFamily: fontFamily.sans,
+    fontSize: 14,
   },
+  inputPassword: { paddingRight: 64 },
+  toggle: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    minWidth: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  toggleText: { ...typography.label, color: colors.olive },
   inputError: { borderColor: colors.danger },
+  hint: { ...typography.labelSmall, color: colors.textSecondary },
   error: { ...typography.bodySmall, color: colors.danger },
 });

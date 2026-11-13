@@ -54,7 +54,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
   },
   solid: { backgroundColor: colors.olive },
-  outline: { borderWidth: 1, borderColor: colors.borderStrong },
+  // Site stepper: square outline buttons, 8 radius.
+  outline: {
+    borderWidth: 1,
+    borderColor: colors.borderButton,
+    borderRadius: radius.sm,
+  },
   btn: {
     width: 44,
     height: 44,

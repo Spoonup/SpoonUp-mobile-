@@ -30,7 +30,7 @@ export const Chip = ({ label, selected, onPress, dotColor }: Props) => (
 
 const styles = StyleSheet.create({
   chip: {
-    minHeight: 44,
+    minHeight: 44, // site is 38-40; 44 keeps the iOS touch target
     flexDirection: 'row',
     alignItems: 'center',
     gap: 7,
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: colors.borderStrong,
+    borderColor: colors.borderButton,
   },
   chipOn: { backgroundColor: colors.ink, borderColor: colors.ink },
   dot: { width: 7, height: 7, borderRadius: 4 },

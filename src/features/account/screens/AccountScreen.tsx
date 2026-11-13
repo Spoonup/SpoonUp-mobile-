@@ -72,7 +72,7 @@ export const AccountScreen = ({ navigation }: Props) => {
           <View style={styles.flex}>
             <Text style={styles.name}>{user ? user.name : 'Guest'}</Text>
             <Text style={styles.phone}>
-              {user ? `+91 ${user.phone}` : 'Log in to see your orders'}
+              {user ? user.email : 'Log in to see your orders'}
             </Text>
           </View>
         </View>
@@ -133,23 +133,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarText: {
-    fontFamily: fontFamily.sansSemiBold,
+    fontFamily: fontFamily.sansMedium,
     fontSize: 20,
     color: colors.onDark,
   },
   name: {
     fontFamily: fontFamily.serif,
-    fontSize: 26,
-    lineHeight: 29,
+    fontSize: 30,
+    lineHeight: 33,
     color: colors.ink,
   },
   phone: { ...typography.bodySmall, color: colors.textSecondary },
   card: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     overflow: 'hidden',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surfaceMuted,
   },
   row: {
     minHeight: 52,

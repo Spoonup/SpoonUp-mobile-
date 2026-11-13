@@ -1,14 +1,5 @@
-import { ApiError } from '../src/services/api/interceptors';
-import { trackingError } from '../src/features/orders/errorMessage';
-import {
-  guestOrderService,
-  mockGuestControls,
-} from '../src/features/orders/services/guestOrderService';
-import {
-  buildTimeline,
-  normalizeReference,
-  validateReference,
-} from '../src/features/orders/tracking';
+import { guestOrderService } from '../src/features/orders/services/guestOrderService';
+import { buildTimeline } from '../src/features/orders/tracking';
 import {
   groupNotifications,
   routeFor,
@@ -16,36 +7,12 @@ import {
 } from '../src/features/notifications/logic';
 import type { AppNotification } from '../src/features/notifications/types';
 
-describe('reference validation', () => {
-  test('trims and uppercases', () => {
-    expect(normalizeReference('  su-24817 ')).toBe('SU-24817');
-  });
-  test('rejects empty, short and bad characters', () => {
-    expect(validateReference('  ')).toMatch(/Enter/);
-    expect(validateReference('ab1')).toMatch(/6–20/);
-    expect(validateReference('SU 24817!')).toMatch(/6–20/);
-    expect(validateReference(' su-24817 ')).toBeUndefined();
-  });
-});
-
-describe('guest tracking service', () => {
-  afterEach(() => (mockGuestControls.force = null));
-  test('finds known, 404s unknown, 429s when limited', async () => {
-    await expect(
-      guestOrderService.trackGuestOrder('SU-24817'),
-    ).resolves.toMatchObject({
-      status: 'out_for_delivery',
-    });
-    const miss = await guestOrderService
-      .trackGuestOrder('SU-00000')
-      .catch(e => e);
-    expect(trackingError(miss)).toMatch(/couldn’t find/);
-    mockGuestControls.force = 'rate_limit';
-    const limited = await guestOrderService
-      .trackGuestOrder('SU-24817')
-      .catch(e => e);
-    expect(trackingError(limited)).toMatch(/Too many/);
-    expect(trackingError(new ApiError(500, undefined))).toMatch(/right now/);
+describe('guest tracking service (mock)', () => {
+  test('lists the orders remembered on this device', async () => {
+    const { orders, unavailable } = await guestOrderService.listRecent();
+    expect(orders.map(o => o.number)).toEqual(['SU-24817', 'SU-24802']);
+    expect(orders[0].status).toBe('out_for_delivery');
+    expect(unavailable).toBe(0);
   });
 });
 

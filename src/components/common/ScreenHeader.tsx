@@ -47,10 +47,10 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: colors.borderStrong,
+    borderColor: colors.borderButton,
     alignItems: 'center',
     justifyContent: 'center',
   },
   backText: { fontSize: 18, color: colors.ink },
-  title: { ...typography.title, color: colors.ink },
+  title: { ...typography.headline, color: colors.ink, flexShrink: 1 },
 });

@@ -64,7 +64,7 @@ export const DeliverySection = ({
   };
 
   return (
-    <Section title="Delivery">
+    <Section step={3} title="When should the kitchen order arrive?">
       <View style={styles.list}>{renderBody()}</View>
     </Section>
   );
@@ -76,12 +76,17 @@ const styles = StyleSheet.create({
     minHeight: 48,
     justifyContent: 'center',
     gap: 2,
-    padding: 12,
+    padding: 14,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.md,
+    borderRadius: radius.card,
+    backgroundColor: colors.white,
   },
-  selected: { borderColor: colors.ink, borderWidth: 2 },
+  selected: {
+    borderColor: colors.olive,
+    borderWidth: 2,
+    backgroundColor: colors.selectedBg,
+  },
   label: { ...typography.label, color: colors.ink },
   note: { ...typography.bodySmall, color: colors.textSecondary },
 });

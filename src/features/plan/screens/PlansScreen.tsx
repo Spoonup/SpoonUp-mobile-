@@ -1,4 +1,5 @@
 import {
+  Image,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -25,7 +26,9 @@ import {
   typography,
 } from '../../../theme';
 import { formatRupees } from '../../../utils/money';
+import { mocksEnabled } from '../../../services/api/mode';
 import { useAuth } from '../../auth/context/AuthContext';
+import { PlanBuilder } from '../components/PlanBuilder';
 import { daysLeftLabel, formatPlanDate } from '../logic';
 import { usePlan } from '../hooks/usePlan';
 import type { Plan } from '../types';
@@ -53,16 +56,38 @@ const Offer = ({
   onBuy: () => void;
 }) => (
   <>
-    <View style={styles.hero}>
-      <Text style={styles.kicker}>30-DAY PLAN · PAID ONCE</Text>
-      <Text style={styles.heroTitle}>
-        {expired ? 'Your plan has ended' : 'One payment. 30 days.'}
+    <View style={styles.intro}>
+      <Text style={styles.kickerDark}>SCHEDULE PLAN</Text>
+      <Text style={styles.h1}>
+        {expired ? 'Your plan has ended.' : 'Decide once. Then just '}
+        {expired ? null : <Text style={styles.h1Italic}>eat</Text>}
+        {expired ? null : '.'}
       </Text>
-      <Text style={styles.price}>{formatRupees(plan.offer.price)}</Text>
-      <Text style={styles.heroSub}>
-        Valid for {plan.offer.validityDays} days from activation
+      <Text style={styles.lead}>
+        Pay once for the whole plan. Fresh food arrives on your schedule for{' '}
+        {plan.offer.validityDays} days.
       </Text>
     </View>
+    <View style={styles.stats}>
+      <View style={styles.stat}>
+        <Text style={styles.statNum}>{plan.offer.validityDays}</Text>
+        <Text style={styles.statLabel}>days per pass</Text>
+      </View>
+      <View style={styles.stat}>
+        <Text style={styles.statNum}>1</Text>
+        <Text style={styles.statLabel}>payment, paid once</Text>
+      </View>
+      <View style={styles.stat}>
+        <Text style={styles.statNum}>0</Text>
+        <Text style={styles.statLabel}>fees to pause or skip by email</Text>
+      </View>
+    </View>
+    <Image
+      source={require('../../../assets/images/lifestyle/week-jars.jpg')}
+      style={styles.photo}
+      resizeMode="cover"
+      accessibilityIgnoresInvertColors
+    />
     {expired && plan.expiresAt ? (
       <View style={styles.card}>
         <Row label="Ended on" value={formatPlanDate(plan.expiresAt)} />
@@ -79,11 +104,23 @@ const Offer = ({
         </Text>
       ))}
     </View>
-    <Text style={styles.note}>
-      Your plan starts only after we verify your payment.
-    </Text>
+    <View style={styles.summary}>
+      <Text style={styles.kickerDark}>YOUR PLAN</Text>
+      <Row label="Valid for" value={`${plan.offer.validityDays} days`} />
+      <View style={styles.totalRow}>
+        <Text style={styles.cardTitle}>Plan price</Text>
+        <Text style={styles.total}>{formatRupees(plan.offer.price)}</Text>
+      </View>
+      <Text style={styles.note}>
+        One prepaid payment. It does not renew. Your plan starts only after we
+        verify your payment.
+      </Text>
+    </View>
+    {/* DECISION: matches website, differs from CLAUDE.md: the site builds a
+        plan (product, frequency, GST) in the cart; the app keeps the fixed
+        server-priced plan until the backend exposes the builder. */}
     <Button
-      label={`${expired ? 'Renew' : 'Buy plan'} · ${formatRupees(
+      label={`${expired ? 'Renew plan' : 'Start plan'} · ${formatRupees(
         plan.offer.price,
       )}`}
       onPress={onBuy}
@@ -123,9 +160,9 @@ export const PlansScreen = ({ navigation }: Props) => {
   const pull = useRefresh(refetch);
 
   // Guests can read the offer; buying needs an account, then resumes here.
-  const buy = () =>
+  const buy = (productId?: string, frequency?: string) =>
     isAuthenticated
-      ? navigation.navigate('PlanPayment')
+      ? navigation.navigate('PlanPayment', { productId, frequency })
       : navigation.navigate('Auth', { returnTo: 'PlanPayment' });
   const support = () =>
     isAuthenticated
@@ -151,13 +188,32 @@ export const PlansScreen = ({ navigation }: Props) => {
     }
     const status = isAuthenticated ? data.status : 'none';
     if (status === 'active') return <Active plan={data} onSupport={support} />;
-    return <Offer plan={data} expired={status === 'expired'} onBuy={buy} />;
+    if (!mocksEnabled) {
+      return (
+        <>
+          {status === 'expired' && data.expiresAt ? (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Your plan has ended</Text>
+              <Row label="Ended on" value={formatPlanDate(data.expiresAt)} />
+              <Text style={styles.note}>
+                Renewing is a new one-time purchase. Nothing is charged
+                automatically.
+              </Text>
+            </View>
+          ) : null}
+          <PlanBuilder onStart={buy} />
+        </>
+      );
+    }
+    return (
+      <Offer plan={data} expired={status === 'expired'} onBuy={() => buy()} />
+    );
   };
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <Text accessibilityRole="header" style={styles.title}>
-        30-day plan
+        Schedule plan
       </Text>
       <ScrollView
         contentContainerStyle={styles.content}
@@ -178,27 +234,50 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
   },
-  content: { gap: spacing.md, padding: spacing.xl },
+  content: { gap: spacing.xl, padding: spacing.xl },
+  intro: { gap: spacing.md },
+  kickerDark: { ...typography.kicker, color: colors.tanDark },
+  h1: { ...typography.display, color: colors.ink },
+  h1Italic: { fontFamily: fontFamily.serifItalic },
+  lead: { ...typography.bodyLarge, color: colors.textSecondary },
+  stats: { flexDirection: 'row', gap: spacing.md },
+  stat: { flex: 1, gap: 2 },
+  statNum: { ...typography.headline, color: colors.ink },
+  statLabel: { ...typography.labelSmall, color: colors.textSecondary },
+  photo: {
+    width: '100%',
+    aspectRatio: 1.5,
+    borderRadius: radius.card,
+    backgroundColor: colors.surfaceMuted,
+  },
   hero: {
     backgroundColor: colors.ink,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     padding: spacing.xl,
     gap: 6,
   },
   kicker: { ...typography.kicker, color: colors.sage },
   heroTitle: { ...typography.title, color: colors.onDark },
-  // Instrument Serif has no ₹ glyph; the fallback font garbled the digits.
-  price: {
-    fontFamily: fontFamily.sansSemiBold,
-    fontSize: 32,
-    lineHeight: 38,
-    color: colors.onDark,
-  },
   heroSub: { ...typography.bodySmall, color: colors.onDarkMuted },
+  summary: {
+    backgroundColor: colors.surfaceMuted,
+    borderRadius: radius.xl,
+    padding: 20,
+    gap: spacing.sm,
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  total: { ...typography.amount, color: colors.ink },
   card: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.lg,
+    borderRadius: radius.card,
     backgroundColor: colors.white,
     padding: spacing.lg,
     gap: spacing.sm,

@@ -19,6 +19,8 @@ export type DeliveryOption = {
   kind: DeliveryKind;
   label: string;
   detail: string;
+  // Backend slot start (ISO) for a scheduled option; sent as `scheduledFor`.
+  scheduledFor?: string;
 };
 
 export type QuoteRequest = {
@@ -26,6 +28,7 @@ export type QuoteRequest = {
   addressId: string;
   deliveryOptionId: string;
   couponCode: string | null;
+  scheduledFor?: string | null;
 };
 
 export type OrderIntent = {
@@ -42,4 +45,6 @@ export type VerifiedStatus = 'pending' | 'paid' | 'failed';
 export type PaymentStatusResult = {
   status: VerifiedStatus;
   paymentReference?: string;
+  // Backend order id once the checkout is fulfilled (live mode).
+  orderId?: string;
 };
