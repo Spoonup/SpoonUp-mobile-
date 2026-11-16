@@ -1,4 +1,5 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
@@ -22,7 +23,7 @@ import { planService } from '../../plan/services/planService';
 import { findProduct } from '../../shop/data/products';
 import { useProducts } from '../../shop/hooks/useProducts';
 import { CategoryTiles, type CategoryTile } from '../components/CategoryTiles';
-import { HomeHeader } from '../components/HomeHeader';
+import { HomeHeader, homeHeaderHeight } from '../components/HomeHeader';
 import { ReorderRow } from '../components/ReorderRow';
 import {
   deliveryKicker,
@@ -42,6 +43,7 @@ type Props = CompositeScreenProps<
 
 export const HomeScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
+  const scrollY = useRef(new Animated.Value(0)).current;
   const cart = useCart();
   const { isAuthenticated, user } = useAuth();
   const unread = useUnreadCount(isAuthenticated);
@@ -127,100 +129,118 @@ export const HomeScreen = ({ navigation }: Props) => {
     onAdd: () => cart.add(product.id),
   }));
 
-  return shell(
-    <ScrollView
-      contentContainerStyle={[styles.content, { paddingBottom: spacing.xl }]}
-      showsVerticalScrollIndicator={false}
-    >
+  return (
+    <View style={styles.screen}>
       <HomeHeader
         initials={initialsOf(user?.name)}
         unread={unread}
         onOpenNotifications={() => navigation.navigate('Notifications')}
         onOpenAccount={() => navigation.navigate('Account')}
+        scrollY={scrollY}
+        topInset={insets.top}
       />
-      <View style={styles.greetingBlock}>
-        <Text style={styles.greeting} numberOfLines={2} ellipsizeMode="tail">
-          {greetingFor(user?.name, returning, now.getHours())}
-        </Text>
-        <Text style={styles.subline}>{subline(live, liveDish?.name, now)}</Text>
-      </View>
-
-      {returning ? (
-        next ? (
-          <View style={styles.darkCard}>
-            {liveDish ? (
-              <AspectImage
-                source={liveDish.image}
-                ratio={1}
-                style={styles.thumb}
-              />
-            ) : null}
-            <View style={styles.darkText}>
-              <Text style={styles.darkKicker}>
-                {deliveryKicker(next.scheduledDate, now)}
-              </Text>
-              {liveDish ? (
-                <Text style={styles.darkTitle}>{liveDish.name}</Text>
-              ) : null}
-              <Text style={styles.darkSub}>
-                Delivery {next.sequenceNo} of{' '}
-                {live?.deliveryCount ?? live?.deliveries?.length} · prepaid
-              </Text>
-            </View>
-            {/* Skip omitted: the backend only exposes delivery skip to admins. */}
-          </View>
-        ) : null
-      ) : (
-        <View style={styles.planCard}>
-          <AspectImage
-            source={require('../../../assets/images/lifestyle/week-jars.jpg')}
-            ratio={2.9}
-            maxHeight={120}
-          />
-          <View style={styles.planBody}>
-            <Text style={styles.planKicker}>
-              {perJar ? `PLAN · FROM ${perJar} A JAR` : 'PLAN · PAY ONCE'}
-            </Text>
-            <Text style={styles.planTitle}>Start a breakfast plan</Text>
-            <Text style={styles.planCopy}>
-              Pay once for 30 days of jars at your door. Pick your dish and how
-              often.
-            </Text>
-            <View style={styles.planBtn}>
-              <Button
-                variant="dark"
-                label="Build my plan"
-                onPress={() => navigation.navigate('Plans')}
-              />
-            </View>
-          </View>
+      <Animated.ScrollView
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: homeHeaderHeight(insets.top) + spacing.sm,
+            paddingBottom: spacing.xl,
+          },
+        ]}
+        scrollIndicatorInsets={{ top: homeHeaderHeight(insets.top) }}
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true },
+        )}
+      >
+        <View style={styles.greetingBlock}>
+          <Text style={styles.greeting} numberOfLines={2} ellipsizeMode="tail">
+            {greetingFor(user?.name, returning, now.getHours())}
+          </Text>
+          <Text style={styles.subline}>
+            {subline(live, liveDish?.name, now)}
+          </Text>
         </View>
-      )}
 
-      <CategoryTiles tiles={tiles} />
+        {returning ? (
+          next ? (
+            <View style={styles.darkCard}>
+              {liveDish ? (
+                <AspectImage
+                  source={liveDish.image}
+                  ratio={1}
+                  style={styles.thumb}
+                />
+              ) : null}
+              <View style={styles.darkText}>
+                <Text style={styles.darkKicker}>
+                  {deliveryKicker(next.scheduledDate, now)}
+                </Text>
+                {liveDish ? (
+                  <Text style={styles.darkTitle}>{liveDish.name}</Text>
+                ) : null}
+                <Text style={styles.darkSub}>
+                  Delivery {next.sequenceNo} of{' '}
+                  {live?.deliveryCount ?? live?.deliveries?.length} · prepaid
+                </Text>
+              </View>
+              {/* Skip omitted: the backend only exposes delivery skip to admins. */}
+            </View>
+          ) : null
+        ) : (
+          <View style={styles.planCard}>
+            <AspectImage
+              source={require('../../../assets/images/lifestyle/week-jars.jpg')}
+              ratio={2.9}
+              maxHeight={120}
+            />
+            <View style={styles.planBody}>
+              <Text style={styles.planKicker}>
+                {perJar ? `PLAN · FROM ${perJar} A JAR` : 'PLAN · PAY ONCE'}
+              </Text>
+              <Text style={styles.planTitle}>Start a breakfast plan</Text>
+              <Text style={styles.planCopy}>
+                Pay once for 30 days of jars at your door. Pick your dish and
+                how often.
+              </Text>
+              <View style={styles.planBtn}>
+                <Button
+                  variant="dark"
+                  label="Build my plan"
+                  onPress={() => navigation.navigate('Plans')}
+                />
+              </View>
+            </View>
+          </View>
+        )}
 
-      {returning && again.length > 0 ? (
-        <ReorderRow
-          items={again}
-          cartCount={cart.count}
-          onOpenCart={() => navigation.navigate('Cart')}
-        />
-      ) : null}
+        <CategoryTiles tiles={tiles} />
 
-      {/* Everyone else (guests, first visit) sees the live catalog instead.
+        {returning && again.length > 0 ? (
+          <ReorderRow
+            items={again}
+            cartCount={cart.count}
+            onOpenCart={() => navigation.navigate('Cart')}
+          />
+        ) : null}
+
+        {/* Everyone else (guests, first visit) sees the live catalog instead.
           DECISION: the backend has no sales ranking, so this is "From the
           kitchen" (catalog order), not "Best sellers". */}
-      {!(returning && again.length > 0) && kitchen.length > 0 ? (
-        <ReorderRow
-          title="From the kitchen"
-          actionLabel="See all"
-          items={kitchen}
-          cartCount={cart.count}
-          onOpenCart={() => navigation.navigate('Cart')}
-          onAction={() => navigation.navigate('Shop')}
-        />
-      ) : null}
-    </ScrollView>,
+        {!(returning && again.length > 0) && kitchen.length > 0 ? (
+          <ReorderRow
+            title="From the kitchen"
+            actionLabel="See all"
+            items={kitchen}
+            cartCount={cart.count}
+            onOpenCart={() => navigation.navigate('Cart')}
+            onAction={() => navigation.navigate('Shop')}
+          />
+        ) : null}
+      </Animated.ScrollView>
+    </View>
   );
 };
 
