@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, spacing, typography } from '../../theme';
+import { Icon } from './Icon';
 
 type Props = {
   title: string;
@@ -19,9 +20,7 @@ export const ScreenHeader = ({ title, onBack, right }: Props) => (
           hitSlop={4}
           style={styles.back}
         >
-          <Text allowFontScaling={false} style={styles.backText}>
-            ←
-          </Text>
+          <Icon name="back" color={colors.ink} size={20} />
         </Pressable>
       ) : null}
       <Text accessibilityRole="header" style={styles.title}>
@@ -47,10 +46,15 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: colors.borderButton,
+    borderColor: colors.borderInput,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  backText: { fontSize: 18, color: colors.ink },
-  title: { ...typography.headline, color: colors.ink, flexShrink: 1 },
+  title: {
+    ...typography.headline,
+    fontSize: 28,
+    lineHeight: 30,
+    color: colors.ink,
+    flexShrink: 1,
+  },
 });

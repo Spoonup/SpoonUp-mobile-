@@ -16,6 +16,8 @@ export const endpoints = {
   addresses: '/api/me/addresses',
   myOrders: '/api/me/orders',
   mySubscriptions: '/api/me/subscriptions',
+  storeCredit: '/api/me/store-credit',
+  myReferrals: '/api/me/referrals',
   checkout: {
     prepare: '/api/checkout/prepare',
     complete: '/api/checkout/complete',

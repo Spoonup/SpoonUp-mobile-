@@ -16,7 +16,7 @@ import { ScreenHeader } from '../../../components/common/ScreenHeader';
 import { Skeleton } from '../../../components/common/Skeleton';
 import { TextField } from '../../../components/common/TextField';
 import type { RootStackParamList } from '../../../navigation/types';
-import { colors, radius, spacing, typography } from '../../../theme';
+import { colors, fontFamily, spacing, typography } from '../../../theme';
 import { AttachmentLink } from '../components/AttachmentLink';
 import { AttachmentPicker } from '../components/AttachmentPicker';
 import { StatusChip } from '../components/StatusChip';
@@ -70,7 +70,9 @@ export const TicketDetailsScreen = ({ navigation, route }: Props) => {
       <>
         <View style={styles.head}>
           <Text style={styles.subject}>{data.subject}</Text>
-          <StatusChip status={data.status} />
+          <Text style={styles.headMeta}>
+            {data.category} · Updated {formatWhen(data.updatedAt)}
+          </Text>
         </View>
         <FlatList
           data={data.messages}
@@ -88,11 +90,13 @@ export const TicketDetailsScreen = ({ navigation, route }: Props) => {
                 }`}
                 style={[styles.bubble, mine ? styles.mine : styles.theirs]}
               >
-                <Text style={styles.who}>
+                <Text style={[styles.who, mine && styles.whoMine]}>
                   {mine ? 'You' : 'SpoonUp support'} ·{' '}
                   {formatWhen(item.createdAt)}
                 </Text>
-                <Text style={styles.msg}>{item.body}</Text>
+                <Text style={[styles.msg, mine && styles.msgMine]}>
+                  {item.body}
+                </Text>
                 {item.attachment ? (
                   <AttachmentLink attachment={item.attachment} />
                 ) : null}
@@ -117,6 +121,7 @@ export const TicketDetailsScreen = ({ navigation, route }: Props) => {
               disabled={reply.isPending}
             />
             <Button
+              variant="dark"
               label="Send reply"
               onPress={send}
               loading={reply.isPending}
@@ -142,7 +147,11 @@ export const TicketDetailsScreen = ({ navigation, route }: Props) => {
       ]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScreenHeader title="Ticket" onBack={navigation.goBack} />
+      <ScreenHeader
+        title={data ? `#${data.id}` : 'Ticket'}
+        onBack={navigation.goBack}
+        right={data ? <StatusChip status={data.status} /> : undefined}
+      />
       {renderBody()}
     </KeyboardAvoidingView>
   );
@@ -151,19 +160,40 @@ export const TicketDetailsScreen = ({ navigation, route }: Props) => {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.surface },
   pad: { padding: spacing.xl },
-  head: { gap: 6, paddingHorizontal: spacing.xl, paddingBottom: spacing.sm },
-  subject: { ...typography.heading, fontSize: 16, color: colors.ink },
+  head: {
+    gap: 2,
+    marginHorizontal: spacing.xl,
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: colors.surfaceMuted,
+  },
+  subject: {
+    fontFamily: fontFamily.sansSemiBold,
+    fontSize: 13,
+    lineHeight: 18,
+    color: colors.ink,
+  },
+  headMeta: {
+    fontFamily: fontFamily.sans,
+    fontSize: 11.5,
+    color: colors.textSecondary,
+  },
   thread: { gap: spacing.md, padding: spacing.xl },
-  bubble: { maxWidth: '88%', padding: spacing.md, borderRadius: radius.lg },
-  mine: { alignSelf: 'flex-end', backgroundColor: colors.sageLight },
+  bubble: { maxWidth: '84%', padding: 12, borderRadius: 14 },
+  mine: {
+    alignSelf: 'flex-end',
+    backgroundColor: colors.ink,
+    borderBottomRightRadius: 4,
+  },
   theirs: {
     alignSelf: 'flex-start',
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderBottomLeftRadius: 4,
+    backgroundColor: colors.surfaceMuted,
   },
   who: { ...typography.labelSmall, color: colors.textMuted },
+  whoMine: { color: colors.sage },
   msg: { ...typography.body, color: colors.ink, marginTop: 4 },
+  msgMine: { color: colors.onDark },
   composer: {
     gap: spacing.sm,
     padding: spacing.xl,

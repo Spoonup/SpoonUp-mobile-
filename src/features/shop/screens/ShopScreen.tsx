@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import type { CompositeScreenProps } from '@react-navigation/native';
@@ -40,32 +41,28 @@ type Props = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>
 >;
 
-// Site filters: All · N, Eat now, Subscribable, Pantry · ships.
-const FILTERS: { key: ShopCategory; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'now', label: 'Eat now' },
-  { key: 'plan', label: 'Subscribable' }, // DECISION: matches website label; app copy elsewhere says "plan"
-  { key: 'ships', label: 'Pantry · ships' },
+// Mockup 6c filters: All, Eat now, Subscribe (plan-able). The mockup's Pantry
+// filter is intentionally absent (pantry is sold in a separate app/site).
+const FILTERS: { key: ShopCategory; label: string; dot: string }[] = [
+  { key: 'all', label: 'All', dot: colors.textDisabled },
+  { key: 'now', label: 'Eat now', dot: colors.olive },
+  { key: 'plan', label: 'Subscribe', dot: colors.ink },
 ];
+const PLAN_NOTE =
+  'Tap “Plan it” on any of these to pick how often. Pay once for 30 days.';
 
-type Sort = 'featured' | 'low' | 'high';
-// Display-only ordering of what the backend returned; prices stay backend-owned.
-const SORTS: { key: Sort; label: string }[] = [
-  { key: 'featured', label: 'Popular' },
-  { key: 'low', label: 'Price low to high' },
-  { key: 'high', label: 'Price high to low' },
-];
-
-const SKELETONS = [0, 1];
+const SKELETONS = [0, 1, 2, 3];
 
 export const ShopScreen = ({ navigation, route }: Props) => {
   const insets = useSafeAreaInsets();
   const cart = useCart();
+  const { width } = useWindowDimensions();
+  // Fixed cell width keeps a lone last card from stretching across the row.
+  const cell = Math.floor((width - spacing.xl * 2 - 11) / 2);
   const { data, isLoading, error, refetch } = useProducts();
   const pull = useRefresh(refetch);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<ShopCategory>('all');
-  const [sort, setSort] = useState<Sort>('featured');
 
   const routeCategory = route.params?.category;
   useEffect(() => {
@@ -74,7 +71,7 @@ export const ShopScreen = ({ navigation, route }: Props) => {
 
   const products = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    const found = (data ?? []).filter(
+    return (data ?? []).filter(
       product =>
         (category === 'all' ||
           (category === 'plan'
@@ -82,18 +79,15 @@ export const ShopScreen = ({ navigation, route }: Props) => {
             : product.category === category)) &&
         (!needle || product.name.toLowerCase().includes(needle)),
     );
-    if (sort === 'low') return [...found].sort((a, b) => a.price - b.price);
-    if (sort === 'high') return [...found].sort((a, b) => b.price - a.price);
-    return found;
-  }, [data, category, query, sort]);
+  }, [data, category, query]);
 
   const renderBody = () => {
     if (isLoading) {
       return (
-        <View style={styles.grid}>
+        <View style={styles.skeletons}>
           {SKELETONS.map(key => (
             <View key={key} style={styles.skeleton}>
-              <Skeleton height={280} borderRadius={radius.card} />
+              <Skeleton height={230} borderRadius={14} />
             </View>
           ))}
         </View>
@@ -103,28 +97,28 @@ export const ShopScreen = ({ navigation, route }: Props) => {
     return (
       <FlatList
         data={products}
+        numColumns={2}
         keyExtractor={product => product.id}
+        columnWrapperStyle={styles.column}
         contentContainerStyle={styles.list}
         keyboardShouldPersistTaps="handled"
         {...pull}
         showsVerticalScrollIndicator={false}
         keyboardDismissMode="on-drag"
         ListEmptyComponent={
-          <View>
-            <EmptyState
-              title="Nothing found"
-              message={
-                query
-                  ? `Nothing matches “${query}”. Try “chia” or “dry fruits”.`
-                  : 'No products in this category yet.'
-              }
-              actionLabel={query ? 'Clear search' : undefined}
-              onAction={query ? () => setQuery('') : undefined}
-            />
-          </View>
+          <EmptyState
+            title="Nothing found"
+            message={
+              query
+                ? `Nothing matches “${query}”. Try “chia” or “smoothie”.`
+                : 'No products in this category yet.'
+            }
+            actionLabel={query ? 'Clear search' : undefined}
+            onAction={query ? () => setQuery('') : undefined}
+          />
         }
         renderItem={({ item }) => (
-          <View>
+          <View style={{ width: cell }}>
             <ProductCard
               product={item}
               quantity={cart.quantityOf(item.id)}
@@ -133,7 +127,9 @@ export const ShopScreen = ({ navigation, route }: Props) => {
               }
               onAdd={() => cart.add(item.id)}
               onRemove={() => cart.remove(item.id)}
-              onPlan={() => navigation.navigate('Plans')}
+              onPlan={() =>
+                navigation.navigate('NewPlan', { productId: item.id })
+              }
             />
           </View>
         )}
@@ -146,7 +142,7 @@ export const ShopScreen = ({ navigation, route }: Props) => {
       <View style={styles.top}>
         <View style={styles.titleRow}>
           <Text accessibilityRole="header" style={styles.title}>
-            Shop all
+            Shop
           </Text>
           <Pressable
             accessibilityRole="button"
@@ -165,12 +161,12 @@ export const ShopScreen = ({ navigation, route }: Props) => {
           </Pressable>
         </View>
         <View style={styles.searchWrap}>
-          <SearchIcon color={colors.textSecondary} />
+          <SearchIcon color={colors.textMuted} />
           <TextInput
             accessibilityLabel="Search products"
             value={query}
             onChangeText={setQuery}
-            placeholder="Search beverages, healthy breakfast…"
+            placeholder="Search puddings, smoothies, dry fruits…"
             placeholderTextColor={colors.textDisabled}
             returnKeyType="search"
             clearButtonMode="while-editing"
@@ -186,33 +182,16 @@ export const ShopScreen = ({ navigation, route }: Props) => {
           {FILTERS.map(filter => (
             <Chip
               key={filter.key}
-              label={
-                filter.key === 'all'
-                  ? `All · ${(data ?? []).length}`
-                  : filter.label
-              }
+              label={filter.label}
+              dotColor={filter.dot}
               selected={category === filter.key}
               onPress={() => setCategory(filter.key)}
             />
           ))}
         </ScrollView>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.chips}
-          accessibilityLabel="Sort products"
-        >
-          <Text style={styles.sortLabel}>Sort:</Text>
-          {SORTS.map(option => (
-            <Chip
-              key={option.key}
-              label={option.label}
-              selected={sort === option.key}
-              onPress={() => setSort(option.key)}
-            />
-          ))}
-        </ScrollView>
+        {category === 'plan' ? (
+          <Text style={styles.note}>{PLAN_NOTE}</Text>
+        ) : null}
       </View>
       <View style={styles.body}>{renderBody()}</View>
       <CartBar onPress={() => navigation.navigate('Cart')} />
@@ -233,13 +212,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  title: { ...typography.title, color: colors.ink },
+  title: {
+    fontFamily: fontFamily.serif,
+    fontSize: 30,
+    lineHeight: 34,
+    color: colors.ink,
+  },
   cartBtn: {
     width: 44,
     height: 44,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: colors.borderButton,
+    borderColor: colors.borderInput,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -251,18 +235,22 @@ const styles = StyleSheet.create({
     height: 18,
     paddingHorizontal: 4,
     borderRadius: 9,
-    backgroundColor: colors.sage,
+    backgroundColor: colors.olive,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  badgeText: { ...typography.labelSmall, fontSize: 11, color: colors.ink },
+  badgeText: {
+    fontFamily: fontFamily.sansSemiBold,
+    fontSize: 10,
+    color: colors.onDark,
+  },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
     minHeight: 48,
     borderWidth: 1,
-    borderColor: colors.borderButton,
+    borderColor: colors.borderInput,
     borderRadius: radius.pill,
     paddingHorizontal: spacing.lg,
     backgroundColor: colors.white,
@@ -274,19 +262,21 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.sans,
     fontSize: 13.5,
   },
-  sortLabel: {
-    ...typography.label,
-    color: colors.textSecondary,
-    alignSelf: 'center',
-  },
   chips: { gap: 7, paddingRight: spacing.xl },
+  note: { ...typography.labelSmall, color: colors.textSecondary },
   body: { flex: 1 },
+  column: { gap: 11 },
   list: {
     flexGrow: 1,
     paddingHorizontal: spacing.xl,
     paddingBottom: spacing.lg,
-    gap: spacing.lg,
+    gap: 11,
   },
-  grid: { gap: spacing.lg, paddingHorizontal: spacing.xl },
-  skeleton: { width: '100%' },
+  skeletons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 11,
+    paddingHorizontal: spacing.xl,
+  },
+  skeleton: { width: '47.5%' },
 });

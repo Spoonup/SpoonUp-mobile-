@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { OnboardingScreen } from '../features/onboarding/screens/OnboardingScreen';
 import { SplashScreen } from '../features/onboarding/screens/SplashScreen';
 import { AuthScreen } from '../features/auth/screens/AuthScreen';
+import { CreditScreen } from '../features/credit/screens/CreditScreen';
 import { ProfileScreen } from '../features/account/screens/ProfileScreen';
 import { AttachmentPreviewScreen } from '../features/support/screens/AttachmentPreviewScreen';
 import { CreateTicketScreen } from '../features/support/screens/CreateTicketScreen';
@@ -16,7 +17,6 @@ import {
   PaymentCancelledScreen,
   PaymentFailedScreen,
 } from '../features/checkout/screens/PaymentOutcomeScreens';
-import { PaymentScreen } from '../features/checkout/screens/PaymentScreen';
 import { PaymentVerifyScreen } from '../features/checkout/screens/PaymentVerifyScreen';
 import { OrderDetailsScreen } from '../features/orders/screens/OrderDetailsScreen';
 import { GuestTrackingScreen } from '../features/orders/screens/GuestTrackingScreen';
@@ -24,6 +24,7 @@ import { OrderTrackingScreen } from '../features/orders/screens/OrderTrackingScr
 import { NotificationsScreen } from '../features/notifications/screens/NotificationsScreen';
 import { ProductDetailsScreen } from '../features/shop/screens/ProductDetailsScreen';
 import { HelpSignInScreen } from '../features/auth/screens/HelpSignInScreen';
+import { NewPlanScreen } from '../features/plan/screens/NewPlanScreen';
 import { PlanPaymentScreen } from '../features/plan/screens/PlanPaymentScreen';
 import {
   PlanCancelledScreen,
@@ -34,6 +35,7 @@ import { PlanVerifyScreen } from '../features/plan/screens/PlanVerifyScreen';
 import { RazorpayCheckoutScreen } from '../features/payments/RazorpayCheckoutScreen';
 import { BackendGapScreen } from '../components/common/BackendGapScreen';
 import { mocksEnabled } from '../services/api/mode';
+import { colors } from '../theme';
 import { MainTabs } from './MainTabs';
 import type { RootStackParamList } from './types';
 
@@ -42,7 +44,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const RootNavigator = () => (
   <Stack.Navigator
     initialRouteName="Splash"
-    screenOptions={{ headerShown: false }}
+    screenOptions={{
+      headerShown: false,
+      // Cream behind every screen so no window colour shows through.
+      contentStyle: { backgroundColor: colors.surface },
+    }}
   >
     <Stack.Screen name="Splash" component={SplashScreen} />
     <Stack.Screen name="Onboarding" component={OnboardingScreen} />
@@ -61,9 +67,9 @@ export const RootNavigator = () => (
       component={mocksEnabled ? NotificationsScreen : BackendGapScreen}
     />
     <Stack.Screen name="Profile" component={ProfileScreen} />
+    <Stack.Screen name="Credit" component={CreditScreen} />
     <Stack.Screen name="Addresses" component={AddressListScreen} />
     <Stack.Screen name="AddressForm" component={AddressFormScreen} />
-    <Stack.Screen name="Payment" component={PaymentScreen} />
     <Stack.Screen
       name="RazorpayCheckout"
       component={RazorpayCheckoutScreen}
@@ -90,6 +96,7 @@ export const RootNavigator = () => (
       options={{ gestureEnabled: false }}
     />
     <Stack.Screen name="HelpSignIn" component={HelpSignInScreen} />
+    <Stack.Screen name="NewPlan" component={NewPlanScreen} />
     <Stack.Screen name="PlanPayment" component={PlanPaymentScreen} />
     <Stack.Screen
       name="PlanVerify"

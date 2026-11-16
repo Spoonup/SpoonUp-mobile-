@@ -1,19 +1,10 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radius, typography } from '../../theme';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { colors, fontFamily, radius, typography } from '../../theme';
 import { formatRupees } from '../../utils/money';
 import type { Product } from '../../features/shop/data/products';
+import { AspectImage } from './AspectImage';
+import { Icon } from './Icon';
 import { Stepper } from './Stepper';
-
-// Site tags: solid olive for kitchen items, tan for pantry (ships).
-const TAG = {
-  now: { label: 'NOW · 30–45 MIN', bg: colors.tagNow, fg: colors.surface },
-  ships: { label: 'SHIPS · 3–5 DAYS', bg: colors.tan, fg: colors.surface },
-} as const;
-
-const NOTE = {
-  now: 'Eat-now only',
-  ships: 'Ships by courier',
-} as const;
 
 type Props = {
   product: Product;
@@ -24,8 +15,9 @@ type Props = {
   onPlan?: () => void;
 };
 
-// Single-column site card: 3:2 image, tag overlay, name, description, price,
-// note line and a full-width ink "Add to cart" button. No shadow.
+// Mockup 6c: 2-column card. Image fills the card width (AspectImage), NOW tag,
+// name, backend kind/unit line, price + Add (or stepper), optional "Plan it".
+// DECISION: pantry sold in a separate app/site, so every card is a kitchen item.
 export const ProductCard = ({
   product,
   quantity,
@@ -34,62 +26,74 @@ export const ProductCard = ({
   onRemove,
   onPlan,
 }: Props) => {
-  const tag = TAG[product.category];
-  const note = product.canSubscribe ? 'Plan available' : NOTE[product.category];
+  // Real backend fields only: kind label + sold-per unit; mock data uses meta.
+  const sub =
+    [product.categoryLabel, product.unit && `per ${product.unit}`]
+      .filter(Boolean)
+      .join(' · ') || product.meta;
   return (
     <View style={styles.card}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${product.name}, ${formatRupees(product.price)}`}
         onPress={onPress}
+        style={styles.top}
       >
-        <View style={styles.imageWrap}>
-          <Image
-            source={product.image}
-            style={styles.image}
-            resizeMode="cover"
-            accessibilityIgnoresInvertColors
-          />
-          <Text
-            style={[styles.tag, { color: tag.fg, backgroundColor: tag.bg }]}
-          >
-            {tag.label}
-          </Text>
-        </View>
+        <AspectImage source={product.image} ratio={1.4} maxHeight={150}>
+          <Text style={styles.tag}>NOW</Text>
+        </AspectImage>
         <View style={styles.body}>
-          <Text style={styles.name}>{product.name}</Text>
-          <Text style={styles.meta}>{product.meta}</Text>
-          <Text style={styles.price}>{formatRupees(product.price)}</Text>
-          <Text style={styles.note}>{note}</Text>
+          <Text style={styles.name} numberOfLines={2}>
+            {product.name}
+          </Text>
+          {sub ? (
+            <Text style={styles.meta} numberOfLines={1}>
+              {sub}
+            </Text>
+          ) : null}
         </View>
       </Pressable>
       <View style={styles.footer}>
-        {quantity > 0 ? (
-          <Stepper
-            variant="outline"
-            quantity={quantity}
-            itemName={product.name}
-            onIncrement={onAdd}
-            onDecrement={onRemove}
-          />
-        ) : (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Add ${product.name}`}
-            onPress={onAdd}
-            style={styles.add}
-          >
-            <Text style={styles.addText}>Add to cart</Text>
-          </Pressable>
-        )}
+        <View style={styles.buyRow}>
+          <Text style={styles.price}>{formatRupees(product.price)}</Text>
+          {quantity > 0 ? (
+            <Stepper
+              compact
+              quantity={quantity}
+              itemName={product.name}
+              onIncrement={onAdd}
+              onDecrement={onRemove}
+            />
+          ) : (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Add ${product.name}`}
+              onPress={onAdd}
+              style={styles.add}
+            >
+              <Icon
+                name="plus"
+                color={colors.onDark}
+                size={14}
+                strokeWidth={2.2}
+              />
+              <Text style={styles.addText}>Add</Text>
+            </Pressable>
+          )}
+        </View>
+        {onPlan && !product.canSubscribe ? (
+          // Keeps price rows aligned across a row of cards.
+          <View style={styles.planSlot} />
+        ) : null}
         {product.canSubscribe && onPlan ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`Plan ${product.name}`}
             onPress={onPlan}
+            hitSlop={{ top: 4, bottom: 4 }}
             style={styles.plan}
           >
-            <Text style={styles.planText}>Plan</Text>
+            <Text style={styles.planText}>Plan it</Text>
           </Pressable>
         ) : null}
       </View>
@@ -99,54 +103,68 @@ export const ProductCard = ({
 
 const styles = StyleSheet.create({
   card: {
+    flex: 1,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.card,
+    borderRadius: 14,
     overflow: 'hidden',
     backgroundColor: colors.white,
   },
-  imageWrap: { aspectRatio: 1.5, backgroundColor: colors.surfaceMuted },
-  image: { width: '100%', height: '100%' },
+  top: { flex: 1 },
   tag: {
     ...typography.tag,
     position: 'absolute',
-    top: 10,
-    left: 10,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    top: 8,
+    left: 8,
+    paddingVertical: 3,
+    paddingHorizontal: 6,
     borderRadius: 4,
     overflow: 'hidden',
+    backgroundColor: colors.surface,
+    color: colors.tagNow,
   },
-  body: { padding: 16, paddingBottom: 12, gap: 4 },
-  name: { ...typography.heading, color: colors.ink },
-  meta: { ...typography.bodySmall, color: colors.textSecondary },
-  price: { ...typography.price, color: colors.ink, marginTop: 4 },
-  note: { ...typography.labelSmall, color: colors.textSecondary },
-  footer: {
+  body: { paddingHorizontal: 11, paddingTop: 10, gap: 3 },
+  name: { ...typography.label, lineHeight: 16, color: colors.ink },
+  meta: { ...typography.labelSmall, fontSize: 10.5, color: colors.textMuted },
+  footer: { paddingHorizontal: 11, paddingTop: 6, paddingBottom: 11, gap: 6 },
+  buyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingBottom: 16,
+    justifyContent: 'space-between',
+    minHeight: 44,
+    gap: 6,
+  },
+  price: {
+    fontFamily: fontFamily.sansSemiBold,
+    fontSize: 13,
+    color: colors.ink,
   },
   add: {
-    flex: 1,
     minHeight: 44,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: radius.xs,
+    gap: 3,
+    paddingHorizontal: 12,
+    borderRadius: radius.pill,
     backgroundColor: colors.ink,
   },
-  addText: { ...typography.label, color: colors.onDark },
+  addText: {
+    fontFamily: fontFamily.sansSemiBold,
+    fontSize: 12,
+    color: colors.onDark,
+  },
+  planSlot: { height: 40 },
   plan: {
-    minHeight: 44,
-    minWidth: 64,
+    minHeight: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
-    borderRadius: radius.xs,
+    borderRadius: radius.pill,
     borderWidth: 1,
-    borderColor: colors.borderButton,
+    borderColor: colors.borderStrong,
   },
-  planText: { ...typography.label, color: colors.ink },
+  planText: {
+    fontFamily: fontFamily.sansSemiBold,
+    fontSize: 11.5,
+    color: colors.ink,
+  },
 });

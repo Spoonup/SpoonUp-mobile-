@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,7 +9,7 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../../../components/common/Button';
-import { useKeyboardVisible } from '../../../hooks/useKeyboardVisible';
+import { useFooterPadding } from '../../../hooks/useFooterPadding';
 import { ScreenHeader } from '../../../components/common/ScreenHeader';
 import { TextField } from '../../../components/common/TextField';
 import { useOffline } from '../../../hooks/useOffline';
@@ -34,7 +33,7 @@ const EMPTY: AddressInput = {
 
 export const AddressFormScreen = ({ navigation, route }: Props) => {
   const insets = useSafeAreaInsets();
-  const keyboardVisible = useKeyboardVisible();
+  const footerPad = useFooterPadding();
   const offline = useOffline();
   const { setAddressId } = useCheckout();
   const addressId = route.params?.addressId;
@@ -80,7 +79,8 @@ export const AddressFormScreen = ({ navigation, route }: Props) => {
   return (
     <KeyboardAvoidingView
       style={styles.screen}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      // Android is edge-to-edge (no adjustResize), so it needs padding too.
+      behavior="padding"
     >
       <View style={{ paddingTop: insets.top }}>
         <ScreenHeader
@@ -119,12 +119,7 @@ export const AddressFormScreen = ({ navigation, route }: Props) => {
           </Text>
         ) : null}
       </ScrollView>
-      <View
-        style={[
-          styles.footer,
-          { paddingBottom: (keyboardVisible ? 0 : insets.bottom) + 12 },
-        ]}
-      >
+      <View style={[styles.footer, { paddingBottom: footerPad }]}>
         <Button
           label="Save address"
           onPress={submit}

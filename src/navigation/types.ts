@@ -1,6 +1,6 @@
 import type { NavigatorScreenParams } from '@react-navigation/native';
 
-export type ShopCategory = 'all' | 'now' | 'plan' | 'ships';
+export type ShopCategory = 'all' | 'now' | 'plan';
 
 export type MainTabParamList = {
   Home: undefined;
@@ -28,15 +28,20 @@ export type RootStackParamList = {
   GuestTracking: undefined;
   Notifications: undefined;
   Profile: undefined;
+  Credit: undefined;
   Addresses: { select?: boolean } | undefined;
   AddressForm: { addressId?: string } | undefined;
-  Payment: undefined;
   RazorpayCheckout: undefined;
   PaymentVerify: { orderId: string };
-  PaymentFailed: undefined;
-  PaymentCancelled: undefined;
+  // amount/reference/reason are display hints from the backend intent.
+  PaymentFailed:
+    | { amount?: number; reference?: string; reason?: string }
+    | undefined;
+  PaymentCancelled: { amount?: number } | undefined;
   OrderConfirmation: { orderId: string; paymentReference: string };
   // Live: the plan (dish + delivery frequency) chosen on the Plans tab.
+  // Build a 30-day plan (mockup 6f2); productId preselects the dish.
+  NewPlan: { productId?: string } | undefined;
   PlanPayment: { productId?: string; frequency?: string } | undefined;
   PlanVerify: { planOrderId: string };
   PlanSuccess: { paymentReference: string };

@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.lg,
+    borderRadius: 14,
     backgroundColor: colors.white,
   },
   ref: { ...typography.heading, color: colors.ink },

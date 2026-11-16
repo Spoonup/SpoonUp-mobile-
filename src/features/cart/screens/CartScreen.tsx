@@ -1,5 +1,6 @@
 import {
   Image,
+  KeyboardAvoidingView,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -14,44 +15,53 @@ import { EmptyState } from '../../../components/common/EmptyState';
 import { ScreenHeader } from '../../../components/common/ScreenHeader';
 import { Skeleton } from '../../../components/common/Skeleton';
 import { Stepper } from '../../../components/common/Stepper';
+import { useFooterPadding } from '../../../hooks/useFooterPadding';
 import type { RootStackParamList } from '../../../navigation/types';
 import { colors, radius, spacing, typography } from '../../../theme';
 import { formatRupees } from '../../../utils/money';
 import { useAuth } from '../../auth/context/AuthContext';
+import { CouponSection } from '../../checkout/components/CouponSection';
+import { DeliveryPicker } from '../../checkout/components/DeliveryPicker';
+import { CreditToggle } from '../../credit/components/CreditToggle';
+import { useCreditOffer } from '../../credit/hooks/useCredit';
+import { payableBeforeCredit, withCredit } from '../../credit/logic';
+import { useCheckoutDraft } from '../../checkout/hooks/useCheckoutDraft';
 import { useCart } from '../context/CartContext';
 import { useCartSummary } from '../hooks/useCartSummary';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Cart'>;
 
-const SECTIONS = [
-  {
-    category: 'now',
-    tag: 'EAT NOW · FROM OUR KITCHEN',
-    note: 'Timing is set at checkout',
-    color: colors.tagNow,
-    bg: colors.tagNowBg,
-  },
-  {
-    category: 'ships',
-    tag: 'PANTRY · SHIPS BY COURIER',
-    note: 'Arrives in 3–5 days',
-    color: colors.tagShips,
-    bg: colors.tagShipsBg,
-  },
-] as const;
-
+// DECISION: pantry sold in a separate app/site, so the only group is Eat now.
+// The credit toggle follows the website: the amount is the customer's
+// backend credit, applied to the whole payable (the mockup's "eat-now items"
+// wording is not used). Cash on delivery and Cashfree: see CheckoutScreen.
 export const CartScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
+  const footerPad = useFooterPadding();
   const cart = useCart();
   const { isAuthenticated } = useAuth();
   const summary = useCartSummary();
+  const { checkout, address, delivery, option } = useCheckoutDraft();
+  const offer = useCreditOffer(
+    summary.data ? payableBeforeCredit(summary.data) : undefined,
+  );
 
-  const checkout = () =>
+  const goCheckout = () =>
     isAuthenticated
       ? navigation.navigate('Checkout')
       : navigation.navigate('Auth', { returnTo: 'Checkout' });
 
-  const header = <ScreenHeader title="Your cart" onBack={navigation.goBack} />;
+  const header = (
+    <ScreenHeader
+      title="Cart"
+      onBack={navigation.goBack}
+      right={
+        cart.count > 0 ? (
+          <Text style={styles.count}>{cart.count} in cart</Text>
+        ) : undefined
+      }
+    />
+  );
 
   if (cart.count === 0) {
     return (
@@ -59,7 +69,7 @@ export const CartScreen = ({ navigation }: Props) => {
         {header}
         <EmptyState
           title="Your cart is empty"
-          message="Nothing here yet. The kitchen is warm and the pantry is stocked."
+          message="Nothing here yet. The kitchen is warm and ready when you are."
           actionLabel="Browse the shop"
           onAction={() => navigation.navigate('MainTabs', { screen: 'Shop' })}
           secondaryLabel="Build a plan"
@@ -70,6 +80,10 @@ export const CartScreen = ({ navigation }: Props) => {
       </View>
     );
   }
+
+  const lines = cart.lines.filter(line => line.product.category === 'now');
+  const scheduled = option?.kind === 'scheduled';
+  const timing = scheduled ? `Scheduled · ${option?.label}` : 'Immediate';
 
   const renderBill = () => {
     if (summary.isError) {
@@ -82,122 +96,156 @@ export const CartScreen = ({ navigation }: Props) => {
       );
     }
     if (!summary.data) return <Skeleton height={64} />;
-    return <BillSummary summary={summary.data} />;
+    return <BillSummary summary={withCredit(summary.data, offer.applied)} />;
   };
 
+  const total = summary.data && withCredit(summary.data, offer.applied);
+  const ctaLabel = !isAuthenticated
+    ? 'Log in to checkout'
+    : total && !total.finalAtPayment
+    ? `Checkout · ${formatRupees(total.total)}`
+    : 'Checkout';
+
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <KeyboardAvoidingView
+      style={[styles.screen, { paddingTop: insets.top }]}
+      behavior="padding"
+    >
       {header}
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.sub}>
-          {cart.count} {cart.count === 1 ? 'item' : 'items'}
-        </Text>
-        {SECTIONS.map(section => {
-          const lines = cart.lines.filter(
-            line => line.product.category === section.category,
-          );
-          if (lines.length === 0) return null;
-          return (
-            <View
-              key={section.category}
-              style={[styles.card, { borderLeftColor: section.color }]}
-            >
-              <View style={styles.cardHead}>
-                <Text style={[styles.tag, { color: section.color }]}>
-                  {section.tag}
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.card}>
+          <View style={styles.head}>
+            <Text style={styles.tag}>EAT NOW</Text>
+            <Text style={styles.timing} numberOfLines={1}>
+              {timing}
+            </Text>
+          </View>
+          {lines.map(({ product, quantity }) => (
+            <View key={product.id} style={styles.line}>
+              <Image
+                source={product.image}
+                style={styles.thumb}
+                accessibilityIgnoresInvertColors
+              />
+              <View style={styles.lineInfo}>
+                <Text style={styles.name} numberOfLines={2}>
+                  {product.name}
                 </Text>
-                <Text style={styles.note}>{section.note}</Text>
+                <Text style={styles.price}>
+                  {formatRupees(product.price * quantity)}
+                  {quantity > 1 ? ` · ${formatRupees(product.price)} each` : ''}
+                </Text>
               </View>
-              {lines.map(({ product, quantity }) => (
-                <View key={product.id} style={styles.line}>
-                  <Image
-                    source={product.image}
-                    style={styles.thumb}
-                    accessibilityIgnoresInvertColors
-                  />
-                  <View style={styles.lineInfo}>
-                    <Text style={styles.name} numberOfLines={2}>
-                      {product.name}
-                    </Text>
-                    <Text style={styles.price}>
-                      {formatRupees(product.price)} each
-                    </Text>
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel={`Remove ${product.name} from cart`}
-                      onPress={() => cart.removeAll(product.id)}
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 16 }}
-                    >
-                      <Text style={styles.remove}>Remove</Text>
-                    </Pressable>
-                  </View>
-                  <View style={styles.lineEnd}>
-                    <Stepper
-                      variant="outline"
-                      quantity={quantity}
-                      itemName={product.name}
-                      onIncrement={() => cart.add(product.id)}
-                      onDecrement={() => cart.remove(product.id)}
-                    />
-                    <Text style={styles.lineTotal}>
-                      {formatRupees(product.price * quantity)}
-                    </Text>
-                  </View>
-                </View>
-              ))}
+              <Stepper
+                variant="outline"
+                quantity={quantity}
+                itemName={product.name}
+                onIncrement={() => cart.add(product.id)}
+                onDecrement={() => cart.remove(product.id)}
+              />
             </View>
-          );
-        })}
+          ))}
+          <View style={styles.pickerWrap}>
+            <DeliveryPicker
+              options={delivery.data}
+              selectedId={option?.id}
+              isLoading={delivery.isLoading}
+              isError={delivery.isError}
+              onSelect={checkout.setDeliveryOptionId}
+              onRetry={() => delivery.refetch()}
+            />
+          </View>
+        </View>
+        {isAuthenticated ? (
+          <View style={styles.deliverTo}>
+            <View style={styles.deliverText}>
+              <Text style={styles.name}>
+                {address ? `Deliver to ${address.name}` : 'Delivery address'}
+              </Text>
+              <Text style={styles.price}>
+                {address
+                  ? `${address.line1}, ${address.city} · ${address.pincode}`
+                  : 'Add where we should deliver.'}
+              </Text>
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={address ? 'Change address' : 'Add address'}
+              onPress={() =>
+                address
+                  ? navigation.navigate('Addresses', { select: true })
+                  : navigation.navigate('AddressForm')
+              }
+              style={styles.change}
+            >
+              <Text style={styles.changeText}>
+                {address ? 'Change' : 'Add'}
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
+        <CouponSection
+          appliedCode={checkout.couponCode}
+          onApplied={checkout.setCouponCode}
+        />
+        <CreditToggle offer={offer} />
         {renderBill()}
-        <Text style={styles.hint}>
-          Coupons and GST are applied at checkout.
-        </Text>
       </ScrollView>
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
+      <View style={[styles.footer, { paddingBottom: footerPad }]}>
+        <Text style={styles.footNote}>
+          {isAuthenticated
+            ? 'You pay online on the next step.'
+            : 'Log in to pay. Your cart is kept.'}
+        </Text>
         <Button
+          variant="dark"
           // DECISION: matches website, differs from CLAUDE.md: the site allows
-          // guest checkout ("No account needed first"). Guest checkout is not
-          // built; the app still asks guests to sign in, so that copy is not used.
-          label={
-            isAuthenticated ? 'Continue to checkout' : 'Log in to checkout'
-          }
-          onPress={checkout}
-          disabled={!summary.data}
+          // guest checkout. Guest checkout is not built; guests sign in first.
+          label={ctaLabel}
+          onPress={goCheckout}
+          disabled={!summary.data || (isAuthenticated && !option)}
         />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.surface },
-  sub: { ...typography.body, color: colors.textSecondary },
-  hint: { ...typography.labelSmall, color: colors.textSecondary },
-  content: { gap: spacing.md, padding: spacing.xl },
+  count: { ...typography.body, color: colors.textSecondary },
+  content: { gap: spacing.md, padding: spacing.xl, paddingTop: 0 },
   card: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderLeftWidth: 4,
     borderRadius: radius.card,
     overflow: 'hidden',
     backgroundColor: colors.white,
   },
-  cardHead: {
+  head: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 4,
-    paddingVertical: 12,
+    gap: 12,
+    minHeight: 40,
+    paddingVertical: 10,
     paddingHorizontal: 14,
+    backgroundColor: colors.tagNowBg,
   },
-  tag: { ...typography.tag, fontSize: 10.5 },
-  note: { ...typography.labelSmall, color: colors.textSecondary },
+  tag: { ...typography.kicker, fontSize: 11, color: colors.textMuted },
+  timing: {
+    ...typography.labelSmall,
+    flexShrink: 1,
+    color: colors.tagNow,
+    textAlign: 'right',
+  },
   line: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 11,
-    padding: 13,
+    gap: 12,
+    padding: 14,
     borderTopWidth: 1,
     borderTopColor: colors.divider,
   },
@@ -209,19 +257,32 @@ const styles = StyleSheet.create({
   },
   lineInfo: { flex: 1, gap: 2 },
   name: { ...typography.heading, color: colors.ink },
-  price: { ...typography.labelSmall, color: colors.textSecondary },
-  lineEnd: { alignItems: 'flex-end', gap: 6 },
-  lineTotal: { ...typography.label, color: colors.ink },
-  remove: {
-    ...typography.labelSmall,
-    color: colors.textMuted,
-    paddingVertical: 4,
+  price: { ...typography.bodySmall, color: colors.textSecondary },
+  pickerWrap: { borderTopWidth: 1, borderTopColor: colors.divider },
+  deliverTo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.card,
+    backgroundColor: colors.white,
   },
+  deliverText: { flex: 1, gap: 4 },
+  change: { minWidth: 48, minHeight: 48, justifyContent: 'center' },
+  changeText: { ...typography.label, color: colors.olive },
   billError: { ...typography.label, color: colors.danger, textAlign: 'center' },
   footer: {
+    gap: 10,
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.md,
     borderTopWidth: 1,
     borderTopColor: colors.border,
+  },
+  footNote: {
+    ...typography.bodySmall,
+    color: colors.textMuted,
+    textAlign: 'center',
   },
 });

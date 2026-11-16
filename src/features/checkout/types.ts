@@ -21,6 +21,9 @@ export type DeliveryOption = {
   detail: string;
   // Backend slot start (ISO) for a scheduled option; sent as `scheduledFor`.
   scheduledFor?: string;
+  // Scheduled options only: day chip and slot cell labels (backend text).
+  dayLabel?: string;
+  slotLabel?: string;
 };
 
 export type QuoteRequest = {

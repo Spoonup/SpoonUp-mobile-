@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useAuth } from '../../auth/context/AuthContext';
 import { useCart } from '../../cart/context/CartContext';
 import { useCheckout } from '../context/CheckoutContext';
 import { checkoutService } from '../services/checkoutService';
@@ -16,7 +17,8 @@ export const useApplyCoupon = () => {
 export const useCheckoutDraft = () => {
   const { lines } = useCart();
   const checkout = useCheckout();
-  const addresses = useAddresses();
+  const { isAuthenticated } = useAuth();
+  const addresses = useAddresses(isAuthenticated);
   const address =
     addresses.data?.find(item => item.id === checkout.addressId) ??
     addresses.data?.[0];
@@ -25,10 +27,9 @@ export const useCheckoutDraft = () => {
     queryKey: [
       'delivery-options',
       lines.map(line => `${line.product.id}:${line.quantity}`),
-      address?.id,
     ],
     queryFn: () => checkoutService.getDeliveryOptions(lines),
-    enabled: lines.length > 0 && !!address,
+    enabled: lines.length > 0,
   });
   const option =
     delivery.data?.find(item => item.id === checkout.deliveryOptionId) ??

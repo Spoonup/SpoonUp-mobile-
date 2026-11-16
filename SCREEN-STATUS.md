@@ -9,9 +9,9 @@ Migrated from bare React Native 0.87 to managed Expo SDK 58 (Expo Go). Native `i
 
 ## Backend wiring (live vs mock)
 
-Switch: `EXPO_PUBLIC_USE_MOCKS` env (default true; tests run mocks). Set `EXPO_PUBLIC_USE_MOCKS=false` and `EXPO_PUBLIC_API_BASE_URL=http://<LAN-IP>:<port>` (a non-production backend) to go live. Full contract and gaps: `API-CONTRACT.md`.
+Switch: `EXPO_PUBLIC_USE_MOCKS` env (default true; tests run mocks). Set `EXPO_PUBLIC_USE_MOCKS=false` and `EXPO_PUBLIC_API_BASE_URL` (the local `.env` currently points at the public production origin by owner authorization; payments are blocked by the `rzp_test_` guard) to go live. Full contract and gaps: `API-CONTRACT.md`.
 
-**Verification level: nothing has been run against a live server.** The website backend folder is configured with Supabase service credentials, so it was not started (rule: only run if it uses the local JSON DB). Everything below marked "read-only wiring" was checked against `server/index.js` and the web client and has stubbed-client unit tests (`__tests__/live.test.ts`, `payments.test.ts`, `orders.test.ts`). Android bundle export succeeds.
+**Production verification (2026-11-13, owner-authorized): the app service layer was run against `https://spoonupfoods.com` (no payments, no orders).** Live-verified: catalog (39 available products, absolute GCS image URLs), delivery slots, cart quote (guest and signed in), invalid coupon (friendly message), signup, login (wrong password -> `Invalid credentials.`), `/api/auth/me`, 401 after logout, logout, profile PATCH, address create/list/delete, orders list (empty), plan options/status/quote (30 deliveries, 30 days). NOT verified live: prepare/complete/abandon, Razorpay WebView, order detail/guest tracking with a real order, store credit, coupon success, device rendering in Expo Go. The rows below are therefore "live-verified" only for the items named here; the rest stays read-only wiring. Earlier statement, now superseded: nothing had been run against a live server. The website backend folder is configured with Supabase service credentials, so it was not started (rule: only run if it uses the local JSON DB). Everything below marked "read-only wiring" was checked against `server/index.js` and the web client and has stubbed-client unit tests (`__tests__/live.test.ts`, `payments.test.ts`, `orders.test.ts`). Android bundle export succeeds.
 
 | Feature | Live mode | Level |
 |---|---|---|
@@ -60,7 +60,7 @@ Status after this pass. Gaps listed are what remains, if any.
 | Auth | Forgot Password | `features/auth/screens/HelpSignInScreen.tsx` | Ready (conflict) | CLAUDE.md says password reset; the app and website are OTP-based, so the equivalent is "Help signing in". Flag for owner. |
 | Shopping | Home | `features/home/screens/HomeScreen.tsx` | Ready | Now driven by `useHome` (TanStack Query, `homeService` mock) with skeleton loading and ErrorState + retry. Plan card, location and reorder products are still mock. No pull-to-refresh. |
 | Shopping | Categories / Search / Product Listing | `features/shop/screens/ShopScreen.tsx` | Ready | One Shop tab covers all three (category chips, search, grid), matching the design handoff. Added sort, clear-search action, pull-to-refresh. No price/protein filters (backend filter contract unknown). |
-| Shopping | Product Details | `features/shop/screens/ProductDetailsScreen.tsx` | Ready | |
+| Shopping | Product Details | `features/shop/screens/ProductDetailsScreen.tsx` | Ready | Redesigned 2026-11-16 to the owner reference (see "Product details and Home images" at the end). |
 | Shopping | Cart | `features/cart/screens/CartScreen.tsx` | Ready | |
 | Checkout | Checkout (+ Delivery Selection, Coupon) | `features/checkout/screens/CheckoutScreen.tsx`, `components/DeliverySection.tsx`, `CouponSection.tsx` | Ready | Delivery and coupon are sections inside Checkout, not separate screens (matches design). |
 | Checkout | Address List / Add-Edit Address | `features/checkout/screens/AddressListScreen.tsx`, `AddressFormScreen.tsx` | Ready | Added pull-to-refresh. |
@@ -165,3 +165,109 @@ NOT visually verified on a device or simulator. Verified only: `tsc`, `eslint`, 
 - Product details has no ingredients/allergens (API does not supply them).
 - Tab bar left as built (5 tabs); site has none. Chip height stays 44 for touch targets (site 38-40).
 - Serif amounts: Instrument Serif has no rupee glyph, so totals use DM Sans 500 (spec says serif).
+
+## Login / Home / Product pass (2026-11-14)
+
+NOT seen on a device or simulator. Verified: `tsc`, `eslint`, `jest` (69 tests), `expo export` for android and ios.
+
+- Login: root View paints the cream background and the scroll content is at least window height (the gray block under the content came from a container with no background and no flexGrow); every stack screen also has a cream `contentStyle`. Mobile login is vertically centred, with a rotating quote (12 local quotes, native Animated fade every 5s, instant swap when reduce-motion is on) at the bottom. Google/Apple stay disabled "Soon": see `AUTH-PLAN.md` (backend has no phone-OTP, Apple, or in-app Google route).
+- Images: new `components/common/AspectImage` (fixed ratio on a View, cover, max height). Used for product cards (4:3, max 240), home tiles (16:9, max 200), plan photo (16:9, max 220), hero (16:9, max 230). Cart thumbs and home carousel cards were already fixed size.
+- Home: hero photo `assets/images/hero-home.webp`, kicker over its cream corner, headline, subline, "Order in 30 min" + "Build your plan". Two tiles, one kitchen row.
+- Pantry removed from the UI (`// DECISION: pantry sold in a separate app/site`): Shop filter, Home CTA/tile/row, onboarding slide, cart courier group, courier delivery option. `catalogService` drops `ships` products in list and get; `Product.category` still carries the value.
+- Product details redesigned (40% hero image, round back button, rounded sheet, kicker from backend `category`, serif name, price with unit parsed from "(Per bottle)", description, feature row from real fields only, qty stepper + "Add to cart · total"). No size selector: only pantry items have `sizes[]` and the cart has no sizeId.
+- Stepper buttons are 48dp now.
+
+## Home rebuilt to approved app design 6b (2026-11-14)
+
+NOT seen on a device or simulator. Verified: `tsc`, `eslint`, `jest` (72 tests), `expo export` for android and ios.
+
+- Home now follows images 10/11 (6b First visit / Returning), not the website layout. Removed: website hero (`hero-home.webp` kept on disk, unused), logo + Cart pill header, location/ETA pill, "Three ways" stacked tiles, bestseller rows, plan banner, tab-tour coach mark, `homeService`/`useHome`/`homeMock`/`PlanCard`/`CoachMark`.
+- Header: bell (count badge only when a real unread count exists; live mode has none) + avatar (initials, "G" for guests, ring + chevron badge) right-aligned, serif greeting below.
+- States come from real data: signed in AND (orders from `/api/me/orders` or an activated plan from `/api/me/subscriptions`) = Returning, otherwise First visit (guests always).
+- Greeting: guest "Hi there"; first visit "Hi {first}, welcome in"; returning "Good morning/afternoon/evening, {first}" (device time). Subline: "Day N of your {dish} plan. Nice going." with a live plan, else "Eat-now delivers in about 30–45 min." (no location).
+- First visit: "Start a breakfast plan" card ("PLAN · FROM ₹X A JAR", X = lowest backend quote total / deliveries for the cheapest plan-able dish; "PLAN · PAY ONCE" if the quote fails). Returning: dark next-delivery card (date kicker, dish, "Delivery N of M · prepaid") from the plan's deliveries; "Order again" row from past order items matched to the catalog by name, + / check-count wired to the cart, "Cart · N" link.
+- 2-up tiles (Eat now, 30-day plan): two equal flex columns, gap 14, no third column.
+- Omitted because the backend lacks it: Welcome credit card (the backend has no signup/welcome credit; credit comes only from refunds, referral rewards and admin adjustments), Skip button (skip endpoint is admin-only), "7–9 AM" in the kicker (not in subscription data; static website copy only), location/ETA, notification count (no endpoint), "Skip any day and it moves to the end" copy (not backed).
+- Cart entry on Home exists only in the Returning "Order again" row (per design); the First visit layout has no cart link.
+- Dimensions are the design's px scaled to pt (~0.64) with 44pt minimum touch targets, not measured on device.
+
+### Deviations from approved app design
+The Shop, Orders, Plans and Account deviations listed here earlier are resolved by the 2026-11-16 mockup pass below. Cart (6d) deviations are listed under the Cart section. Mockup 6g is built as a SpoonUp credit history screen (see the credit section at the end), not a wallet.
+
+## Cart / Checkout / payment results rebuilt to owner mockups 6d-6d6 (2026-11-16)
+
+Seen on the Android emulator (Pixel_8, Expo Go, live mode, signed in): Cart immediate + scheduled (day chips, slot grid, coupon expanded with keyboard), Checkout, Payment failed, Payment cancelled, Order confirmed (the last three with temporary hard-coded navigation/data, since removed; no payment was made). Not seen: iOS, Payment successful as its own screen, a real order confirmation from the backend. `tsc`, `eslint`, `jest` (72) pass.
+
+### Changed
+- Cart (6d): "Cart / N in cart" header, EAT NOW group with timing line ("Immediate" or "Scheduled · day, slot"), steppers, DELIVERY TYPE tiles (Immediate / Scheduled), day chips + 2-column slot grid (`checkout/components/DeliveryPicker.tsx`), Deliver-to card (signed in only) with Change, "Apply a coupon" row (expands to a code field), bill, dark "Checkout · ₹X" CTA. The cart quote now carries the coupon, so the bill matches checkout.
+- Checkout (6d2): Deliver-to card, PAY ONLINE with Razorpay, bill, "Pay ₹X with Razorpay". Payment now starts here; the separate Payment screen/route was removed (audit a: no more step numbers, no clipped heading; Section and DeliverySection deleted). "Estimated total" is now "To pay" (f).
+- Payment failed (6d4) / cancelled (6d5) / Order confirmed (6d6, dark "Order placed" card, Track order, Continue shopping). Shared `PaymentOutcome` also restyles the Plan failed/cancelled screens.
+- Audit: (b) slot list replaced by chips + grid; (c) New address form uses `KeyboardAvoidingView behavior="padding"` on Android too (edge-to-edge) and the Save button is visible over the keyboard (verified); (d) `hooks/useFooterPadding.ts` gives Android a minimum bottom inset, used by Cart, Checkout, outcome screens, address screens; (e) cart group header is now a single tinted bar.
+
+### Deviations (owner to confirm)
+- Cash on delivery, Cashfree: not rendered (no COD: `paymentMethod` is always online; Cashfree is hidden on the website). The SpoonUp credit toggle IS rendered now (see the credit section at the end).
+- "Immediate · ~40 min" / "Arrives in ~40 min": backend sends no ETA, so tiles say "Made fresh"; confirmation card says "Order placed" unless the order has `etaText`.
+- Slots: mockup shows 4 meal windows; backend slots are hourly, so the grid lists them all (first 3 days).
+- Payment success (6d3) is not a separate screen: Order confirmed appears only after backend verification and shows amount, Razorpay and payment reference (no UPI/method detail, no date, no SMS receipt line).
+- Failed screen: no provider decline reason / payment id from the backend, so Reason is generic and Reference is the checkout handle. "Try again" and "Pay ₹X" return to Checkout (same idempotency key) instead of paying immediately; "Use another payment method" is "Back to cart" (only one method).
+- Order confirmed has no "NOW / rider texts you" note and no COD row. Stepper keeps the square outline style (not the mockup pill). Guests see no Deliver-to card in Cart (addresses need an account) and still log in at checkout.
+
+## Remaining screens rebuilt to owner mockups (2026-11-16)
+
+Seen on the Android emulator (Pixel_8, Expo Go): live mode, signed in as the test account: Sign in, Home (guest-style first visit), Shop, Product details, My plans (empty), New 30-day plan, Account, Addresses. Mock mode (Metro restarted with `EXPO_PUBLIC_USE_MOCKS=true`, then restored): Orders list, Order details, Notifications, Help & support, Ticket details, New ticket. Not seen: iOS, an active/paused/ended plan card with real deliveries, Order details "Reorder" bar, the keyboard over Sign in (the emulator did not raise its soft keyboard; the form uses `KeyboardAvoidingView padding` plus `useFooterPadding`, same as the verified address form), Plan success. `tsc`, `eslint`, `jest` (70) pass.
+
+### Changed
+- Icons: one line-icon set in `components/common/Icon.tsx` (`Icon` + names, 24px grid, round caps, 1.7 stroke). Tab bar, headers (back arrow), steppers, account rows, notifications, coupon chevrons, Home tiles/header, onboarding arrow now use it; no text glyphs (`<-`, `>`, `+`, check marks) or emoji remain in UI. Tab bar stays icon-only with a dot: the mockup has no labels (accessibility labels are set).
+- Button default is now the ink pill (`variant="dark"`), as in every mockup CTA; `primary` (olive) is still available.
+- Sign in (6a): one layout for sign in and sign up (logo, serif heading, pill inputs, ink CTA, Or continue with Google/Apple "soon", switch link, Skip for now, Track an order). The separate mobile-number layout, quote rotator and OTP input were removed (the backend has no phone OTP; the live app already refused it). Footer pads for the Android gesture bar; heading no longer clips on Android.
+- Home (6b): verified; greeting uses a first name only, truncates (2 lines), and falls back to "Hi there" / "Good morning" for username-like names (mobiletest_x, digits, underscores, long). Guests and first visits get a "From the kitchen" row (live catalog order, "See all").
+- Shop (6c): header + cart, search pill, All / Eat now / Subscribe chips with dots, 2-column grid (image fills card via AspectImage, NOW tag, backend kind/unit line, price + Add or stepper pill, "Plan it" for plan-able dishes), floating cart bar. Sort chips removed (not in mockup).
+- New 30-day plan (6f2): jar picker, how-often tiles with backend delivery counts, dark YOUR PLAN card from the backend quote, Continue to the existing Plan payment (address + Razorpay). Plan success restyled.
+- My plans (6f): live plans as cards (progress from delivered count, next-two-weeks strip from the plan's own deliveries, Help), ended plans with Buy again, empty state with a "Build a 30-day plan" hero.
+- Orders (6e/6e2): All / Active / Past, ACTIVE and PAST groups, cards with tag, status, photo (catalog match by item name), progress segments, Reorder / Get help on past orders; details with status hero, timeline, items, deliver-to, Get help, Reorder bar. Tracking screen restyled.
+- Account (6h): avatar + name + phone/email + Edit, Active plans / Orders strip, rows with live counts (orders, plans, saved addresses), Help & support, Sign out, app version. Addresses (6i): "Add a new address" tile and restyled cards. Notifications (6j), Help & support (6k), New ticket (6k2), Ticket thread (6k3) restyled (mock mode only, see below).
+
+### Deviations (owner to confirm)
+- Omitted, no backend data (rendered only if it exists; `// DECISION` / `TODO(api)` in code): member-since, Delivery alerts toggle, Terms row, payment methods, rider card and map, order ETA beyond `etaText`, Invoice, rating, Cancel order, plan Skip / Pause / Change slot / Resume / Extend, slot and start-date pickers and "you save" on New plan, "Plan it · from Rs X" price on shop cards, address Save-as tags / landmark / default toggle / map strip, ticket contact tiles (call/WhatsApp numbers unknown).
+- Login method: mockup is phone OTP; the backend only has username/email + password, so the mockup's look is kept with the real fields. Google/Apple are disabled "soon".
+- Notifications and Help & support are mock-mode screens; live shows the styled "email support" state (backend has no endpoints). Their real layouts were only verified in mock mode.
+- Plans tab title "My plans" and Account title are 15px sans, as in the mockups (other tab titles are 30px serif, as mocked).
+- New plan then Plan payment are two steps (mockup shows one screen); the address and Razorpay step is unchanged.
+- Product details: redesigned 2026-11-16 to the owner's reference image (see the section at the end).
+- Onboarding copy ("~35 min", "Koramangala kitchen") is the approved static design copy, not backend data.
+
+## SpoonUp credit and referral (2026-11-16)
+
+**CLAUDE.md conflict, flagged:** section 13 ("no customer-facing wallet"; store credit from refunds only) is superseded by the owner for credit. The wallet concept is dropped; SpoonUp credit (the website's "store credit") and the referral programme follow the website/backend exactly. Backend wins over the mockups: the mockup's "On eat-now items" wording and a welcome-credit card are not built (the backend has neither).
+
+Built (`src/features/credit`; hooks `useCreditStatement`, `useReferral`, `useCreditOffer`):
+- Account: Credit tile (opens the Credit screen) beside Active plans and Orders, and a dark Refer & earn card (code, programme copy and timing from the backend rule, "Share your code" via React Native `Share`, link `<site>/signin?ref=CODE` as on the website). Card hidden if the programme is off, there is no code, or the call fails.
+- Credit screen (mockup 6g, no wallet): current credit and activity from `/api/me/store-credit` (Refund, Referral reward, Used on an order, Adjustment, Expired), referral card, skeleton / error / logged-out states, pull to refresh. A 404 (new account) shows zero.
+- Cart and Checkout: "Use X SpoonUp credit" switch row (signed in with credit only), a "SpoonUp credit" bill row, "To pay". Plan payment: same switch (the website applies credit to plan carts too). Pay sends `storeCreditAmount`; the charge is the backend's `prepare.amount`.
+- Credit shown is an estimate `min(credit, payable)` with the coupon off first (what the website does); the backend re-validates, clamps and reserves at prepare (cart/quote has no credit params).
+- `noWallet` test: still bans wallet, top-up, withdraw, auto-renew, recurring, subscription wording; `balance` allowed only in `credit/types.ts` and `credit/services/creditService.ts` (backend field name, mapped to `available`). `DECISION` comments saying credit was omitted removed.
+
+Verified: live GET `/api/me/store-credit` and `/api/me/referrals` with the test account (200, shapes match: credit 0, code present, programme enabled). `tsc`, `eslint`, `jest` (72 + credit tests) pass. Not verified: a non-zero credit amount in the UI (test account has 0, so the toggle is hidden), a credit-funded prepare/pay (no payments, no production redemption), iOS, visual render of the new Account tile / Credit screen (emulator step blocked, see report).
+
+Credit visual check (2026-11-16, Android emulator, mock mode, then restored to live): Account Credit tile (₹150) + Refer & earn card, Credit screen (available, programme copy, activity row), Cart credit switch (off: To pay ₹299; on: "SpoonUp credit −₹150", To pay and Checkout ₹149). Rendered correctly; no payment attempted.
+
+## Product details and Home images (2026-11-16)
+
+Product details (owner reference image, brand tokens not the reference's colours/fonts):
+- Full-bleed hero (45% of screen height, cover, muted backdrop), round white back button over it (safe-area aware). Flat white content below: olive mono kicker from backend `category` (omitted if absent), DM Sans semibold name, large price + "per <unit>" (unit parsed from "(Per bottle)"), description, divider-bordered row of line-icon chips, sticky bar with outlined stepper "− 1 bottle +" and olive "Add to cart · ₹X" (price × qty, display only; backend prices the cart), bottom padding from `useFooterPadding`.
+- Chips from real fields only (`attributes()` in the screen, unit-tested): truck "Eat now" (kitchen/immediate), clock "Ready in N min" (backend `prepMinutes`, now mapped in `catalogService`), calendar "Plan available" (`subscribable`), jar "Per <unit>". Row hidden if empty. New `truck` icon (1.7 stroke).
+- Omitted because the backend lacks them (public product allow-list `server/publicProduct.js`): rating row, MRP/compare price and discount pill, veg flag, favourite heart (no favourites endpoint). No "Plan it" on details (it was not there before; Shop cards keep it).
+
+Home images (mockup 6b):
+- Root cause of the empty strip beside photos: `AspectImage` put `aspectRatio` and `maxHeight` on one View, so once the height cap applied Yoga shrank the width (strip on the right of the plan card). Now the ratio sits on an inner View and the outer View caps the height and clips; fixes every user (Home, Shop cards, Plans).
+- `lifestyle/week-jars.jpg` had a cream frame around the cloth (white strips in the 30-day tile/plan card); cropped to the cloth (1125×680). Also used by Onboarding and Plans.
+- Plan card image capped at 120dp, category tile images ratio 2 / max 96dp (mockup 74–120), product row cards unchanged (150 wide, ratio 1.42, matches 6b 136/96).
+- `src/assets/images/hero-home.webp` (untracked) is not referenced anywhere.
+
+Seen on the Android emulator (Pixel_8, live, guest): Product details for Asian Salad (no unit) and Cold Coffee (unit "bottle"), mock Mango Chia Pudding (no category), Home top and scrolled, Shop grid. `tsc`, `eslint`, `jest` (73) pass. Not seen: iOS, the "Ready in N min" chip (the products opened had no `prepMinutes`).
+
+Card heights, referral button, mock pudding image:
+- Home product rows (`ReorderRow`): name reserves 2 lines (`minHeight`), so cards in a row are equal height with prices aligned. Shop grid already equal (row stretch + `top flex:1` + reserved plan slot); unchanged.
+- Refer & earn "Share your code" now uses shared `Button` (`variant="sage"`, pill).
+- Mock `chia` item renamed "Mango Chia Pudding" -> "Cocoa Chia Pudding": no mango photo exists in the app, website assets, or backend catalog; `chia.png` is a chocolate chia jar. `chia.png` is only 400px wide (looks soft on Product details); no larger copy of that photo exists. Live images are full-size originals from GCS (no thumbnail variant used). Also noticed: mock "Green Glow Smoothie" uses `smoothie.png`, a pink dragonfruit smoothie (not fixed).
+- Seen on Pixel_8: Home (live guest) row, Shop grid (live and mock), Account referral card (mock). tsc, eslint, jest (73) pass.

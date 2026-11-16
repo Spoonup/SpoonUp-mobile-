@@ -2,9 +2,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../../../components/common/Button';
+import { Icon } from '../../../components/common/Icon';
 import { useBlockBack } from '../../../hooks/useBlockBack';
 import type { RootStackParamList } from '../../../navigation/types';
-import { colors, radius, spacing, typography } from '../../../theme';
+import { colors, spacing, typography } from '../../../theme';
 import { formatPlanDate } from '../logic';
 import { usePlan } from '../hooks/usePlan';
 
@@ -22,6 +23,14 @@ export const PlanSuccessScreen = ({ navigation, route }: Props) => {
       ]}
     >
       <View style={styles.body}>
+        <View style={styles.mark}>
+          <Icon
+            name="check"
+            color={colors.onDark}
+            size={34}
+            strokeWidth={1.8}
+          />
+        </View>
         <Text accessibilityRole="header" style={styles.title}>
           Your plan is active
         </Text>
@@ -29,19 +38,24 @@ export const PlanSuccessScreen = ({ navigation, route }: Props) => {
           Payment verified. Thank you for choosing SpoonUp.
         </Text>
         <View style={styles.card}>
-          <Text style={styles.line}>
-            Payment reference: {route.params.paymentReference}
-          </Text>
+          <View style={styles.row}>
+            <Text style={styles.key}>Payment reference</Text>
+            <Text style={styles.val}>{route.params.paymentReference}</Text>
+          </View>
           {data?.expiresAt ? (
-            <Text style={styles.line}>
-              Active until {formatPlanDate(data.expiresAt)}
-            </Text>
+            <View style={[styles.row, styles.rowBorder]}>
+              <Text style={styles.key}>Active until</Text>
+              <Text style={styles.val}>{formatPlanDate(data.expiresAt)}</Text>
+            </View>
           ) : null}
         </View>
+        <Text style={styles.note}>
+          Ends on its own after 30 days. Nothing renews or is charged again.
+        </Text>
       </View>
       <View style={styles.actions}>
         <Button
-          label="View my plan"
+          label="Go to My plans"
           onPress={() =>
             navigation.reset({
               index: 0,
@@ -74,11 +88,38 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    gap: 4,
+    borderRadius: 14,
+    backgroundColor: colors.white,
+    overflow: 'hidden',
     marginTop: spacing.md,
   },
-  line: { ...typography.bodySmall, color: colors.ink },
+  mark: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    backgroundColor: colors.olive,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    padding: 12,
+  },
+  rowBorder: { borderTopWidth: 1, borderTopColor: colors.border },
+  key: { ...typography.bodySmall, color: colors.textSecondary },
+  val: {
+    ...typography.label,
+    color: colors.ink,
+    flexShrink: 1,
+    textAlign: 'right',
+  },
+  note: {
+    ...typography.labelSmall,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
   actions: { paddingHorizontal: spacing.xl },
 });

@@ -12,8 +12,15 @@ import { Button } from '../../../components/common/Button';
 import { ErrorState } from '../../../components/common/ErrorState';
 import { ScreenHeader } from '../../../components/common/ScreenHeader';
 import { Skeleton } from '../../../components/common/Skeleton';
+import { useFooterPadding } from '../../../hooks/useFooterPadding';
 import type { RootStackParamList } from '../../../navigation/types';
-import { colors, radius, spacing, typography } from '../../../theme';
+import {
+  colors,
+  fontFamily,
+  radius,
+  spacing,
+  typography,
+} from '../../../theme';
 import { TrackingTimeline } from '../components/TrackingTimeline';
 import { useOrder } from '../hooks/useOrders';
 
@@ -21,6 +28,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'OrderTracking'>;
 
 export const OrderTrackingScreen = ({ navigation, route }: Props) => {
   const insets = useSafeAreaInsets();
+  const footerPad = useFooterPadding();
   const { orderId } = route.params;
   const {
     data: order,
@@ -53,7 +61,7 @@ export const OrderTrackingScreen = ({ navigation, route }: Props) => {
           }
         >
           <View style={styles.card}>
-            <Text style={styles.orderId}>{order.number}</Text>
+            <Text style={styles.orderId}>#{order.number}</Text>
             {order.etaText ? (
               <Text accessibilityLiveRegion="polite" style={styles.eta}>
                 {order.etaText}
@@ -69,7 +77,7 @@ export const OrderTrackingScreen = ({ navigation, route }: Props) => {
             />
           ) : null}
         </ScrollView>
-        <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
+        <View style={[styles.footer, { paddingBottom: footerPad }]}>
           <Button
             variant="outline"
             label="Get help with this order"
@@ -96,10 +104,15 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.lg,
+    borderRadius: 14,
     backgroundColor: colors.white,
   },
-  orderId: { ...typography.heading, color: colors.ink },
+  orderId: {
+    fontFamily: fontFamily.serif,
+    fontSize: 26,
+    lineHeight: 30,
+    color: colors.ink,
+  },
   eta: { ...typography.body, color: colors.olive },
   footer: {
     paddingHorizontal: spacing.xl,

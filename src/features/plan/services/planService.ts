@@ -15,6 +15,7 @@ import type {
 } from '../../checkout/types';
 import { liveCheckout, type Customer } from '../../payments/liveCheckout';
 import { paymentService } from '../../checkout/services/paymentService';
+import { catalogService } from '../../shop/services/catalogService';
 import { derivePlan, planFromSubscriptions } from '../logic';
 import type {
   ApiSubscription,
@@ -23,6 +24,7 @@ import type {
   PlanOffer,
   PlanOptions,
   PlanQuote,
+  PlanRow,
   PlanRecord,
 } from '../types';
 
@@ -31,6 +33,8 @@ export type PlanInput = {
   frequency: string;
   address: Address;
   customer: Customer;
+  // SpoonUp credit to use (display estimate; the backend clamps it).
+  creditAmount?: number;
 };
 
 const subscriptionLine = (productId: string, frequency: string) => ({
@@ -124,6 +128,36 @@ export const planService = {
     };
   },
 
+  // Live: the signed-in customer's raw subscription rows (home/next delivery).
+  // Mocks and guests have none.
+  async getPlanRows(): Promise<PlanRow[]> {
+    return planService.getSubscriptions();
+  },
+
+  async getSubscriptions(): Promise<ApiSubscription[]> {
+    if (mocksEnabled || !(await secureTokenStore.getToken())) return [];
+    return apiClient.get<ApiSubscription[]>(endpoints.mySubscriptions);
+  },
+
+  // Live: lowest per-jar price across the backend's frequencies for the
+  // cheapest plan-able dish (display only: backend quote total / deliveries).
+  // null when mocked or unavailable, so Home shows no "from" price.
+  async fromPerJar(): Promise<number | null> {
+    if (mocksEnabled) return null;
+    const [products, options] = await Promise.all([
+      catalogService.list(),
+      planService.getOptions(),
+    ]);
+    const dish = products
+      .filter(p => p.canSubscribe)
+      .sort((a, b) => a.price - b.price)[0];
+    if (!dish || options.frequencies.length === 0) return null;
+    const quotes = await Promise.all(
+      options.frequencies.map(f => planService.quote(dish.id, f)),
+    );
+    return Math.min(...quotes.map(q => q.total / q.deliveryCount));
+  },
+
   async createPlanIntent(
     idempotencyKey: string,
     input?: PlanInput,
@@ -136,6 +170,9 @@ export const planService = {
       const prepared = await liveCheckout.prepare(
         {
           lines: [subscriptionLine(input.productId, input.frequency)],
+          ...(input.creditAmount
+            ? { storeCreditAmount: input.creditAmount }
+            : {}),
           deliveryAddress: {
             line1: input.address.line1,
             city: input.address.city,

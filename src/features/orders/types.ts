@@ -47,7 +47,7 @@ export const PAYMENT_LABEL: Record<PaymentStatus, string> = {
 export const DELIVERY_LABEL: Record<DeliveryType, string> = {
   immediate: 'Eat now',
   scheduled: 'Scheduled',
-  shipped: 'Pantry (ships in 3–5 days)',
+  shipped: 'Shipped by courier',
 };
 
 export const isActive = (order: Order): boolean =>

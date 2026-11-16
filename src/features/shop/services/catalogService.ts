@@ -6,6 +6,7 @@ import {
   PRODUCTS,
   findProduct,
   rememberProducts,
+  splitUnit,
   type Product,
 } from '../data/products';
 
@@ -15,6 +16,7 @@ const delay = () => new Promise<void>(resolve => setTimeout(resolve, 400));
 type ApiProduct = {
   id: string;
   name: string;
+  category?: string;
   price: number;
   description?: string;
   imageUrl?: string;
@@ -22,6 +24,7 @@ type ApiProduct = {
   deliverLater?: boolean;
   fulfillmentKind?: 'IMMEDIATE' | 'DELIVERY_IN_DAYS';
   subscribable?: boolean;
+  prepMinutes?: number | null;
 };
 
 const FALLBACK_IMAGE = require('../../../assets/images/products/chia.png');
@@ -41,18 +44,28 @@ const toProduct = (p: ApiProduct): Product => {
         : 'now',
     canSubscribe: Boolean(p.subscribable),
     image: url ? { uri: url } : FALLBACK_IMAGE,
+    categoryLabel: p.category,
+    unit: splitUnit(p.description ?? '').unit,
+    prepMinutes: Number(p.prepMinutes) > 0 ? Number(p.prepMinutes) : undefined,
   };
 };
+
+// DECISION: pantry sold in a separate app/site. Courier ("ships") products are
+// dropped here so no list, search, detail or cart path can ever see them.
+const kitchenOnly = (products: Product[]) =>
+  products.filter(product => product.category === 'now');
 
 export const catalogService = {
   async list(): Promise<Product[]> {
     if (mocksEnabled) {
       await delay();
-      return PRODUCTS;
+      return kitchenOnly(PRODUCTS);
     }
     const data = await apiClient.get<ApiProduct[]>(endpoints.products);
     // Prices/availability are backend-owned; unavailable items are hidden.
-    const products = data.filter(p => p.isAvailable !== false).map(toProduct);
+    const products = kitchenOnly(
+      data.filter(p => p.isAvailable !== false).map(toProduct),
+    );
     rememberProducts(products);
     return products;
   },
@@ -60,7 +73,8 @@ export const catalogService = {
     if (mocksEnabled) {
       await delay();
       const product = findProduct(id);
-      if (!product) throw new Error('Product not found');
+      if (!product || product.category !== 'now')
+        throw new Error('Product not found');
       return product;
     }
     // No single-product endpoint exists; the list is the source.

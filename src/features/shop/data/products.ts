@@ -12,6 +12,20 @@ export type Product = {
   category: ProductCategory;
   canSubscribe: boolean;
   image: ImageSourcePropType;
+  // Real backend fields only (absent in mock data): kind label, sold-per unit.
+  categoryLabel?: string;
+  unit?: string;
+  prepMinutes?: number;
+};
+
+// The backend writes the sold-per unit into the description, e.g.
+// "Chilled coffee blended thick and frothy. (Per bottle)". Split it out so the
+// detail screen can show "₹275 / bottle" and a clean description.
+export const splitUnit = (meta: string): { text: string; unit?: string } => {
+  const match = /\s*\(per ([^)]+)\)\.?\s*$/i.exec(meta);
+  return match
+    ? { text: meta.slice(0, match.index).trim(), unit: match[1].trim() }
+    : { text: meta.trim() };
 };
 
 export const PRODUCTS: Product[] = [
@@ -26,7 +40,8 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'chia',
-    name: 'Mango Chia Pudding',
+    // No mango photo exists (repo, website, backend); named to match chia.png.
+    name: 'Cocoa Chia Pudding',
     price: 299,
     meta: '200 ml · 12g protein',
     category: 'now',

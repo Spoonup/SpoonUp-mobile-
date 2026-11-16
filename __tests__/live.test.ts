@@ -98,11 +98,8 @@ test('delivery options come from /api/schedule/slots and carry the slot start', 
     product('b', 'ships'),
   ]);
   expect(api.get).toHaveBeenCalledWith('/api/schedule/slots');
-  expect(options.map(o => o.kind)).toEqual([
-    'immediate',
-    'scheduled',
-    'in_days',
-  ]);
+  // DECISION: pantry sold in a separate app/site, so no courier option.
+  expect(options.map(o => o.kind)).toEqual(['immediate', 'scheduled']);
   expect(options[1]).toMatchObject({
     label: 'Today, 7:00-8:00 pm',
     scheduledFor: '2026-11-14T13:30:00.000Z',
@@ -231,4 +228,25 @@ test('plan: quote uses a SUBSCRIPTION line; status follows the backend subscript
       : [],
   );
   expect((await mod.planService.getPlan()).status).toBe('none');
+});
+
+test('an HTML 200 (e.g. a Cloudflare challenge) is an ApiError, not data', async () => {
+  const {
+    handleResponse,
+    ApiError,
+  } = require('../src/services/api/interceptors');
+  const html = {
+    ok: true,
+    status: 200,
+    headers: { get: () => 'text/html' },
+    text: async () => '<html>Just a moment...</html>',
+  };
+  await expect(handleResponse(html)).rejects.toBeInstanceOf(ApiError);
+  const json = {
+    ok: true,
+    status: 200,
+    headers: { get: () => 'application/json' },
+    json: async () => [1],
+  };
+  await expect(handleResponse(json)).resolves.toEqual([1]);
 });

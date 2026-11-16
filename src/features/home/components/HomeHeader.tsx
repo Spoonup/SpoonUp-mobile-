@@ -1,175 +1,124 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { BellIcon, CartIcon } from '../../../components/common/Icon';
-import { colors, radius, spacing, typography } from '../../../theme';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { BellIcon, Icon } from '../../../components/common/Icon';
+import { colors } from '../../../theme';
+import { fontFamily } from '../../../theme/typography';
 
 type Props = {
-  location?: { area: string; pincode: string; eta: string };
   initials: string;
+  // Real unread count only; 0 hides the badge.
   unread: number;
-  cartCount: number;
-  onOpenCart: () => void;
   onOpenNotifications: () => void;
   onOpenAccount: () => void;
 };
 
+// Approved app design (6b): bell with count badge + avatar, right-aligned.
 export const HomeHeader = ({
-  location,
   initials,
   unread,
-  cartCount,
-  onOpenCart,
   onOpenNotifications,
   onOpenAccount,
 }: Props) => (
-  <View style={styles.wrap}>
-    <View style={styles.row}>
-      <Image
-        source={require('../../../assets/images/spoonup-logo.png')}
-        style={styles.logo}
-        resizeMode="contain"
-        accessibilityLabel="SpoonUp"
-      />
-      <View style={styles.actions}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={
-            cartCount > 0 ? `Cart, ${cartCount} items` : 'Cart'
-          }
-          onPress={onOpenCart}
-          hitSlop={4}
-          style={styles.cartPill}
-        >
-          <CartIcon color={colors.onDark} size={16} />
-          <Text style={styles.cartText}>Cart</Text>
-          {cartCount > 0 ? (
-            <View style={styles.cartBadge}>
-              <Text style={styles.cartBadgeText}>{cartCount}</Text>
-            </View>
-          ) : null}
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={
-            unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'
-          }
-          onPress={onOpenNotifications}
-          hitSlop={4}
-          style={styles.bell}
-        >
-          <BellIcon color={colors.ink} />
-          {unread > 0 ? (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{unread}</Text>
-            </View>
-          ) : null}
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Account"
-          onPress={onOpenAccount}
-          hitSlop={4}
-          style={styles.avatar}
-        >
-          <Text style={styles.avatarText}>{initials}</Text>
-        </Pressable>
+  <View style={styles.row}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={
+        unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'
+      }
+      onPress={onOpenNotifications}
+      hitSlop={4}
+      style={styles.bell}
+    >
+      <BellIcon color={colors.ink} />
+      {unread > 0 ? (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{unread > 99 ? '99+' : unread}</Text>
+        </View>
+      ) : null}
+    </Pressable>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Account"
+      onPress={onOpenAccount}
+      hitSlop={4}
+      style={styles.avatarRing}
+    >
+      <View style={styles.avatar}>
+        <Text style={styles.avatarText}>{initials}</Text>
       </View>
-    </View>
-    {location ? (
-      <View style={styles.location} accessibilityRole="text">
-        <View style={styles.locationDot} />
-        <Text style={styles.locationText} numberOfLines={1}>
-          {location.area} {location.pincode} · {location.eta} ▾
-        </Text>
+      <View style={styles.chevron}>
+        <Icon name="chevronDown" color={colors.ink} size={10} strokeWidth={2} />
       </View>
-    ) : null}
+    </Pressable>
   </View>
 );
 
 const styles = StyleSheet.create({
-  wrap: { gap: spacing.md },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     gap: 10,
   },
-  logo: { height: 32, width: 110 },
-  location: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    gap: 7,
-    paddingVertical: 9,
-    paddingHorizontal: 13,
-    borderRadius: radius.pill,
-    backgroundColor: colors.surfaceMuted,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  locationDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: colors.olive,
-  },
-  locationText: { ...typography.label, color: colors.ink, flexShrink: 1 },
-  actions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cartPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 7,
-    minHeight: 44,
-    paddingHorizontal: 16,
-    borderRadius: radius.pill,
-    backgroundColor: colors.ink,
-  },
-  cartText: { ...typography.button, color: colors.onDark },
-  cartBadge: {
-    minWidth: 20,
-    height: 20,
-    paddingHorizontal: 5,
-    borderRadius: 10,
-    backgroundColor: colors.sage,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cartBadgeText: { ...typography.labelSmall, color: colors.ink },
   bell: {
     width: 44,
     height: 44,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: colors.borderButton,
+    borderColor: colors.borderStrong,
     alignItems: 'center',
     justifyContent: 'center',
   },
   badge: {
     position: 'absolute',
-    top: 2,
-    right: 0,
+    top: -2,
+    right: -2,
     minWidth: 18,
     height: 18,
-    paddingHorizontal: 5,
+    paddingHorizontal: 4,
     borderRadius: 9,
     backgroundColor: colors.terracotta,
-    borderWidth: 2,
-    borderColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   badgeText: {
-    ...typography.labelSmall,
+    fontFamily: fontFamily.sansMedium,
+    fontSize: 10.5,
+    lineHeight: 13,
     color: colors.onDark,
-    fontSize: 10,
-    lineHeight: 12,
+  },
+  avatarRing: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: colors.sage,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: colors.olive,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: { ...typography.label, color: colors.onDark, fontSize: 13 },
+  avatarText: {
+    fontFamily: fontFamily.sansMedium,
+    fontSize: 14,
+    color: colors.onDark,
+  },
+  chevron: {
+    position: 'absolute',
+    right: -4,
+    bottom: -4,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

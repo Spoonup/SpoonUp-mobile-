@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native';
 import type { CartSummary } from '../../features/cart/services/cartService';
 import { colors, radius, typography } from '../../theme';
-import { formatRupees } from '../../utils/money';
+import { formatMoney, formatRupees } from '../../utils/money';
 
 // Displays backend-computed figures only; never derives a total.
 export const BillSummary = ({ summary }: { summary: CartSummary }) => {
-  const { subtotal, tax, deliveryFee, discount, total, finalAtPayment } =
+  const { subtotal, tax, deliveryFee, discount, credit, total, finalAtPayment } =
     summary;
   const rows: [string, string][] = [
     ['Items', formatRupees(subtotal)],
@@ -14,10 +14,10 @@ export const BillSummary = ({ summary }: { summary: CartSummary }) => {
     ...(discount > 0
       ? [['Discount', `−${formatRupees(discount)}`] as [string, string]]
       : []),
-    [
-      finalAtPayment ? 'Total before coupon' : 'Estimated total',
-      formatRupees(total),
-    ],
+    ...(credit && credit > 0
+      ? [['SpoonUp credit', `−${formatMoney(credit)}`] as [string, string]]
+      : []),
+    [finalAtPayment ? 'Total before coupon' : 'To pay', formatRupees(total)],
   ];
   return (
     <View style={styles.bill}>

@@ -6,7 +6,7 @@ type Props = {
   onPress: () => void;
   disabled?: boolean;
   loading?: boolean;
-  // primary = olive pill; outline = bordered pill; dark = ink pill; sage = on dark surfaces.
+  // dark = ink pill (mockup primary, default); primary = olive pill; outline = bordered pill; sage = on dark surfaces.
   variant?: 'primary' | 'outline' | 'dark' | 'sage';
   accessibilityLabel?: string;
 };
@@ -16,7 +16,7 @@ export const Button = ({
   onPress,
   disabled = false,
   loading = false,
-  variant = 'primary',
+  variant = 'dark',
   accessibilityLabel,
 }: Props) => {
   const isInactive = disabled || loading;

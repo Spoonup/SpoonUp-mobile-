@@ -22,11 +22,4 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
     headline: 'Pay once. Your jar, every morning.',
     body: 'Prepay a 30-day plan in one payment. It ends on its own after 30 days and never charges you again.',
   },
-  {
-    image: require('../../../assets/images/lifestyle/pantry.jpg'),
-    tag: 'PANTRY',
-    tagColor: '#8B6A46',
-    headline: 'Dry fruits & muesli, shipped anywhere.',
-    body: 'Kashmiri pantry staples, packed per order and tracked to your door.',
-  },
 ];

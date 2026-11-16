@@ -2,8 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { addressService } from '../services/addressService';
 import type { AddressInput } from '../types';
 
-export const useAddresses = () =>
-  useQuery({ queryKey: ['addresses'], queryFn: addressService.list });
+export const useAddresses = (enabled = true) =>
+  useQuery({ queryKey: ['addresses'], queryFn: addressService.list, enabled });
 
 export const useSaveAddress = () => {
   const queryClient = useQueryClient();

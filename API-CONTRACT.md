@@ -34,13 +34,17 @@ Source: `/Users/sushantnatani/Desktop/SpoonUp/SpoonUp-Website` (read-only). Sing
 | GET `/api/me/orders` | token | | flat sub-orders (`id, orderNumber, status, paymentStatus, subOrderType, items, deliveryAddress, trackingLink`) |
 | GET `/api/orders/:id` | owner token OR `x-order-token` | | order; 404 otherwise. Needs the internal id, not the order number |
 | GET `/api/me/subscriptions` | token | | rows `{status (PENDING_PAYMENT/ACTIVE/PAUSED/CANCELLED/COMPLETED), activatedAt, expiresAt, parentOrderId, ...}` |
-| GET `/api/me/store-credit` | token | | `{balance, transactions}` (not used by the UI yet) |
+| GET `/api/me/store-credit` | token | | `{balance, transactions:[{id,direction:CREDIT/DEBIT,type,amount,reason,createdAt}]}` oldest first; 404 for an account with no credit row yet (treat as 0). Types: REFUND_ISSUED, REFERRAL_BONUS, REDEEMED, ADMIN_ADJUSTMENT, EXPIRY |
+| GET `/api/me/referrals` | token | | `{code, rule:{enabled,referrerAmount,referredAmount,minOrderAmount,rewardTrigger(ON_PAYMENT/AFTER_DELIVERY),holdDays}, joined, rewarded, earned, referrals[], referredBy, canApply}`. `code` null if none; all copy and amounts come from `rule` |
+| POST `/api/me/referrals/apply` | token | `{code}` | add a code to an existing account (only before the first paid order, see `canApply`). Not built in the app |
 
 Order status vocab: IMMEDIATE `pending,preparing,ready,out_for_delivery,delivered,failed_delivery,cancelled,refunded`; SCHEDULED starts `scheduled`; DELIVERY_IN_DAYS `pending,sourcing,packed,shipped,delivered,returned,cancelled,rejected,refunded`. `paymentStatus`: `unpaid|paid|...`.
 
 ## Mobile feature -> backend
 
-Verification level: "read-only wiring" = request/response shapes checked against `server/index.js` and the web client, covered by stubbed-client unit tests, never run against a live server (the website folder is configured for Supabase, so it was not started). "Live-verified" = none yet.
+**Production check (2026-11-13, owner-authorized, via `https://spoonupfoods.com`, no payments/orders; one test user created, its address deleted).** Responses matched the app's types for: GET `/api/products` (200, 42 rows, 39 available, absolute `https://storage.googleapis.com/...` image URLs, `sizes[]` on pantry items; the app sells the first size, which is the default the backend uses when `sizeId` is omitted), GET `/api/settings`, GET `/api/schedule/slots`, POST `/api/cart/quote` (guest and bearer), POST `/api/coupons/validate` (invalid code -> `valid:false`), POST `/api/auth/signup`, `/login` (wrong password -> 401 `Invalid credentials.`), GET `/api/auth/me` (401 after logout), POST `/api/auth/logout`, PATCH `/api/me`, POST/GET/DELETE `/api/me/addresses`, GET `/api/me/orders` (`[]`), GET `/api/me/subscriptions` via plan status, quote with a SUBSCRIPTION line (30 deliveries / 30 days). No Cloudflare challenge or bot block for non-browser clients; no custom headers or user agent needed; http redirects not an issue; `www.` 301-redirects to the apex. Not verified live: checkout prepare/complete/abandon, `/api/orders/:id`, `x-order-token`, store credit, coupon success. A non-JSON 2xx (e.g. a challenge page) now raises an ApiError instead of being returned as data.
+
+Verification level: "read-only wiring" = request/response shapes checked against `server/index.js` and the web client, covered by stubbed-client unit tests, not run against a live server except the endpoints listed in the production check above.
 
 | Mobile feature | Backend | Mode in live | Verification |
 |---|---|---|---|
@@ -59,7 +63,8 @@ Verification level: "read-only wiring" = request/response shapes checked against
 | Support tickets / replies / attachments | none | live: "email support" state; mock only in mock mode | backend gap |
 | Notifications / push tokens | none | live: "email support" state, empty badge; mock only in mock mode | backend gap |
 | Home content (location, ETA, reorder) | none | live: location pill hidden | backend gap |
-| Store credit display | `/api/me/store-credit` | not used | not built |
+| SpoonUp credit (history, amount, toggle) | `/api/me/store-credit`, `storeCreditAmount` on `/api/checkout/prepare` | live | read-only wiring + live GET check |
+| Referral card (code, share, stats) | `/api/me/referrals` | live | live GET check (2026-11-16) |
 | Cashfree | `gateway:'cashfree'` | not used (hidden on the website too) | not built |
 
 ## Payment flow (live)
@@ -71,6 +76,14 @@ Verification level: "read-only wiring" = request/response shapes checked against
 5. Cancel or failure calls `/api/checkout/abandon` so a reserved coupon is released.
 
 Idempotency: one prepared checkout per Payment-screen idempotency key (double taps reuse it until cancel/failure); `complete` is idempotent server-side. If the app restarts mid-payment, a captured payment is still fulfilled by the Razorpay webhook and appears under Orders.
+
+## SpoonUp credit and referral (website "store credit")
+
+Read from `server/storeCredit.js`, `server/referrals.js`, `/api/checkout/prepare`, and the website Checkout/Account pages. The owner dropped the wallet concept; credit follows the website.
+
+- **Earned:** admin converts a refund to credit (REFUND_ISSUED), referral rewards (REFERRAL_BONUS), admin adjustments. There is no welcome/signup credit. Spent at checkout (REDEEMED). EXPIRY is a ledger type, but nothing in the code expires credit on a schedule. Non-withdrawable, no cash value, no top-up.
+- **Redeeming:** only `POST /api/checkout/prepare` takes credit: `storeCreditAmount` (number). Signed-in only (guest: 401 `STORE_CREDIT_NEEDS_ACCOUNT`). The server applies the coupon first, clamps credit to `min(requested, payable)`, checks it against the live ledger minus credit held by other open checkouts (400 `INSUFFICIENT_STORE_CREDIT`), reserves it, charges the gateway `amount = payable - credit`, and returns `storeCredit:{applied}` (or null). Credit is captured on complete and released on abandon/expiry. `/api/cart/quote` has no credit params, so the website (and app) show an estimate `min(credit, total - coupon)`. Credit applies to the whole payable of any cart (eat-now, scheduled, plan lines); there is no per-item restriction (the mockup's "on eat-now items" is not backend behaviour). A fully covered total gives a 0 gateway amount, which the website does not special-case (untested).
+- **Referral:** every account gets a code. A new user enters it at signup (`referralCode` on `/api/auth/signup`; response `referral:{status}` or `{error,message}`) or later via `/api/me/referrals/apply` before the first paid order. The programme is admin-configured (`referral_rules`), no built-in amounts: the client reads `rule` (production now: both get 100 after the friend's first order of at least 350 is delivered). Reward timing follows `rewardTrigger`/`holdDays`; fraud signals can hold a referral for admin review. Public check: GET `/api/referrals/validate?code=` (rate limited). Website share link: `<origin>/signin?ref=CODE`.
 
 ## Gaps for the backend team
 

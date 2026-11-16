@@ -12,7 +12,7 @@ type CartContextValue = {
   quantities: Record<string, number>;
   count: number;
   quantityOf: (productId: string) => number;
-  add: (productId: string) => void;
+  add: (productId: string, quantity?: number) => void;
   remove: (productId: string) => void;
   removeAll: (productId: string) => void;
   clear: () => void;
@@ -24,10 +24,10 @@ const CartContext = createContext<CartContextValue | null>(null);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
-  const add = useCallback((productId: string) => {
+  const add = useCallback((productId: string, quantity = 1) => {
     setQuantities(prev => ({
       ...prev,
-      [productId]: (prev[productId] ?? 0) + 1,
+      [productId]: (prev[productId] ?? 0) + quantity,
     }));
   }, []);
 

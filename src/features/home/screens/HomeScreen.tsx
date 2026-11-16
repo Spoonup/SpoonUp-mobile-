@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -10,239 +10,272 @@ import type {
   MainTabParamList,
   RootStackParamList,
 } from '../../../navigation/types';
-import { useProducts } from '../../shop/hooks/useProducts';
+import { AspectImage } from '../../../components/common/AspectImage';
 import { Button } from '../../../components/common/Button';
-import { PlanCard } from '../components/PlanCard';
-import { usePlan } from '../../plan/hooks/usePlan';
-import { CategoryTiles, type CategoryTile } from '../components/CategoryTiles';
-import { CoachMark } from '../components/CoachMark';
+import { ErrorState } from '../../../components/common/ErrorState';
+import { Skeleton } from '../../../components/common/Skeleton';
+import { formatRupees } from '../../../utils/money';
 import { useAuth } from '../../auth/context/AuthContext';
 import { useUnreadCount } from '../../notifications/hooks/useNotifications';
+import { useOrders } from '../../orders/hooks/useOrders';
+import { planService } from '../../plan/services/planService';
+import { findProduct } from '../../shop/data/products';
+import { useProducts } from '../../shop/hooks/useProducts';
+import { CategoryTiles, type CategoryTile } from '../components/CategoryTiles';
 import { HomeHeader } from '../components/HomeHeader';
 import { ReorderRow } from '../components/ReorderRow';
-import { useHome } from '../hooks/useHome';
-import { Skeleton } from '../../../components/common/Skeleton';
-import { ErrorState } from '../../../components/common/ErrorState';
+import {
+  deliveryKicker,
+  greetingFor,
+  initialsOf,
+  isReturning,
+  livePlan,
+  nextDelivery,
+  orderAgain,
+  subline,
+} from '../logic';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'Home'>,
   NativeStackScreenProps<RootStackParamList>
 >;
 
-const BESTSELLERS = 3;
-
 export const HomeScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
   const cart = useCart();
-  const plan = usePlan();
-  const home = useHome();
-  const products = useProducts();
-  const [coachDismissed, setCoachDismissed] = useState(false);
   const { isAuthenticated, user } = useAuth();
-  const unreadNotifications = useUnreadCount(isAuthenticated);
+  const unread = useUnreadCount(isAuthenticated);
+  const products = useProducts();
+  const orders = useOrders(isAuthenticated);
+  const rows = useQuery({
+    queryKey: ['plan-rows', isAuthenticated],
+    queryFn: planService.getPlanRows,
+    enabled: isAuthenticated,
+  });
+  // Optional "from" price: its failure only hides the price.
+  const fromPrice = useQuery({
+    queryKey: ['plan-from'],
+    queryFn: planService.fromPerJar,
+  });
 
-  if (!home.data) {
-    return (
-      <View style={[styles.screen, { paddingTop: insets.top + spacing.sm }]}>
-        {home.isError ? (
-          <ErrorState onRetry={() => home.refetch()} />
-        ) : (
-          <View style={styles.header}>
-            <Skeleton height={44} borderRadius={12} />
-            <View style={styles.skeletonGap} />
-            <Skeleton height={28} width="60%" />
-            <View style={styles.skeletonGap} />
-            <Skeleton height={120} borderRadius={16} />
-            <View style={styles.skeletonGap} />
-            <Skeleton height={160} borderRadius={16} />
-          </View>
-        )}
-      </View>
+  const shell = (children: React.ReactNode) => (
+    <View style={[styles.screen, { paddingTop: insets.top + spacing.sm }]}>
+      {children}
+    </View>
+  );
+
+  if (isAuthenticated && (orders.isError || rows.isError)) {
+    return shell(
+      <ErrorState
+        onRetry={() => {
+          orders.refetch();
+          rows.refetch();
+        }}
+      />,
+    );
+  }
+  if (isAuthenticated && (orders.isLoading || rows.isLoading)) {
+    return shell(
+      <View style={styles.content}>
+        <Skeleton height={44} borderRadius={22} />
+        <Skeleton height={36} width="70%" />
+        <Skeleton height={120} borderRadius={18} />
+        <Skeleton height={160} borderRadius={16} />
+      </View>,
     );
   }
 
-  const { isNewUser: isNew, location } = home.data;
-  // Guests have no name; signed-in users show their own (home mock only supplies location).
-  const firstName = user?.name.trim().split(' ')[0] || 'there';
-  const initials = user?.name.trim().charAt(0).toUpperCase() || 'G';
-  const showCoach = isNew && !coachDismissed;
+  const now = new Date();
+  const orderList = orders.data ?? [];
+  const rowList = rows.data ?? [];
+  const returning = isReturning(isAuthenticated, orderList, rowList);
+  const live = livePlan(rowList, now);
+  const liveDish = live?.productId ? findProduct(live.productId) : undefined;
+  const next = live ? nextDelivery(live, now) : undefined;
+  const perJar =
+    fromPrice.data != null ? `${formatRupees(fromPrice.data)}` : undefined;
 
-  const goShop = (category?: 'all' | 'now' | 'plan' | 'ships') =>
-    navigation.navigate('Shop', { category });
-
+  // DECISION: pantry sold in a separate app/site (no pantry CTA, tile or row).
   const tiles: CategoryTile[] = [
     {
       key: 'now',
-      tag: 'NOW · 30–45 MIN',
-      tagColor: colors.olive,
-      tagBg: colors.tagNowBg,
+      kicker: 'NOW',
       label: 'Eat now',
-      sub: 'Made fresh in our kitchen and at your door in under 45 minutes.',
+      sub: '30–45 min',
       image: require('../../../assets/images/lifestyle/eat-now.jpg'),
-      onPress: () => goShop('now'),
+      onPress: () => navigation.navigate('Shop', { category: 'now' }),
     },
     {
       key: 'plan',
-      tag: 'PLAN · PAY ONCE',
-      tagColor: colors.ink,
-      tagBg: colors.tagPlanBg,
+      kicker: '30 DAYS',
       label: '30-day plan',
-      sub: 'Pay once for the whole plan and we deliver on your schedule.',
+      sub: perJar ? `Prepaid · from ${perJar}/jar` : 'Prepaid, pay once',
       image: require('../../../assets/images/lifestyle/week-jars.jpg'),
       onPress: () => navigation.navigate('Plans'),
     },
-    {
-      key: 'ships',
-      tag: 'SHIPS · 3–5 DAYS',
-      tagColor: colors.tan,
-      tagBg: colors.tagShipsBg,
-      label: 'Pantry',
-      sub: 'Kashmiri dry fruits, muesli and modak, sourced per order.',
-      image: require('../../../assets/images/lifestyle/pantry.jpg'),
-      onPress: () => goShop('ships'),
-    },
   ];
 
-  // Bestseller rows come from the catalog service; no hardcoded ids.
-  const rowItems = (category: 'now' | 'ships') =>
-    (products.data ?? [])
-      .filter(product => product.category === category)
-      .slice(0, BESTSELLERS)
-      .map(product => ({
-        product,
-        quantity: cart.quantityOf(product.id),
-        onAdd: () => cart.add(product.id),
-      }));
-  const kitchenItems = rowItems('now');
-  const pantryItems = rowItems('ships');
+  const again = orderAgain(orderList, products.data ?? []).map(product => ({
+    product,
+    quantity: cart.quantityOf(product.id),
+    onAdd: () => cart.add(product.id),
+  }));
 
-  return (
-    <View style={[styles.screen, { paddingTop: insets.top + spacing.sm }]}>
-      <View style={styles.header}>
-        <HomeHeader
-          location={location}
-          initials={initials}
-          unread={unreadNotifications}
-          cartCount={cart.count}
-          onOpenCart={() => navigation.navigate('Cart')}
-          onOpenNotifications={() => navigation.navigate('Notifications')}
-          onOpenAccount={() => navigation.navigate('Account')}
-        />
+  const kitchen = (products.data ?? []).slice(0, 8).map(product => ({
+    product,
+    quantity: cart.quantityOf(product.id),
+    onAdd: () => cart.add(product.id),
+  }));
+
+  return shell(
+    <ScrollView
+      contentContainerStyle={[styles.content, { paddingBottom: spacing.xl }]}
+      showsVerticalScrollIndicator={false}
+    >
+      <HomeHeader
+        initials={initialsOf(user?.name)}
+        unread={unread}
+        onOpenNotifications={() => navigation.navigate('Notifications')}
+        onOpenAccount={() => navigation.navigate('Account')}
+      />
+      <View style={styles.greetingBlock}>
+        <Text style={styles.greeting} numberOfLines={2} ellipsizeMode="tail">
+          {greetingFor(user?.name, returning, now.getHours())}
+        </Text>
+        <Text style={styles.subline}>{subline(live, liveDish?.name, now)}</Text>
       </View>
 
-      <ScrollView
-        contentContainerStyle={[styles.content, { paddingBottom: spacing.xl }]}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.hero}>
-          <Text style={styles.kicker}>GOOD FOOD, HIGHER DAYS</Text>
-          {isAuthenticated ? (
-            <Text style={styles.hello}>Good to see you, {firstName}.</Text>
-          ) : null}
-          <Text style={styles.h1}>
-            Food that tastes like a <Text style={styles.h1Italic}>craving</Text>
-            , works like a plan.
-          </Text>
-          <Text style={styles.lead}>
-            Made fresh in our kitchen every morning. Real ingredients, nothing
-            refined, at your door in 30 min.
-          </Text>
-          <Button label="Order in 30 min" onPress={() => goShop('now')} />
-          <View style={styles.pair}>
-            <View style={styles.flex}>
+      {returning ? (
+        next ? (
+          <View style={styles.darkCard}>
+            {liveDish ? (
+              <AspectImage
+                source={liveDish.image}
+                ratio={1}
+                style={styles.thumb}
+              />
+            ) : null}
+            <View style={styles.darkText}>
+              <Text style={styles.darkKicker}>
+                {deliveryKicker(next.scheduledDate, now)}
+              </Text>
+              {liveDish ? (
+                <Text style={styles.darkTitle}>{liveDish.name}</Text>
+              ) : null}
+              <Text style={styles.darkSub}>
+                Delivery {next.sequenceNo} of{' '}
+                {live?.deliveryCount ?? live?.deliveries?.length} · prepaid
+              </Text>
+            </View>
+            {/* Skip omitted: the backend only exposes delivery skip to admins. */}
+          </View>
+        ) : null
+      ) : (
+        <View style={styles.planCard}>
+          <AspectImage
+            source={require('../../../assets/images/lifestyle/week-jars.jpg')}
+            ratio={2.9}
+            maxHeight={120}
+          />
+          <View style={styles.planBody}>
+            <Text style={styles.planKicker}>
+              {perJar ? `PLAN · FROM ${perJar} A JAR` : 'PLAN · PAY ONCE'}
+            </Text>
+            <Text style={styles.planTitle}>Start a breakfast plan</Text>
+            <Text style={styles.planCopy}>
+              Pay once for 30 days of jars at your door. Pick your dish and how
+              often.
+            </Text>
+            <View style={styles.planBtn}>
               <Button
-                variant="outline"
-                label="Build your plan"
+                variant="dark"
+                label="Build my plan"
                 onPress={() => navigation.navigate('Plans')}
               />
             </View>
-            <View style={styles.flex}>
-              <Button
-                variant="outline"
-                label="Shop dry fruits"
-                onPress={() => goShop('ships')}
-              />
-            </View>
-          </View>
-          <View style={styles.pair}>
-            <View style={styles.flex}>
-              <Text style={styles.stat}>0G REFINED SUGAR</Text>
-              <Text style={styles.statSub}>
-                Sweetened with fruit and dates only.
-              </Text>
-            </View>
-            <View style={styles.flex}>
-              <Text style={styles.stat}>UP TO 21G PROTEIN</Text>
-              <Text style={styles.statSub}>Printed on every dish we make.</Text>
-            </View>
           </View>
         </View>
+      )}
 
-        <View style={styles.section}>
-          <Text style={styles.h2}>Three ways to eat with us</Text>
-          <CategoryTiles tiles={tiles} />
-        </View>
+      <CategoryTiles tiles={tiles} />
 
+      {returning && again.length > 0 ? (
         <ReorderRow
-          title="Bestsellers from the kitchen"
-          actionLabel="See all kitchen items"
-          onAction={() => goShop('now')}
-          items={kitchenItems}
+          items={again}
+          cartCount={cart.count}
+          onOpenCart={() => navigation.navigate('Cart')}
         />
-
-        {plan.data ? (
-          <PlanCard
-            plan={
-              isAuthenticated
-                ? plan.data
-                : { ...plan.data, status: 'none', daysLeft: 0 }
-            }
-            onPress={() => navigation.navigate('Plans')}
-          />
-        ) : null}
-
-        <ReorderRow
-          title="Bestsellers from the pantry"
-          actionLabel="See all pantry"
-          onAction={() => goShop('ships')}
-          items={pantryItems}
-        />
-      </ScrollView>
-
-      {showCoach ? (
-        <View style={styles.coach}>
-          <CoachMark onDismiss={() => setCoachDismissed(true)} />
-        </View>
       ) : null}
-    </View>
+
+      {/* Everyone else (guests, first visit) sees the live catalog instead.
+          DECISION: the backend has no sales ranking, so this is "From the
+          kitchen" (catalog order), not "Best sellers". */}
+      {!(returning && again.length > 0) && kitchen.length > 0 ? (
+        <ReorderRow
+          title="From the kitchen"
+          actionLabel="See all"
+          items={kitchen}
+          cartCount={cart.count}
+          onOpenCart={() => navigation.navigate('Cart')}
+          onAction={() => navigation.navigate('Shop')}
+        />
+      ) : null}
+    </ScrollView>,
   );
 };
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.surface },
-  header: { paddingHorizontal: spacing.xl },
-  skeletonGap: { height: spacing.lg },
-  content: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
-    gap: 40,
+  content: { paddingHorizontal: spacing.xl, gap: 18 },
+  greetingBlock: { gap: 4 },
+  greeting: {
+    fontFamily: fontFamily.serif,
+    fontSize: 32,
+    lineHeight: 36,
+    color: colors.ink,
   },
-  flex: { flex: 1 },
-  hero: { gap: spacing.md },
-  kicker: { ...typography.kicker, color: colors.tanDark },
-  hello: { ...typography.titleCard, color: colors.ink },
-  h1: { ...typography.display, color: colors.ink },
-  h1Italic: { fontFamily: fontFamily.serifItalic },
-  lead: { ...typography.bodyLarge, color: colors.ink },
-  pair: { flexDirection: 'row', gap: spacing.md },
-  stat: {
-    ...typography.kicker,
-    fontSize: 11,
+  subline: { ...typography.body, fontSize: 14, color: colors.textMuted },
+  darkCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    padding: 14,
+    borderRadius: 18,
+    backgroundColor: colors.ink,
+  },
+  thumb: { width: 68, borderRadius: 12 },
+  darkText: { flex: 1, gap: 3 },
+  darkKicker: {
+    ...typography.tag,
+    fontSize: 10.5,
+    letterSpacing: 1.6,
+    color: colors.sage,
+  },
+  darkTitle: {
+    fontFamily: fontFamily.sansMedium,
+    fontSize: 16,
+    lineHeight: 21,
+    color: colors.onDark,
+  },
+  darkSub: { ...typography.bodySmall, color: colors.onDarkMuted },
+  planCard: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    backgroundColor: colors.surfaceMuted,
+  },
+  planBody: { padding: 16, gap: 6 },
+  planKicker: {
+    ...typography.tag,
+    fontSize: 10.5,
     letterSpacing: 1.6,
     color: colors.ink,
   },
-  statSub: { ...typography.body, color: colors.textSecondary, marginTop: 4 },
-  section: { gap: spacing.lg },
-  h2: { ...typography.headline, color: colors.ink },
-  coach: { position: 'absolute', left: 12, right: 12, bottom: 12 },
+  planTitle: {
+    fontFamily: fontFamily.serif,
+    fontSize: 26,
+    lineHeight: 30,
+    color: colors.ink,
+  },
+  planCopy: { ...typography.body, color: colors.textMuted },
+  planBtn: { alignSelf: 'flex-start', marginTop: 8 },
 });

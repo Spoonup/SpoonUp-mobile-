@@ -16,7 +16,7 @@ import {
   spacing,
   typography,
 } from '../../../theme';
-import { formatRupees } from '../../../utils/money';
+import { formatMoney, formatRupees } from '../../../utils/money';
 import { mocksEnabled } from '../../../services/api/mode';
 import { useAuth } from '../../auth/context/AuthContext';
 import { AddressCard } from '../../checkout/components/AddressCard';
@@ -25,6 +25,8 @@ import { useAddresses } from '../../checkout/hooks/useAddresses';
 import { EmptyState } from '../../../components/common/EmptyState';
 import { friendlyError } from '../../checkout/errorMessage';
 import { routeAfterSdk } from '../../checkout/paymentFlow';
+import { CreditToggle } from '../../credit/components/CreditToggle';
+import { useCreditOffer } from '../../credit/hooks/useCredit';
 import { usePlan } from '../hooks/usePlan';
 import { planService } from '../services/planService';
 
@@ -47,6 +49,7 @@ export const PlanPaymentScreen = ({ navigation, route }: Props) => {
     queryFn: () => planService.quote(productId as string, frequency as string),
     enabled: live && !!productId && !!frequency,
   });
+  const creditOffer = useCreditOffer(live ? quote.data?.total : undefined);
   // One key per payment screen: taps and retries reuse the same plan order.
   const [idempotencyKey] = useState(planService.newIdempotencyKey);
 
@@ -59,6 +62,7 @@ export const PlanPaymentScreen = ({ navigation, route }: Props) => {
               productId,
               frequency,
               address,
+              creditAmount: creditOffer.applied,
               customer: {
                 name: user?.name ?? address.name,
                 phone: address.phone || user?.phone || '',
@@ -135,6 +139,7 @@ export const PlanPaymentScreen = ({ navigation, route }: Props) => {
               />
             )
           ) : null}
+          <CreditToggle offer={creditOffer} />
           <Text style={styles.note}>
             Your plan starts only after we verify the payment with your bank.
           </Text>
@@ -150,7 +155,11 @@ export const PlanPaymentScreen = ({ navigation, route }: Props) => {
       )}
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
         <Button
-          label={price !== undefined ? `Pay ${formatRupees(price)}` : 'Pay'}
+          label={
+            price !== undefined
+              ? `Pay ${formatMoney(price - creditOffer.applied)}`
+              : 'Pay'
+          }
           onPress={() => pay.mutate()}
           loading={pay.isPending}
           disabled={!ready || offline}

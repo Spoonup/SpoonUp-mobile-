@@ -17,6 +17,8 @@ export type CartSummary = {
   subtotalPlaceholder?: never;
   deliveryFee: number;
   discount: number;
+  // SpoonUp credit applied (display estimate; backend clamps at payment).
+  credit?: number;
   total: number;
 };
 
@@ -47,10 +49,14 @@ export const cartService = {
   // Live: POST /api/cart/quote (backend-priced; GST is added server-side and
   // is included in `total`/`subtotal`; the backend has no delivery fee).
   // Mock arithmetic below stands in for the server and must not ship.
-  async getSummary(lines: CartLine[]): Promise<CartSummary> {
+  async getSummary(
+    lines: CartLine[],
+    couponCode?: string | null,
+  ): Promise<CartSummary> {
     if (!mocksEnabled) {
       const quote = await apiClient.post<QuoteResponse>(endpoints.cartQuote, {
         lines: toApiLines(lines),
+        ...(couponCode ? { couponCode } : {}),
       });
       return summaryFromQuote(quote);
     }

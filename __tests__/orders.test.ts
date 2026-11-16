@@ -60,7 +60,8 @@ test('order tokens: newest first, deduped, capped, ignores entries without a tok
   expect(await orderTokens.tokenFor('zzz')).toBeUndefined();
 });
 
-test('delivery options: ASAP + slots for kitchen items, courier for pantry, no ETA invented', () => {
+// DECISION: pantry sold in a separate app/site, so there is no courier option.
+test('delivery options: ASAP + slots for kitchen items, no courier, no ETA invented', () => {
   const lines = [
     { product: { category: 'now' }, quantity: 1 },
     { product: { category: 'ships' }, quantity: 1 },
@@ -84,14 +85,17 @@ test('delivery options: ASAP + slots for kitchen items, courier for pantry, no E
     'slot:Today-0',
     'slot:Today-1',
     'slot:Tomorrow-0',
-    'courier',
+    'slot:Sat-0',
+    'slot:Sat-1',
+    'slot:Sat-2',
+    'slot:Sat-3',
+    'slot:Sat-4',
   ]);
+  expect(options[1]).toMatchObject({ dayLabel: 'Today', slotLabel: 's0' });
   expect(
     buildDeliveryOptions(lines, { enabled: false, days: [] }).map(o => o.id),
-  ).toEqual(['now', 'courier']);
-  expect(buildDeliveryOptions([lines[1]], slots).map(o => o.kind)).toEqual([
-    'in_days',
-  ]);
+  ).toEqual(['now']);
+  expect(buildDeliveryOptions([lines[1]], slots)).toEqual([]);
 });
 
 test('api lines carry ids and quantities only; slot goes on kitchen lines', () => {

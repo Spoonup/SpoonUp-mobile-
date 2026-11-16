@@ -28,6 +28,8 @@ type CreateParams = {
   address: Address;
   option: DeliveryOption;
   couponCode: string | null;
+  // Credit to use (display estimate); the backend clamps and reserves it.
+  creditAmount?: number;
   idempotencyKey: string;
   // Contact details sent to the backend (live). Falls back to the address.
   customer?: Customer;
@@ -70,6 +72,9 @@ export const paymentService = {
             pincode: address.pincode,
           },
           ...(params.couponCode ? { couponCode: params.couponCode } : {}),
+          ...(params.creditAmount
+            ? { storeCreditAmount: params.creditAmount }
+            : {}),
         },
         params.customer ?? {
           name: address.name,

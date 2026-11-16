@@ -75,7 +75,7 @@ export const CreateTicketScreen = ({ navigation, route }: Props) => {
         ]}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.label}>Category</Text>
+        <Text style={styles.label}>1 · WHAT’S IT ABOUT?</Text>
         <View style={styles.chips}>
           {CATEGORIES.map(item => (
             <Chip
@@ -94,7 +94,7 @@ export const CreateTicketScreen = ({ navigation, route }: Props) => {
 
         {orders.data?.length ? (
           <>
-            <Text style={styles.label}>Related order (optional)</Text>
+            <Text style={styles.label}>2 · WHICH ORDER? (OPTIONAL)</Text>
             <View style={styles.chips}>
               <Chip
                 label="None"
@@ -142,6 +142,7 @@ export const CreateTicketScreen = ({ navigation, route }: Props) => {
           </Text>
         ) : null}
         <Button
+          variant="dark"
           label="Submit ticket"
           onPress={submit}
           loading={create.isPending}
@@ -154,7 +155,13 @@ export const CreateTicketScreen = ({ navigation, route }: Props) => {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.surface },
   content: { gap: spacing.md, paddingHorizontal: spacing.xl },
-  label: { ...typography.label, color: colors.ink },
+  label: {
+    ...typography.tag,
+    fontSize: 10,
+    letterSpacing: 1,
+    color: colors.textMuted,
+    paddingTop: 4,
+  },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   multiline: { minHeight: 120, paddingTop: 12 },
   error: { ...typography.bodySmall, color: colors.danger },

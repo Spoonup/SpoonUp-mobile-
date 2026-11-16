@@ -15,6 +15,8 @@ type Props = TextInputProps & {
   hint?: string;
   // Password field with a Show/Hide toggle (sets secureTextEntry itself).
   password?: boolean;
+  // Pill-shaped input used on the sign-in screen (mockup 6a).
+  pill?: boolean;
 };
 
 export const TextField = ({
@@ -22,6 +24,7 @@ export const TextField = ({
   error,
   hint,
   password,
+  pill,
   style,
   ...inputProps
 }: Props) => {
@@ -32,6 +35,7 @@ export const TextField = ({
       placeholderTextColor={colors.textDisabled}
       style={[
         styles.input,
+        pill ? styles.inputPill : null,
         error ? styles.inputError : null,
         password ? styles.inputPassword : null,
         style,
@@ -72,17 +76,26 @@ export const TextField = ({
 
 const styles = StyleSheet.create({
   wrap: { gap: 6 },
-  label: { ...typography.label, color: colors.ink },
+  label: {
+    ...typography.labelSmall,
+    fontFamily: fontFamily.sansMedium,
+    color: colors.ink,
+  },
   input: {
     minHeight: 48,
-    borderWidth: 1,
-    borderColor: colors.borderInput,
-    borderRadius: radius.sm,
+    borderWidth: 1.5,
+    borderColor: colors.borderStrong,
+    borderRadius: 11,
     paddingHorizontal: 14,
     backgroundColor: colors.white,
     color: colors.ink,
     fontFamily: fontFamily.sans,
     fontSize: 14,
+  },
+  inputPill: {
+    borderRadius: radius.pill,
+    paddingHorizontal: 18,
+    borderColor: colors.borderInput,
   },
   inputPassword: { paddingRight: 64 },
   toggle: {

@@ -30,11 +30,11 @@ type ApiSlots = {
 
 // Shows the first days only so the list stays usable; the backend still
 // validates whichever slot is chosen.
-const SLOT_DAYS = 2;
+const SLOT_DAYS = 3;
 
 // Delivery choices from backend data (the site's checkout does the same: ASAP
-// or a bookable slot for kitchen items, courier for pantry items). No ETA is
-// computed here.
+// or a bookable slot for kitchen items). No ETA is computed here.
+// DECISION: pantry sold in a separate app/site, so there is no courier option.
 export const buildDeliveryOptions = (
   lines: CartLine[],
   slots: ApiSlots | null,
@@ -58,18 +58,12 @@ export const buildDeliveryOptions = (
             label: `${day.label}, ${slot.label}`,
             detail: 'Scheduled slot',
             scheduledFor: slot.start,
+            dayLabel: day.label,
+            slotLabel: slot.label,
           });
         }
       }
     }
-  }
-  if (has('ships')) {
-    options.push({
-      id: 'courier',
-      kind: 'in_days',
-      label: 'Courier',
-      detail: 'Ships to your address',
-    });
   }
   return options;
 };
@@ -102,22 +96,16 @@ export const checkoutService = {
               kind: 'scheduled',
               label: 'Today, 7–8 pm',
               detail: 'Scheduled slot',
+              dayLabel: 'Today',
+              slotLabel: '7–8 pm',
             },
             {
               id: 'slot-morn',
               kind: 'scheduled',
               label: 'Tomorrow, 8–9 am',
               detail: 'Scheduled slot',
-            },
-          ]
-        : []),
-      ...(has('ships')
-        ? [
-            {
-              id: 'courier',
-              kind: 'in_days',
-              label: 'Courier',
-              detail: 'Delivered in 3–5 days',
+              dayLabel: 'Tomorrow',
+              slotLabel: '8–9 am',
             },
           ]
         : []),

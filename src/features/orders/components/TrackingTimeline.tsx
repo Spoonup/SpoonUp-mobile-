@@ -1,10 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, spacing, typography } from '../../../theme';
+import { colors, fontFamily } from '../../../theme';
 import { buildTimeline } from '../tracking';
 import type { OrderStatus } from '../types';
 
+// Mockup 6e2 STATUS block: dots on a rail, done/current in olive.
 export const TrackingTimeline = ({ status }: { status: OrderStatus }) => (
-  <View style={styles.wrap}>
+  <View>
     {buildTimeline(status).map((step, i, all) => {
       const reached = step.state !== 'upcoming';
       const bad = step.status === 'cancelled';
@@ -27,6 +28,7 @@ export const TrackingTimeline = ({ status }: { status: OrderStatus }) => (
               style={[
                 styles.dot,
                 reached && { backgroundColor: tint, borderColor: tint },
+                step.state === 'current' && { backgroundColor: colors.white },
               ]}
             />
             {i < all.length - 1 ? (
@@ -42,7 +44,7 @@ export const TrackingTimeline = ({ status }: { status: OrderStatus }) => (
             style={[
               styles.label,
               !reached && styles.upcoming,
-              step.state === 'current' && styles.current,
+              step.state === 'current' && { color: tint },
             ]}
           >
             {step.label}
@@ -54,19 +56,23 @@ export const TrackingTimeline = ({ status }: { status: OrderStatus }) => (
 );
 
 const styles = StyleSheet.create({
-  wrap: { paddingVertical: spacing.xs },
-  row: { flexDirection: 'row', gap: spacing.md, minHeight: 48 },
-  rail: { alignItems: 'center', width: 16 },
+  row: { flexDirection: 'row', gap: 12, minHeight: 40 },
+  rail: { alignItems: 'center', width: 18 },
   dot: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    marginTop: 2,
     borderWidth: 2,
     borderColor: colors.borderStrong,
     backgroundColor: colors.white,
   },
-  line: { flex: 1, width: 2, backgroundColor: colors.border },
-  label: { ...typography.body, color: colors.ink, marginTop: -2 },
-  current: { ...typography.label },
+  line: { flex: 1, width: 2, minHeight: 18, backgroundColor: colors.border },
+  label: {
+    fontFamily: fontFamily.sansSemiBold,
+    fontSize: 13,
+    color: colors.ink,
+    paddingBottom: 14,
+  },
   upcoming: { color: colors.textDisabled },
 });

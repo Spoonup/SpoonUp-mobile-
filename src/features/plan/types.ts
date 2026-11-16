@@ -38,9 +38,15 @@ export type ApiSubscription = {
   activatedAt: string | null;
   expiresAt: string | null;
   parentOrderId: string | null;
+  productId?: string;
+  deliveryCount?: number;
+  deliveries?: { sequenceNo: number; scheduledDate: string; status: string }[];
 };
 
 // Backend-priced plan quote (POST /api/cart/quote with a SUBSCRIPTION line).
+// Alias for customer-facing code, which avoids the backend's table name.
+export type PlanRow = ApiSubscription;
+
 export type PlanQuote = {
   total: number;
   deliveryCount: number;

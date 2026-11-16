@@ -26,7 +26,7 @@ export const EmptyState = ({
     <Text style={styles.message}>{message}</Text>
     {actionLabel && onAction ? (
       <View style={styles.action}>
-        <Button label={actionLabel} onPress={onAction} />
+        <Button variant="dark" label={actionLabel} onPress={onAction} />
       </View>
     ) : null}
     {secondaryLabel && onSecondary ? (

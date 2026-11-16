@@ -11,6 +11,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { appStorage } from '../../../services/storage/appStorage';
 import { Button } from '../../../components/common/Button';
+import { Icon } from '../../../components/common/Icon';
 import { colors, fontFamily, spacing, typography } from '../../../theme';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ONBOARDING_SLIDES } from '../data/slides';
@@ -93,7 +94,7 @@ export const OnboardingScreen = ({ navigation }: Props) => {
         </View>
         {isLast ? (
           <View style={styles.cta}>
-            <Button label="Get started" onPress={finish} />
+            <Button variant="dark" label="Get started" onPress={finish} />
           </View>
         ) : (
           <Pressable
@@ -102,7 +103,7 @@ export const OnboardingScreen = ({ navigation }: Props) => {
             onPress={next}
             style={({ pressed }) => [styles.nextBtn, pressed && styles.pressed]}
           >
-            <Text style={styles.nextArrow}>→</Text>
+            <Icon name="arrowRight" color={colors.onDark} size={22} />
           </Pressable>
         )}
       </View>
@@ -166,7 +167,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  nextArrow: { fontSize: 20, color: colors.onDark },
   pressed: { transform: [{ scale: 0.95 }] },
   cta: { flex: 1 },
 });

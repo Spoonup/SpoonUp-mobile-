@@ -7,7 +7,8 @@ import { ErrorState } from '../../../components/common/ErrorState';
 import { ScreenHeader } from '../../../components/common/ScreenHeader';
 import { Skeleton } from '../../../components/common/Skeleton';
 import type { RootStackParamList } from '../../../navigation/types';
-import { colors, radius, spacing, typography } from '../../../theme';
+import { Icon, type IconName } from '../../../components/common/Icon';
+import { colors, fontFamily, spacing, typography } from '../../../theme';
 import { useAuth } from '../../auth/context/AuthContext';
 import {
   useMarkAllRead,
@@ -16,6 +17,18 @@ import {
 } from '../hooks/useNotifications';
 import { groupNotifications, routeFor, unreadCount } from '../logic';
 import type { AppNotification } from '../types';
+
+const ICON: Record<AppNotification['type'], IconName> = {
+  order_confirmed: 'receipt',
+  status_changed: 'receipt',
+  out_for_delivery: 'box',
+  delivered: 'check',
+  payment_failed: 'alert',
+  support_reply: 'help',
+  ticket_resolved: 'help',
+  plan_activated: 'calendar',
+  plan_expiring: 'calendar',
+};
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Notifications'>;
 
@@ -55,8 +68,8 @@ export const NotificationsScreen = ({ navigation }: Props) => {
     if (isLoading) {
       return (
         <View style={styles.list}>
-          <Skeleton height={72} borderRadius={radius.lg} />
-          <Skeleton height={72} borderRadius={radius.lg} />
+          <Skeleton height={72} borderRadius={14} />
+          <Skeleton height={72} borderRadius={14} />
         </View>
       );
     }
@@ -94,15 +107,14 @@ export const NotificationsScreen = ({ navigation }: Props) => {
             onPress={() => open(item)}
             style={[styles.item, !item.read && styles.itemUnread]}
           >
-            {!item.read ? (
-              <View style={styles.dot} />
-            ) : (
-              <View style={styles.dotGap} />
-            )}
+            <View style={styles.tile}>
+              <Icon name={ICON[item.type]} color={colors.olive} size={18} />
+            </View>
             <View style={styles.text}>
               <Text style={styles.title}>{item.title}</Text>
               <Text style={styles.body}>{item.body}</Text>
             </View>
+            {!item.read ? <View style={styles.dot} /> : null}
           </Pressable>
         )}
       />
@@ -137,20 +149,23 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   list: { flexGrow: 1, gap: spacing.sm, paddingHorizontal: spacing.xl },
   section: {
-    ...typography.label,
-    color: colors.textSecondary,
+    ...typography.tag,
+    fontSize: 10,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: colors.textMuted,
     paddingTop: spacing.md,
     paddingBottom: spacing.xs,
   },
   item: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: spacing.md,
     minHeight: 64,
     padding: spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.lg,
+    borderRadius: 14,
     backgroundColor: colors.white,
   },
   itemUnread: { backgroundColor: colors.surfaceMuted },
@@ -160,9 +175,20 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: colors.terracotta,
   },
-  dotGap: { width: 8 },
+  tile: {
+    width: 38,
+    height: 38,
+    borderRadius: 11,
+    backgroundColor: 'rgba(74,93,46,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   text: { flex: 1, gap: 2 },
-  title: { ...typography.label, color: colors.ink },
+  title: {
+    fontFamily: fontFamily.sansSemiBold,
+    fontSize: 13,
+    color: colors.ink,
+  },
   body: { ...typography.bodySmall, color: colors.textSecondary },
   markAll: { minHeight: 44, justifyContent: 'center' },
   markAllText: { ...typography.label, color: colors.olive },

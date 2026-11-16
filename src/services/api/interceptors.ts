@@ -39,9 +39,15 @@ export const withDefaultHeaders: RequestInterceptor = async init => {
 
 export const handleResponse = async (response: Response): Promise<unknown> => {
   const contentType = response.headers.get('content-type') ?? '';
-  const body = contentType.includes('application/json')
+  const isJson = contentType.includes('application/json');
+  const body = isJson
     ? await response.json().catch(() => undefined)
-    : await response.text();
+    : undefined;
+  // A proxy/Cloudflare challenge or error page is HTML, not the API's JSON:
+  // never hand it to callers as data (they would crash on the wrong shape).
+  if (response.ok && !isJson && response.status !== 204) {
+    throw new ApiError(502, undefined);
+  }
 
   if (response.status === 401) emitSessionExpired();
   if (!response.ok) {

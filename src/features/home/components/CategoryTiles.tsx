@@ -1,11 +1,12 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radius, typography } from '../../../theme';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { AspectImage } from '../../../components/common/AspectImage';
+import { Icon } from '../../../components/common/Icon';
+import { colors, fontFamily, typography } from '../../../theme';
+import { TILE_GAP } from '../logic';
 
 export type CategoryTile = {
   key: string;
-  tag: string;
-  tagColor: string;
-  tagBg: string;
+  kicker: string;
   label: string;
   sub: string;
   image: number;
@@ -14,10 +15,9 @@ export type CategoryTile = {
 
 type Props = { tiles: CategoryTile[] };
 
-// Site "Three ways to eat with us": stacked white tiles, image + mono tag +
-// serif title + one-line description.
+// Approved app design (6b): two equal-width tiles filling the row.
 export const CategoryTiles = ({ tiles }: Props) => (
-  <View style={styles.col}>
+  <View style={styles.row}>
     {tiles.map(tile => (
       <Pressable
         key={tile.key}
@@ -26,22 +26,13 @@ export const CategoryTiles = ({ tiles }: Props) => (
         onPress={tile.onPress}
         style={({ pressed }) => [styles.tile, pressed && styles.pressed]}
       >
-        <Image
-          source={tile.image}
-          style={styles.image}
-          resizeMode="cover"
-          accessibilityIgnoresInvertColors
-        />
+        <AspectImage source={tile.image} ratio={2} maxHeight={96} />
         <View style={styles.text}>
-          <Text
-            style={[
-              styles.tag,
-              { color: tile.tagColor, backgroundColor: tile.tagBg },
-            ]}
-          >
-            {tile.tag}
-          </Text>
-          <Text style={styles.label}>{tile.label}</Text>
+          <Text style={styles.kicker}>{tile.kicker}</Text>
+          <View style={styles.labelRow}>
+            <Text style={styles.label}>{tile.label}</Text>
+            <Icon name="chevronRight" color={colors.ink} size={14} />
+          </View>
           <Text style={styles.sub}>{tile.sub}</Text>
         </View>
       </Pressable>
@@ -50,24 +41,27 @@ export const CategoryTiles = ({ tiles }: Props) => (
 );
 
 const styles = StyleSheet.create({
-  col: { gap: 16 },
+  row: { flexDirection: 'row', gap: TILE_GAP },
   tile: {
-    borderRadius: radius.card,
+    flex: 1,
+    borderRadius: 16,
     overflow: 'hidden',
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
+    backgroundColor: colors.surfaceMuted,
   },
   pressed: { opacity: 0.85 },
-  image: { width: '100%', aspectRatio: 2.1 },
-  text: { padding: 20, gap: 8, alignItems: 'flex-start' },
-  tag: {
+  text: { paddingHorizontal: 12, paddingTop: 10, paddingBottom: 14, gap: 3 },
+  kicker: {
     ...typography.tag,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 4,
-    overflow: 'hidden',
+    fontSize: 10,
+    color: colors.ink,
+    letterSpacing: 1.4,
   },
-  label: { ...typography.titleCard, color: colors.ink },
-  sub: { ...typography.body, color: colors.textSecondary },
+  labelRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  label: {
+    fontFamily: fontFamily.sansMedium,
+    fontSize: 15,
+    lineHeight: 20,
+    color: colors.ink,
+  },
+  sub: { ...typography.bodySmall, color: colors.textMuted },
 });
